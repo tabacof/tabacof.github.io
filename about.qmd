@@ -1,0 +1,19 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/PedroTabacof
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/tabacof/
+    - icon: github
+      text: Github
+      href: https://github.com/tabacof/
+
+---
+
+Personal blog of Pedro Tabacof: under construction!

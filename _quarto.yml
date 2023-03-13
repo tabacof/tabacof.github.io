@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Pedro Tabacof's blog"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/tabacof/
+      - icon: linkedin
+        href: https://www.linkedin.com/in/tabacof/
+      - icon: twitter
+        href: https://twitter.com/PedroTabacof
+format:
+  html:
+    theme: litera
+    css: styles.css

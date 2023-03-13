@@ -1,33 +1,5 @@
 [
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
-    "section": "",
-    "text": "This is a post with executable code."
-  },
-  {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome To My Blog",
-    "section": "",
-    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Blog",
-    "section": "",
-    "text": "The Hierarchy of Needs in Machine Learning\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMar 15, 2019\n\n\nPedro Tabacof\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "Personal blog of Pedro Tabacof: under construction!"
-  },
-  {
     "objectID": "posts/hierarchy_needs_ml/index.html",
     "href": "posts/hierarchy_needs_ml/index.html",
     "title": "The Hierarchy of Needs in Machine Learning",
@@ -54,5 +26,19 @@
     "title": "The Hierarchy of Needs in Machine Learning",
     "section": "Conclusion",
     "text": "Conclusion\nIn this article, I tried to convey the perspective of a machine learning practitioner, certainly biased by my own particular experience. However, I believe that the points raised are relevant to many other data scientists. I hope that the reader can use the presented hierarchy of needs to better guide their processes and decisions, whether as a practitioner or a student in the field. If anyone has another application of the framework, please do not hesitate to contact me or write a comment."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Blog",
+    "section": "",
+    "text": "The Hierarchy of Needs in Machine Learning\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMar 15, 2019\n\n\nPedro Tabacof\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Personal blog of Pedro Tabacof: under construction!"
   }
 ]

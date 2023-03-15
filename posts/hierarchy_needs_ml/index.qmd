@@ -32,7 +32,7 @@ I worked on a document classification project where there initially seemed to be
 The target is what the model will try to predict, which may not be obvious at first:
 
  * **Churn**: What should be the time window to define churn? What if the user becomes active again?
- * **Credit**: How long must one go without paying to be a default? What if the cllections team gets all the money back?
+ * **Credit**: How long must one go without paying to be a default? What if the collections team gets all the money back?
  * **Sales lead**: At what point in the sales funnel do we define conversion? What if there is a refund?
  * **Document classification**: What should be done with sub-categories? Can we group smaller categories into "others"?
 
@@ -42,7 +42,7 @@ Choosing the target is the most critical step in modelling. No features or model
 
 Evaluation is the framework that objectively assesses how well a model will perform when deployed. The evaluation process should closely resemble what happens after the model's deployment. While the standard holdout or cross-validation splits provide a starting point, they are generally insufficient. If the problem evolves over time (as is the case for nearly all business problems), a [time-series split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html) should be employed. If the target is censored for six months, there should be a six-month gap between training and testing. If the data contains groups and the model will make predictions for new groups in the future, you should use a [group split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html).
 
-Metrics judge how well a model is predicting its target. It's not uncommon to use more than one evaluation metric for the same problem. For example, in a binary classification problem, one might use AUC to assess how well the model ranks examples and log loss to evaluate whether the probabilities are well calibrated. It's also common to consider business metrics, such as expected conversion rate or the number of credit approvals. These metrics are harder to estimate offline and generally require some assumptions or experiments. Although handling these metrics may be more difficult, they serve as a more powerful guide than traditional machine learning metrics. Plus, communicating results with people from other areas becomes much easier.
+Metrics judge how well a model is predicting its target. It's not uncommon to use more than one evaluation metric for the same problem. For example, in a binary classification problem, one might use AUC to assess how well the model ranks examples and log loss to evaluate whether the probabilities are well calibrated. It's also common to consider business metrics, such as expected conversion rate or the number of credit approvals. These metrics are harder to estimate offline and generally require some assumptions or experiments. Although handling these metrics may be more difficult, they serve as a more powerful guide than traditional machine learning metrics. Plus, communicating results with people from other areas becomes much easier!
 
 ### Features
 
@@ -85,7 +85,7 @@ Once, while I was in the process of updating models, an analyst noticed that the
 
 ### Monitoring
 
-Monitoring a model in production should be done at all levels of the hierarchy. Monitoring is generally associated with evaluation metrics, but other needs should not be ignored. For example, in a credit card fraud problem, the target is generally censored for several months (since it takes time to determine whether fraud has occurred or not, as it is a manual process), meaning that metrics can only be calculated months after each model decision. In this case, it is important to evaluate how the target is changing over time (using proxies with shorter censoring), monitor whether the model's output distribution remains stable over time, and whether the distribution of features remains the same, which is a significant challenge in itself. For more information on model monitoring, I highly recommend watching Lina Weichbrodt's [PyData Berlin presentation](https://www.youtube.com/watch?v=wWxqnZb-LSk).
+Monitoring a model in production should be done at all levels of the hierarchy. Monitoring is generally associated with evaluation metrics, but other needs should not be ignored. For example, in a credit card fraud problem, the target is generally censored for several months (since it takes time to determine whether fraud has occurred or not, as it is a manual process), meaning that metrics can only be calculated months after each model decision. In this case, it is important to evaluate how the target is changing over time (using proxies with shorter censoring), monitor whether the model's output distribution remains stable over time, and whether the distribution of features remains the same, which is a significant challenge in itself. For more information on model monitoring, I highly recommend watching Lina Weichbrodt's PyData Berlin [presentation](https://www.youtube.com/watch?v=wWxqnZb-LSk).
 
 ### Kaggle
 

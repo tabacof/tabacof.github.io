@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Pedro Tabacof">
-<meta name="dcterms.date" content="2019-03-15">
+<meta name="dcterms.date" content="2023-03-15">
 
-<title>Pedro Tabacof’s blog - The Hierarchy of Needs in Machine Learning</title>
+<title>Pedro Tabacof’s blog - The Hierarchy of Machine Learning Needs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">The Hierarchy of Needs in Machine Learning</h1>
+      <h1 class="title">The Hierarchy of Machine Learning Needs</h1>
                       </div>
   </div>
     
@@ -127,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 15, 2019</p>
+        <p class="date">March 15, 2023</p>
       </div>
     </div>
     
@@ -145,77 +145,86 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>In 1943, Abraham Maslow created the <a href="https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs">hierarchy of human needs</a>, ranging from basic physiological needs to abstract concepts like self-actualization. In this article, I would like to propose the hierarchy of needs in machine learning.</p>
-<p><img src="ml_needs_pyramid.png" class="img-fluid"></p>
-<p>A framework like this can be useful for answering questions such as:</p>
+<p>In 1943, Abraham Maslow created the <a href="https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs">hierarchy of human needs</a>, ranging from basic physiological needs to abstract concepts like self-actualization. In this article, I propose a hierarchy of machine learning needs:</p>
+<p><img src="ml_needs_pyramid2.png" class="img-fluid"></p>
+<p>A framework like this can be useful for answering questions like:</p>
 <ol type="1">
 <li>Will my job as a data scientist be automated in a few years?</li>
-<li>In terms of personal growth, should I focus on solving more problems on Kaggle or more problems in the real world?</li>
-<li>What kind of monitoring should I do after deploying a model into production?</li>
+<li>In terms of personal growth, should I focus on solving more Kaggle problems or more real-world problems?</li>
+<li>What kind of monitoring should I do after deploying a model in production?</li>
 </ol>
-<p>I try to answer these and more questions at the end of this article, but first it is necessary to define and better understand each need in the hierarchy.</p>
+<p>I try to answer these questions and more at the end of this article, but first, it’s necessary to define and better understand each need in the hierarchy.</p>
 <section id="the-hierarchy-of-needs" class="level2">
 <h2 class="anchored" data-anchor-id="the-hierarchy-of-needs">The hierarchy of needs</h2>
 <section id="business" class="level3">
 <h3 class="anchored" data-anchor-id="business">Business</h3>
-<p>The business is above everything, or rather, at the base of the pyramid. Directly or indirectly, we should always try to deliver value to the business. This way, we can have an impact on customers, obtain resources, and grow in our careers. This pragmatic view may be discouraging for those who are only seeking technical challenges, but I would like to propose that business challenges are more difficult and unique than those found in machine learning competitions.</p>
-<p>No e-commerce company aims solely at predicting customer churn; the goal is actually to take actions that reduce churn among the most valuable customers. Credit risk alone is not useful for much; on the other hand, deciding who will receive credit and how much is the core of many financial institutions. The probability of conversion of each lead is only the first step in prioritizing and allocating sales resources in a B2B company. In the three examples cited above, the interest lies in intervention (causality) and not just prediction (machine learning).</p>
-<p>I worked on a document classification project that initially did not seem to have any complicated business issues involved: achieving sufficient accuracy would be enough for the project to be successful. After talking to system users, we realized that the reason for the classification was more important than the decision itself. In the same place, a project had previously failed simply because it only considered the AUC of the model, without any concern for the use of the model in practice. We changed our focus and were able to deliver a system that was actually useful for users and the company.</p>
+<p>Business sits at the base of the pyramid, as it’s the foundation everything is built upon. Directly or indirectly, data scientists must always strive to deliver value to the business. This way, we can impact customers positively, secure resources (whether human or computational), and advance in our careers. This pragmatic view may be discouraging for those seeking technical challenges only, but I propose that business challenges are more difficult and unique than those found in machine learning competitions.</p>
+<p>No e-commerce company aims solely to predict customer churn; the real goal is to take actions that reduce churn among the most valuable customers. Credit risk assessment alone isn’t very useful; deciding who will receive credit and for how much is the core of many financial institutions. The probability of lead conversion is just the first step in prioritizing and allocating sales resources in a B2B company. In all three examples mentioned above, the focus is on intervention (causality) rather than just prediction (machine learning).</p>
+<p>I worked on a document classification project where there initially seemed to be no complicated business issues involved; achieving sufficient accuracy would ensure the project’s success. After talking to the actual users, I realized that the classification rationale was more important than the decision itself. In the same place, a project had previously failed for considering only the model’s AUC without any concern for its practical use. We shifted our focus and delivered a system that was genuinely useful for the users and the company.</p>
 </section>
 <section id="target" class="level3">
 <h3 class="anchored" data-anchor-id="target">Target</h3>
 <p>The target is what the model will try to predict, which may not be obvious at first:</p>
 <ul>
-<li><strong>Churn</strong>: What should be the time window considered? What if the user comes back to life?</li>
-<li><strong>Credit</strong>: How to define a default? How long does someone need to be without paying?</li>
-<li><strong>Sales lead</strong>: At what point in the sales funnel do we define conversion?</li>
-<li><strong>Document classification</strong>: Which categories will be considered? What to do with sub-categories?</li>
+<li><strong>Churn</strong>: What should be the time window to define churn? What if the user becomes active again?</li>
+<li><strong>Credit</strong>: How is a default defined? How long must one go without paying to be a default?</li>
+<li><strong>Sales lead</strong>: At what point in the sales funnel do we define conversion? What if there is a refund?</li>
+<li><strong>Document classification</strong>: What should be done with sub-categories? Can we group smaller categories into “others”?</li>
 </ul>
-<p>Deciding the target is the most important step in modeling. There are no features or models that can save an inappropriate target. On the other hand, having an appropriate target, even very simple models (such as linear regression) with some basic features can already have some impact and be put into production.</p>
+<p>Choosing the target is the most critical step in modeling. No features or models can save an inappropriate target. On the other hand, having an appropriate target allows even very simple models (such as linear regression) with basic features to have some impact and be deployed to production.</p>
 </section>
-<section id="metrics" class="level3">
-<h3 class="anchored" data-anchor-id="metrics">Metrics</h3>
-<p>Evaluation metrics will indicate how well a model is predicting its target. It is not uncommon to use more than one evaluation metric for the same problem. For example, in a binary classification problem, one can use AUC to evaluate how the model is ranking examples and use logloss to evaluate if the probabilities make sense.</p>
-<p>In addition, it is common to take into account business metrics, such as expected conversion rate or number of approvals. These metrics are more difficult to estimate offline, and some assumptions or experiments will generally be necessary. As laborious as it may be to deal with this type of metric, they will be a more powerful guide than traditional machine learning metrics. Additionally, communicating the results with people from other areas becomes easier.</p>
+<section id="evaluationmetrics" class="level3">
+<h3 class="anchored" data-anchor-id="evaluationmetrics">Evaluation/Metrics</h3>
+<p>Evaluation is the framework that objectively assesses how well a model performs. The evaluation process should closely resemble the expected outcomes after the model’s deployment. While the standard train-test or cross-validation splits provide a starting point, they are generally insufficient. If the problem evolves over time (as is the case for nearly all business problems), a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html">time-series split</a> should be employed. If the target is censored for six months, there should be a six-month gap between training and testing. If the data contains groups and the model will make predictions for new groups in the future, you should use a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html">group split</a>.</p>
+<p>Metrics judge how well a model is predicting its target. It’s not uncommon to use more than one evaluation metric for the same problem. For example, in a binary classification problem, one might use AUC to assess how well the model ranks examples and log loss to evaluate whether the probabilities are well calibrated. Moreover, it’s common to consider business metrics, such as expected conversion rate or the number of credit approvals. These metrics are harder to estimate offline and generally require some assumptions or experiments. Although handling these metrics may be more laborious, they serve as a more powerful guide than traditional machine learning metrics. Plus, communicating results with people from other areas becomes much easier.</p>
 </section>
 <section id="features" class="level3">
 <h3 class="anchored" data-anchor-id="features">Features</h3>
-<p>Features are what go into the model. It is crucial to avoid leakage, meaning that at the moment of putting the model into production, the features must appear in the same way they did during training. I once had a leakage problem when trying to predict conversions, as I used features that only appeared when the user converted. In other cases, the values were missing. The model learned that missing values were never associated with conversion and achieved 100% AUC. However, this model had no value.</p>
+<p>Features are what go into the model. It’s crucial to avoid leakage, meaning that when deploying the model in production, features must appear in the same way they did during training. I’ve encountered leakage in a conversion prediction project where I used features that only appeared when the user converted. In other cases, the values were missing. The model learned that missing values were never associated with conversions and achieved a 100% AUC. However, this model had no real value for the business!</p>
 <p>Feature engineering can be partially automated with tools like <a href="https://www.featuretools.com/">Featuretools</a>. However, most of the work in creating new features depends on understanding the problem and the available data (including what can be crawled or purchased externally).</p>
-<p>Is more always better when it comes to features? Not necessarily, as more features may require more monitoring and engineering, which may not be a good trade-off in certain cases. It is necessary to balance the value of features (perhaps with a business metric) with their operational cost.</p>
+<p>Are more features always better? Not necessarily. More features may require more monitoring and engineering, which may not be a good trade-off in certain cases. It’s essential to balance the value of features (possibly with a business metric) with their operational and maintenance costs.</p>
 </section>
 <section id="models" class="level3">
 <h3 class="anchored" data-anchor-id="models">Models</h3>
-<p>In the end, given the business constraints, target, evaluation metric, and features, the choice of models is considerably reduced. If the business requires interpretability of predictions, you should not use a neural network. If the target is continuous, you want a regression model, not a classification model. If the metric evaluates the calibration of probabilities, you want a model that can learn a <a href="https://en.wikipedia.org/wiki/Scoring_rule#Proper_scoring_rules">proper scoring rule</a>. If you have more features than examples, you want a model that can ignore most of the features, like Lasso regression.</p>
-<p>The modeling process can be automated with tools like <a href="https://automl.github.io/auto-sklearn/master/">auto-sklearn</a> or <a href="https://pycaret.gitbook.io/docs/">PyCaret</a>, but only if it makes sense for the business. In certain occasions, gaining one percentage point of accuracy is not as useful as having interpretability of decisions, communicating to other areas how the model works (including external regulators), training speed in the case of “big data,” and prediction latency in real-time systems.</p>
+<p>In the end, given the constraints of business, target, evaluation metric, and features, the choice of models narrows considerably. If the business requires interpretability of predictions, you shouldn’t use a neural network. If the target is continuous, you want a regression model, not a classification model. If the metric evaluates the calibration of probabilities, you want a model that can learn a <a href="https://en.wikipedia.org/wiki/Scoring_rule#Proper_scoring_rules">proper scoring rule</a>. If you have more features than examples, you want a model that can ignore most features, like Lasso regression.</p>
+<p>The modeling process can be automated with tools like <a href="https://automl.github.io/auto-sklearn/master/">auto-sklearn</a> or <a href="https://pycaret.gitbook.io/docs/">PyCaret</a>, but only if it makes sense for the business. In some cases, gaining an additional percentage point in accuracy is less useful than having interpretable decisions, communicating with other areas about how the model works (including external regulators), training speed for “big data” cases, and prediction latency for real-time systems.</p>
 </section>
 </section>
 <section id="applications" class="level2">
 <h2 class="anchored" data-anchor-id="applications">Applications</h2>
 <p>We can apply the hierarchy of needs to better understand the reality of machine learning, which is difficult to learn in MOOCs or competitions:</p>
 <section id="the-spiral-of-applied-machine-learning" class="level3">
-<h3 class="anchored" data-anchor-id="the-spiral-of-applied-machine-learning">The spiral of applied machine learning</h3>
-<p>In practice, machine learning is not done in a linear way, starting with a business problem and ending with a model. The process is repeated several times, and each iteration feeds the next:</p>
-<p><img src="ml_applied_spiral.png" class="img-fluid"></p>
+<h3 class="anchored" data-anchor-id="the-spiral-of-applied-machine-learning">The Spiral of Applied Machine Learning</h3>
+<p>In practice, machine learning is not done linearly, starting with a business problem and ending with a model. The process is repeated several times, and each iteration feeds the next:</p>
+<p><img src="ml_applied_spiral2.png" class="img-fluid"></p>
+<p>This suggests starting simple on the modelling side. Always define a baseline first, which can be the status quo model, a business rule of thumb, or a simple model (e.g.&nbsp;a linear regression or a decision tree classifier). The first model you build to compare against the baseline should be pragmatic, which depends on your domain:</p>
+<ul>
+<li>Tabular data: Use LightGBM (watch my PyData London presentation <a href="https://www.youtube.com/watch?v=qGsHlvE8KZM">here</a>) or XGBoost</li>
+<li>Text classification: Use word counts and Naive Bayes, TF-IDF and logistic regression, or ChatGPT API</li>
+<li>Image recognition: ResNet with transfer learning or ChatGPT4 API</li>
+<li>Time series forecasting: Auto-ARIMA or Prophet</li>
+</ul>
+<p>This will handle the “model” part of the spiral and probably capture most of the gains. Use your time to focus on the other components before coming back to the model.</p>
 </section>
-<section id="ml-automation" class="level3">
-<h3 class="anchored" data-anchor-id="ml-automation">ML automation</h3>
-<p>Automation of machine learning acts only on some levels of the pyramid: primarily in modeling, then in feature engineering and selection. The other needs are much harder to automate and are the biggest differentiator among data scientists. Even in the modeling part, there are cases where maximizing a metric alone does not capture the whole story:</p>
-<p>Once, while I was in the process of updating models, an analyst noticed that there was a small sub-population in which the new model provided predictions that made no sense. In terms of metrics, there was no doubt that the second model was better, but for the business, it was not good to make mistakes in this sub-population. In this case, since I was using a relatively interpretable model, I was able to discover the reason for the wrong predictions (related to how missing values were being handled) and think of an appropriate solution.</p>
+<section id="auto-ml" class="level3">
+<h3 class="anchored" data-anchor-id="auto-ml">Auto ML</h3>
+<p>Machine learning automation operates only at the highest levels of the pyramid: primarily in modeling, followed by feature engineering and selection. The other needs are much harder to automate and are the biggest differentiators among data scientists, since they depend on domain knowledge. Even in the modeling part, there are cases where maximizing a single metric does not capture the whole story:</p>
+<p>Once, while I was in the process of updating models, an analyst noticed that there was a small sub-population where the new model provided predictions that made no sense. In terms of metrics, there was no doubt that the new model was better, but for the business, it was not good to make mistakes in this sub-population. In this case, since I was using a relatively interpretable model, I managed to discover the reason for the incorrect predictions (related to how the missing values were being handled) and could deploy an appropriate solution.</p>
 </section>
 <section id="monitoring" class="level3">
 <h3 class="anchored" data-anchor-id="monitoring">Monitoring</h3>
-<p>Monitoring a model in production should be done at all levels of the hierarchy. Monitoring is generally associated with evaluation metrics, but other needs should not be ignored. For example, in fraud detection, the target is generally censored for several months since it takes time to determine whether fraud occurred or not, which is a manual process. Therefore, metrics can only be calculated months after each model decision. In this case, it is important to evaluate how the target is changing over time (using proxies for lower censorship), monitor whether the model output distribution remains stable over time, and also whether the distribution of features remains the same, which is a significant challenge in itself.</p>
+<p>Monitoring a model in production should be done at all levels of the hierarchy. Monitoring is generally associated with evaluation metrics, but other needs should not be ignored. For example, in a credit card fraud problem, the target is generally censored for several months (since it takes time to determine whether fraud has occurred or not, as it is a manual process), meaning that metrics can only be calculated months after each model decision. In this case, it is important to evaluate how the target is changing over time (using proxies with shorter censoring), monitor whether the model’s output distribution remains stable over time, and whether the distribution of features remains the same, which is a significant challenge in itself. For more information on model monitoring, I highly recommend watching Lina Weichbrodt’s <a href="https://www.youtube.com/watch?v=wWxqnZb-LSk">PyData Berlin presentation</a>.</p>
 </section>
 <section id="kaggle" class="level3">
 <h3 class="anchored" data-anchor-id="kaggle">Kaggle</h3>
-<p>In the case of Kaggle, the entire challenge is in modeling and feature engineering. The metric and target are already given, and the business does not appear explicitly. Therefore, we can see the limitations of Kaggle as training and evaluating a data scientist who will work on real problems.</p>
-<p>Kaggle is an excellent tool for what it proposes, and it is highly valued in the selection process of some places. However, a data scientist needs to go beyond Kaggle and try to tackle other types of problems, those that are not well-formulated and therefore are a fertile ground for exploring targets, metrics, and using models in decision making.</p>
+<p>In the case of Kaggle, the entire challenge lies in modeling, feature engineering and evaluation. The metric and target are already given. The business aspect is not explicitly present. With this, we can see the limitations of Kaggle as training and evaluation for a data scientist who will work on real-world problems.</p>
+<p>Kaggle is a great tool for its purpose and is highly valued in the selection process for some positions. However, a data scientist needs to go beyond this and try to tackle other types of problems, those that are not well-formulated and therefore are fertile ground for exploring targets, metrics, and the use of models in decision-making.</p>
 </section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>In this article, I tried to convey the perspective of a machine learning practitioner, certainly biased by my own particular experience. However, I believe that the points raised are relevant to many other data scientists. I hope that the reader can use the presented hierarchy of needs to better guide their processes and decisions, whether as a practitioner or a student in the field. If anyone has another application of the framework, please do not hesitate to contact me or write a comment.</p>
+<p>In this article, I tried to convey the perspective of a machine learning practitioner, undoubtedly biased by my particular experience. However, I believe the points raised are relevant to many other data scientists. I hope the reader can use the presented hierarchy of needs to better guide the processes and decisions made as both a practitioner and a student in the field.</p>
+<p>This blog post originally appeared in the <a href="https://medium.com/data-hackers/a-hierarquia-de-necessidades-de-machine-learning-813a66369b83">Data Hackers Medium</a> in 2019. Full disclosue: the translation was done with the help of GPT4. I reviewed the final text and updated some sections, since I’ve personally learned and grown a lot since 2019. I’m open to feedback or suggestions for more applications of the hierarchy of needs framework.</p>
 
 
 </section>

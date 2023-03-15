@@ -64,18 +64,18 @@ We can apply the hierarchy of needs to better understand the reality of machine 
 
 ### The Spiral of Applied Machine Learning
 
-In practice, machine learning is not done linearly, starting with a business problem and ending with a model. The process is repeated several times, and each iteration feeds the next:
+In practice, machine learning is not a linear process, starting with a business problem and ending with a model. The process is repeated several times, and each iteration feeds the next:
 
 ![](ml_applied_spiral2.png)
 
-This suggests starting simple on the modelling side. Always define a baseline first, which can be the status quo model, a business rule of thumb, or a simple model (e.g. a linear regression or a decision tree classifier). The first model you build to compare against the baseline should be pragmatic, which depends on your domain:
+This suggests starting simple on the modelling side. Always define a baseline first, which can be a business rule of thumb or a simple model (e.g. a linear regression or a decision tree classifier). The first proper model you build to compare against the baseline should be pragmatic, which depends on your domain:
 
- * Tabular data: Use LightGBM (watch my PyData London presentation [here](https://www.youtube.com/watch?v=qGsHlvE8KZM)) or XGBoost
- * Text classification: Use word counts and Naive Bayes, TF-IDF and logistic regression, or ChatGPT API
- * Image recognition: ResNet with transfer learning or ChatGPT4 API
- * Time series forecasting: Auto-ARIMA or Prophet
+ * **Tabular data**: Use LightGBM (watch my PyData London presentation [here](https://www.youtube.com/watch?v=qGsHlvE8KZM)) or XGBoost
+ * **Time series forecasting**: Use Auto-ARIMA or Prophet
+ * **Text classification**: Use word counts and Naive Bayes, TF-IDF and logistic regression, or ChatGPT API
+ * **Image recognition**: Use ResNet with transfer learning or ChatGPT4 API
 
-This will handle the "model" part of the spiral and probably capture most of the gains. Use your time to focus on the other components before coming back to the model: deploy it as soon as possible, get feedback from the stakeholders, explore the failure modes (error analysis), and then start the target-evaluation-metrics-features-model process again.
+This will handle the "model" part of the spiral and probably capture most of the gains. Use your time to focus on the other components before coming back to the model: deploy it as soon as possible, get feedback from the stakeholders, explore the failure modes (error analysis), and then go over the target-evaluation-metrics-features-model process again.
 
 ### Auto ML
 

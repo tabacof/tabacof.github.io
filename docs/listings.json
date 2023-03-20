@@ -2,7 +2,9 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/hierarchy_needs_ml/index.html"
+      "/posts/hierarchy_needs_ml/index.html",
+      "/posts/neurips_2018/index.html",
+      "/posts/how_not_to_forecast_election/index.html"
     ]
   }
 ]

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pedro Tabacof">
+<meta name="dcterms.date" content="2018-12-17">
+
+<title>Pedro Tabacof’s blog - NeurIPS 2018: A Data Scientist’s Account</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pedro Tabacof’s blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/tabacof/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/tabacof/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/PedroTabacof"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">NeurIPS 2018: A Data Scientist’s Account</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Pedro Tabacof </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 17, 2018</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p><img src="montreal.jpeg" class="img-fluid"></p>
+<p>Two weeks ago in Montreal, NeurIPS (formerly known as NIPS) took place, the world’s largest conference on machine learning and artificial intelligence. Major advancements in the field were presented, covering Deep Learning, GANs, and Reinforcement Learning, including both theory and practice. Over eight thousand people attended, more than a thousand papers were accepted, and dozens of workshops were held. Additionally, nearly all major tech companies were present, primarily aiming to recruit scientists and researchers. I went to NeurIPS to present the work <a href="https://arxiv.org/abs/1806.04646">Adversarial Attacks on Variational Autoencoders</a> at the LatinX in AI workshop, co-authored by <a href="https://www.linkedin.com/in/george-gondim/">George Gondim</a>, myself and <a href="https://www.linkedin.com/in/eduardovalle/">Eduardo Valle</a>.</p>
+<p>Speaking of LatinX, this year diversity and inclusion were the hottest topics at the conference. We had three other workshops dedicated to this (Black in AI, Women in ML, Queer in AI), as well as smaller talks and gatherings on the subject. Despite this, more than half of the Black in AI participants couldn’t obtain visas in time or were denied, which had some <a href="https://www.bloomberg.com/news/articles/2018-11-30/visa-issues-cast-shadow-on-canada-s-moment-in-the-ai-spotlight#xj4y7vzkg">repercussions</a> and may influence future conference locations. At LatinX, the Latin American artificial intelligence meeting <a href="https://khipu.ai/">Khipu</a> was announced, scheduled to take place in Montevideo in November 2019. We Brazilians cannot miss this opportunity!</p>
+<p>The conference had its issues: tickets sold out in just 11 minutes; last-minute name change (and we were left without mugs because of it); overcrowded sessions, with people being kicked out due to “fire hazard”; numerous audiovisual problems (it would have been better to watch many talks from home). Despite this, the experience is unique; there’s no other place where you bump into Geoff Hinton, Yoshua Bengio, and Yann LeCun in the halls. Of course, they’ll always be surrounded by admirers and people wanting to take photos.</p>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="hinton.jpeg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Imagine you’re explaining your poster and Geoff Hinton appears behind you?</figcaption><p></p>
+</figure>
+</div>
+<p>Although these “celebrities” were present, their students were the ones presenting the academic work. With over a thousand papers at the main conference and hundreds at the workshops, it’s hard to know everything that happened there. I noted down more than 30 articles to review more carefully later. Although this is a large amount to read, it’s only a fraction of the total. For those who want a taste of what’s published there, here are some examples:</p>
+<p>Best papers (according to reviewers and program committee):</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1806.07366">Neural Ordinary Differential Equations</a></li>
+<li><a href="https://papers.nips.cc/paper/8200-non-delusional-q-learning-and-value-iteration">Non-delusional Q-learning and Value-iteration</a></li>
+<li><a href="https://arxiv.org/abs/1806.00291">Optimal Algorithms for Non-Smooth Distributed Optimization in Networks</a></li>
+<li><a href="https://papers.nips.cc/paper/7601-nearly-tight-sample-complexity-bounds-for-learning-mixtures-of-gaussians-via-sample-compression-schemes">Nearly Tight Sample Complexity Bounds for Learning Mixtures of Gaussians via Sample Compression Schemes</a></li>
+</ul>
+<p>Best papers (according to me):</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1805.06440">Regularization Learning Networks: Deep Learning for Tabular Datasets</a></li>
+<li><a href="https://arxiv.org/abs/1811.12188">Bayesian Neural Network Ensembles</a></li>
+<li><a href="https://arxiv.org/abs/1803.04307">The Everlasting Database: Statistical Validity at a Fair Price</a></li>
+<li><a href="https://papers.nips.cc/paper/7338-how-to-start-training-the-effect-of-initialization-and-architecture">How to Start Training: The Effect of Initialization and Architecture</a></li>
+</ul>
+<p>Besides the academic side, NeurIPS has a strong social aspect: parties and gatherings. Excluding the official closing, the parties were sponsored by companies. I attended two (Nvidia and Element AI), with excellent food and drinks. There’s a bit of elitism; I only managed to attend these two parties thanks to a friend who works with big names in a Montreal lab. However, every day there were several options, with varying degrees of difficulty to get a ticket.</p>
+<p>In my opinion, the gatherings organized by participants through the conference app were the best part of the week, as they brought together people with similar interests. I attended <em>AI for Business and AI in Production</em>, both highly relevant to my work as a data scientist at Nubank. There, it’s possible to meet people from various backgrounds and profiles who share the same interest, without the elitism of those exclusive parties.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ai_business.jpeg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">AI for Business lunch (I’m wearing purple in the top right photo)</figcaption><p></p>
+</figure>
+</div>
+<p>Finally, the last two days were dedicated to workshops. In them, you could delve deep into a specific topic and even learn about things not officially published anywhere yet. The workshop that left the greatest impression on me was <a href="https://nips.cc/Conferences/2018/Schedule?showEvent=10908">AI in Financial Services</a>. However, it had a strong bias toward North American and European realities, mostly discussing regulations and how machine learning could be done within these constraints. For example, in those countries, you need to explain the reasons for denying a loan, but how do you do that if the loan risk is calculated by a deep neural network? However, many countries like China, India, and Brazil don’t have such restrictions, so our challenges are different and were barely explored there. I can say that Nubank is at the forefront of applying machine learning to financial products globally.</p>
+<p>NeurIPS is an academic conference, not the place to meet other data scientists but rather to find machine learning and AI researchers. I recommend the experience for those with an academic inclination, who have the habit of reading papers and plan to, or have already published work in the field. If you have other interests, there are conferences and meetings that may be more useful professionally and more accessible, such as Strata, PAPIs.io or even KDD. The most important thing is to get out there, meet new people, have an enriching experience, but don’t forget to take some time to explore and enjoy the trip!</p>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

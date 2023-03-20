@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pedro Tabacof">
+<meta name="dcterms.date" content="2016-11-16">
+
+<title>Pedro Tabacof’s blog - How (not) to forecast an election</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pedro Tabacof’s blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/tabacof/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/tabacof/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/PedroTabacof"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">How (not) to forecast an election</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Pedro Tabacof </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 16, 2016</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p><em>We use a hierarchical Bayesian model to show how a simple pro-Trump bias has a huge effect on forecasting election results. See the discussion on <a href="https://news.ycombinator.com/item?id=13049651">HackerNews</a>.</em></p>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>Unlike other countries, where presidential elections follow a simple majority rule, the American election follows a different set of rules that makes it very hard for outsiders to understand what is going on. However, the idea is quite simple: each state has a number of electoral college votes, totaling 538 votes across the nation. The winner candidate of each state election takes all of its electoral college votes (with two exceptions). If a candidate receives 270 electoral votes or more overall, he or she wins the election. This makes the election an interesting forecasting problem. Instead of predicting the total number of votes in each candidate, the problem is forecasting the results of each state individually.</p>
+<blockquote class="blockquote">
+<p>Prediction is very difficult, especially if it’s about the future. (<a href="https://en.wikiquote.org/wiki/Niels_Bohr#Disputed">disputed</a>)</p>
+</blockquote>
+<p>Our interest is not to forecast the election, which is not a random variable anymore (spoiler alert: Trump won). We want to show how a Bayesian forecasting model works, and propose a modification that explains why statistical models would fail so badly if there were polling biases.</p>
+</section>
+<section id="polling" class="level3">
+<h3 class="anchored" data-anchor-id="polling">Polling</h3>
+<p>In theory, a poll should randomly sample the voting population. However, in practice there are several possible polling problems that can compromise their use in naive statistical analyses:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Shy_Tory_factor"><strong>Shy Tory</strong></a> / <a href="https://en.wikipedia.org/wiki/Bradley_effect"><strong>Bradley</strong></a> / <strong>“shame”</strong> effects Voters are not comfortable with revealing their particular preference.</li>
+<li><strong>Selection bias</strong>: People who answer the pollsters are from an unrepresentative subgroup (e.g.&nbsp;people who answer landline phones).</li>
+<li><strong>Stratification errors</strong>: Wrong subpopulation determination when doing stratified sampling.</li>
+<li><strong>Candidate and (non)-voting correlation</strong>: As voting is not mandatory, the presidential preference of some people may be correlated with their chance of (not) voting.</li>
+<li><strong>Temporal preference change</strong>: The preferences change over time (a lot of people make up their minds in the last week).</li>
+<li><strong>Sample noise</strong>: Any sample from a population will be noisy and its statistics will not be identical to the population statistics.</li>
+</ul>
+<p>Simple forecasts usually only consider the last item when estimating the margins of error or uncertainty. If you only consider this and nothing more, multiple polls will be treated as independent and unbiased, and the more polls you use, the smaller the forecasting errors will be, until there is almost certainty. The other effects are biases that will make the average of multiple polls unreliable and possibly useless. As they are not directly available for modeling, the only way to estimate them is by making strong assumptions or using polling results from previous elections. We do not attempt to model exactly those issues here, we rather include all of them in a bias term that is shared across all polls, and show that even a small bias term favorable to Trump completely changes the forecast.</p>
+</section>
+<section id="forecast" class="level3">
+<h3 class="anchored" data-anchor-id="forecast">Forecast</h3>
+<p>We leave the details of our hierarchical Bayesian forecasting model at the end, for the advanced reader. Now we show the results of its forecasts. However, depending on which polls we include, we have very different results. The polls to use in a forecasting model should be recent and of good quality (conducted with appropriate methodology and with past successes). As a proxy of quality, we use the grades from <a href="https://projects.fivethirtyeight.com/pollster-ratings/">538</a>.</p>
+<p>We found that the simple choice of which polls to use has a very large impact on the probability of victory of each candidate:</p>
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Polling choice</th>
+<th>Clinton</th>
+<th>Trump</th>
+<th>Neither</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Last poll with good grade</td>
+<td>87.3%</td>
+<td>10.5%</td>
+<td>2.2%</td>
+</tr>
+<tr class="even">
+<td>Polls with the best 3 grades (over the last month)</td>
+<td>99.3%</td>
+<td>0.6%</td>
+<td>0.1%</td>
+</tr>
+<tr class="odd">
+<td>All polls from last week</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+</tr>
+</tbody>
+</table>
+<p>We consider polls with good grades to be above B, but this is not possible for some states, so we use a more tolerant definition in those cases. When we say last week or last month, we mean from the Election Day.</p>
+<p>By aggregating the polls with different weights (e.g.&nbsp;according to their quality or distance from election), we would have endless forecasting possibilities, which explains the diversity found in the media before the election:</p>
+<ul>
+<li><a href="http://www.nytimes.com/interactive/2016/upshot/presidential-polls-forecast.html?_r=0">New York Times</a>: 85% Clinton, 15% Trump</li>
+<li><a href="https://elections.huffingtonpost.com/2016/forecast/president">Huffington Post</a>: 98% Clinton, 1.7% Trump</li>
+<li><a href="https://www.independent.co.uk/news/world/americas/sam-wang-princeton-election-consortium-poll-hillary-clinton-donald-trump-victory-a7399671.html">Princeton Election Consortium</a>: 99% Clinton</li>
+<li><a href="http://projects.fivethirtyeight.com/2016-election-forecast/">538</a>: 71.4% Clinton, 28.6% Trump</li>
+</ul>
+<p>Of the mainstream forecasters, only 538 cannot be included in the same bucket of certain Clinton victory. Notice that the other forecasts are consistent with our own results shown in the previous table. How come the forecasters, including us, made such egregious mistakes? As in many statistical problems, the answer lies with the data: garbage in, garbage out.</p>
+</section>
+<section id="bias-impact" class="level3">
+<h3 class="anchored" data-anchor-id="bias-impact">Bias impact</h3>
+<p>We encompass all possible polling issues in a general bias term. We use a bias term that is favorable to Trump on election day because that is clearly what happened on November 8. This can be interpreted as a hidden preference for Trump that is not captured by the polls by all the issues explained before. Instead of fixing the bias to an arbitrary value, we use a uniform random variable. We start with zero bias, where Clinton is almost surely the victor, and increase its span until Trump is almost certainly the victor:</p>
+<p align="center">
+<img src="bias_influence.png" alt="" width="500">
+</p>
+<p>We see that even a small polling bias has a huge effect on the election forecast. This explains why 538 had a more favorable Trump forecast as they <a href="http://simplystatistics.org/2016/11/09/not-all-forecasters-got-it-wrong/">included a polling bias and did not treat the polls as independent samples</a>, but this also indicates that even 538 probably underestimated the polling biases.</p>
+<p>You can check for yourself how the bias impacts the results of each state election on the map below. For each state we forecast the predicted percentage of votes of each candidate, with adjustable bias. Note that percentage of votes is different from the probability of winning in the state, which would also take the uncertainty of the prediction into account.</p>
+<p><img src="us_map_bias.gif" class="img-fluid"></p>
+</section>
+<section id="hierarchical-bayesian-forecasting-model" class="level3">
+<h3 class="anchored" data-anchor-id="hierarchical-bayesian-forecasting-model">Hierarchical Bayesian forecasting model</h3>
+<p>We can use a hierarchical Bayesian model to aggregate the information of each state poll to form a globally coherent forecast. Overall, each poll’s likelihood is modeled as a multinomial, with Dirichlet prior (per state) and uniform hyperprior (per nation). This way, prior information is shared across states and we can use weakly informative hyperpriors. We start with an overall national preference over each candidate, modeled as three independent wide uniform distributions:</p>
+<p align="center">
+<img src="eq1.png" alt="" width="250">
+</p>
+<p>Then, we have the voting intention in each state, with the national preference as prior:</p>
+<p align="center">
+<img src="eq2.png" alt="" width="250">
+</p>
+<p>Finally, each poll is modeled as one independent sample of the voting intention of the state:</p>
+<p align="center">
+<img src="eq3.png" alt="" width="300">
+</p>
+<p>We infer the posteriors of the unknown parameters (state voting intentions and national preferences) given the observed variables (the polls we decided to include). The posterior is our knowledge of the unseen variables after observing statistically related variables. Depending on the choice of which polls to include as observations, as we explained before, the posteriors and thus the forecast will be different.</p>
+<p align="center">
+<img src="elections_graphical_model.svg" alt="" width="500">
+</p>
+<p>To forecast the probability of each candidate winning the state election, we use the same multinomial likelihood that was used for the inference. However, now the voting intentions are the posterior given the polls, and number of voters is chosen to match 2012 election numbers. Thus, for each state we sample the predicted number of votes of each candidate on election day using the following formula:</p>
+<p align="center">
+<img src="eq4.png" alt="" width="350">
+</p>
+<p>The candidate with more votes takes all the electoral colleges of the state (we ignore the particularities of Nebraska and Maine). We sum the electoral colleges votes of each candidates, and if a candidate wins 270 votes or more, he or she is the winner. We repeat this process multiple times in order to determine the probability of each candidate winning the election.</p>
+<p>To add the bias term in our forecast to account for all the polling issues already cited, we make a simple change to the predictive model:</p>
+<p align="center">
+<img src="eq5.png" alt="" width="400">
+</p>
+<p>This bias always stochastically favors Trump. We must subtract the same value from Clinton in order to guarantee <em>θ<sup>bias</sup></em> remains a valid probability simplex. In our experiments above, we vary <em>ϵ</em> from 0 to 5%.</p>
+</section>
+<section id="stan-code" class="level3">
+<h3 class="anchored" data-anchor-id="stan-code">Stan Code</h3>
+<p>Take a look at our code and feel free to play with it. Here is how we implemented our model in <a href="https://mc-stan.org/">Stan</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode stan code-with-copy"><code class="sourceCode stan"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_polls; <span class="co">// Number of polls</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_states; <span class="co">// Number of states (51 because of D.C.)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_candidates; <span class="co">// Number of candidates (3: Trump, Clinton, Ind.)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> polls_states[nb_polls]; <span class="co">// Poll -&gt; state map</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> votes[nb_polls, nb_candidates]; <span class="co">// Polled votes for each candidate</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_voters[nb_states]; <span class="co">// Number of voters for forecasting</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real</span> bias; <span class="co">// Polling bias</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">parameters</span> {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">simplex</span>[nb_candidates] theta[nb_states]; <span class="co">//1 - Trump, 2 - Clinton, 3 - Ind.</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vector</span>[nb_candidates] alpha;</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">model</span> {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(c <span class="cf">in</span> <span class="dv">1</span>:nb_candidates)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        alpha[c] ~ uniform(<span class="dv">0</span>, <span class="dv">1000</span>); <span class="co">// Weakly informative hyperprior</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span>:nb_states)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        theta[s] ~ dirichlet(alpha); <span class="co">// Dirichlet prior per state</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(p <span class="cf">in</span> <span class="dv">1</span>:nb_polls) <span class="co">// Multinomial observations (polled values)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        votes[p] ~ multinomial(theta[polls_states[p]]);</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">generated quantities</span> {</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> votes_pred[nb_states, nb_candidates]; <span class="co">// Predicted number of votes on election day</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real</span> epsilon[nb_states]; <span class="co">// Bias random variable</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">simplex</span>[nb_candidates] theta_bias[nb_states]; <span class="co">// Biased voting intentions</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">// The deltas below are used to ensure that the biased thetas form a valid simplex</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real</span> delta_t[nb_states];</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real</span> delta_h[nb_states];</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real</span> delta[nb_states];</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span>:nb_states) {</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(bias == <span class="fl">0.0</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>            epsilon[s] &lt;- <span class="fl">0.0</span>;</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            epsilon[s] &lt;- uniform_rng(<span class="dv">0</span>, bias); <span class="co">// Bias value for this state</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="co">// We must ensure that theta will remain a valid probability simplex,</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="co">// so we limit delta in a way theta will never be below 0 or above 1</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        delta_t[s] &lt;- fabs(theta[s][<span class="dv">1</span>] - fmax(<span class="fl">0.0</span>, fmin(<span class="fl">1.0</span>, theta[s][<span class="dv">1</span>] + epsilon[s])));</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        delta_h[s] &lt;- fabs(theta[s][<span class="dv">2</span>] - fmin(<span class="fl">1.0</span>, fmax(<span class="fl">0.0</span>, theta[s][<span class="dv">2</span>] - epsilon[s])));</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        delta[s] &lt;- fmin(delta_t[s], delta_h[s]);</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        theta_bias[s][<span class="dv">1</span>] &lt;- theta[s][<span class="dv">1</span>] + delta[s];</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        theta_bias[s][<span class="dv">2</span>] &lt;- theta[s][<span class="dv">2</span>] - delta[s];</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        theta_bias[s][<span class="dv">3</span>] &lt;- theta[s][<span class="dv">3</span>];</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        votes_pred[s] &lt;- multinomial_rng(theta_bias[s], nb_voters[s]);</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>We have found that even a modestly sophisticated statistical model does very little to counter unreliable data. A proper forecasting model for the American elections must include polling biases, as we have shown in a general way. To arrive at a precise number, you must either make assumptions on the polling methodology, or calibrate the polls weights using their historical reliability. This could be the reason that 538 had Trump winning at the highest probability of the mainstream media. We have also to consider that when you forecast 70% probability of winning, the prediction is expected to fail 30% of the time, so it is hard to evaluate models and forecasters using only one observation.</p>
+<p>Even though the 2016 election was one of most surprising polling misses in recent years, the result was not a black swan. Nassim Nicholas Taleb pointed out, before the election, that the mainstream forecasts were not reliable due to their significant volatility. According to his model based on option theory, this <a href="https://web.archive.org/web/20161110051019/https://mishtalk.com/2016/08/07/nassim-telab-blasts-nate-silver-about-election-odds-in-series-of-tweets/">volatility should have pulled the probabilities toward 50-50</a>. As a follow-up, if there is interest, we want to explore a time-series model where the voting intentions follow a random walk. To do this, we need to change the underlying model to allow the unseen random walk influence the polling results. Following <a href="https://statmodeling.stat.columbia.edu/2009/04/29/conjugate_prior/">Andrew Gelman’s suggestion</a>, we can change the Dirichlet prior to a softmax prior, and then we can make the softmax parameters follow a random walk.</p>
+<section id="acknowledgements" class="level4">
+<h4 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h4>
+<p>This blog post was written with <a href="https://www.linkedin.com/in/ramon-de-oliveira/">Ramon Oliveira</a> back when we were working together in a data science consulting company (Datart) we co-founded.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

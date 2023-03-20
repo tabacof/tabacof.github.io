@@ -3,6 +3,7 @@ title: "How (not) to forecast an election"
 author: "Pedro Tabacof"
 date: "2016-11-16"
 categories: []
+image: us_map_bias.gif
 ---
 
 _We use a hierarchical Bayesian model to show how a simple pro-Trump bias has a huge effect on forecasting election results. See the discussion on  [HackerNews](https://news.ycombinator.com/item?id=13049651)._
@@ -53,7 +54,7 @@ Of the mainstream forecasters, only 538 cannot be included in the bucket of cert
 
 We encompass all possible polling issues in a general bias term. We use a bias term that is favorable to Trump on election day because that is clearly what happened on November 8. This can be interpreted as a hidden preference for Trump that is not captured by the polls by all the issues explained before. Instead of fixing the bias to an arbitrary value, we use a uniform random variable. We start with zero bias, where Clinton is almost surely the victor, and increase its span until Trump is almost certainly the victor:
 
-<p align="center"><img src="bias_influence.png" alt= "" width="500"></p>
+![](bias_influence.png){fig-align="center"}
 
 We see that even a small polling bias has a huge effect on the election forecast. This explains why 538 had a more favorable Trump forecast as they [included a polling bias and did not treat the polls as independent samples](http://simplystatistics.org/2016/11/09/not-all-forecasters-got-it-wrong/), but this also indicates that even 538 probably underestimated the polling biases.
 

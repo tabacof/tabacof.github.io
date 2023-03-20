@@ -280,9 +280,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="bias-impact" class="level3">
 <h3 class="anchored" data-anchor-id="bias-impact">Bias impact</h3>
 <p>We encompass all possible polling issues in a general bias term. We use a bias term that is favorable to Trump on election day because that is clearly what happened on November 8. This can be interpreted as a hidden preference for Trump that is not captured by the polls by all the issues explained before. Instead of fixing the bias to an arbitrary value, we use a uniform random variable. We start with zero bias, where Clinton is almost surely the victor, and increase its span until Trump is almost certainly the victor:</p>
-<p align="center">
-<img src="bias_influence.png" alt="" width="500">
-</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bias_influence.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 <p>We see that even a small polling bias has a huge effect on the election forecast. This explains why 538 had a more favorable Trump forecast as they <a href="http://simplystatistics.org/2016/11/09/not-all-forecasters-got-it-wrong/">included a polling bias and did not treat the polls as independent samples</a>, but this also indicates that even 538 probably underestimated the polling biases.</p>
 <p>You can check for yourself how the bias impacts the results of each state election on the map below. For each state we forecast the predicted percentage of votes of each candidate, with varying bias:</p>
 <p><img src="us_map_bias.gif" class="img-fluid"></p>

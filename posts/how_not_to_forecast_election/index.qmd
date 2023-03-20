@@ -7,19 +7,17 @@ categories: []
 
 _We use a hierarchical Bayesian model to show how a simple pro-Trump bias has a huge effect on forecasting election results. See the discussion on  [HackerNews](https://news.ycombinator.com/item?id=13049651)._
 
-### Introduction
+### US presidential elections 
 
 Unlike other countries, where presidential elections follow a simple majority rule, the American election follows a different set of rules that makes it very hard for outsiders to understand what is going on. However, the idea is quite simple: each state has a number of electoral college votes, totaling 538 votes across the nation. The winner candidate of each state election takes all of its electoral college votes (with two exceptions). If a candidate receives 270 electoral votes or more overall, he or she wins the election. This makes the election an interesting forecasting problem. Instead of predicting the total number of votes in each candidate, the problem is forecasting the results of each state individually.
 
-> Prediction is very difficult, especially if it's about the future. ([disputed](https://en.wikiquote.org/wiki/Niels_Bohr#Disputed))
-
-Our interest is not to forecast the election, which is not a random variable anymore (spoiler alert: Trump won). We want to show how a Bayesian forecasting model works, and propose a modification that explains why statistical models would fail so badly if there were polling biases.
+Our interest is not to forecast the 2016 election, which is not a random variable anymore (spoiler alert: Trump won). We want to show how a Bayesian forecasting model works, and propose a modification that explains why statistical models would fail so badly if there were polling biases.
 
 ### Polling
 
 In theory, a poll should randomly sample the voting population. However, in practice there are several possible polling problems that can compromise their use in naive statistical analyses:
 
- * [**Shy Tory**](https://en.wikipedia.org/wiki/Shy_Tory_factor) / [**Bradley**](https://en.wikipedia.org/wiki/Bradley_effect) / **“shame”** effects Voters are not comfortable with revealing their particular preference.
+ * [**Shy Tory**](https://en.wikipedia.org/wiki/Shy_Tory_factor) and [**Bradley**](https://en.wikipedia.org/wiki/Bradley_effect) effects: Voters are not comfortable with revealing their particular preference.
  * **Selection bias**: People who answer the pollsters are from an unrepresentative subgroup (e.g. people who answer landline phones).
  * **Stratification errors**: Wrong subpopulation determination when doing stratified sampling.
  * **Candidate and (non)-voting correlation**: As voting is not mandatory, the presidential preference of some people may be correlated with their chance of (not) voting.
@@ -40,7 +38,7 @@ We found that the simple choice of which polls to use has a very large impact on
 | Polls with the best 3 grades (over the last month)  | 99.3% | 0.6% | 0.1% |
 | All polls from last week  | 100.0% | 0.0% |0.0% |
 
-We consider polls with good grades to be above B, but this is not possible for some states, so we use a more tolerant definition in those cases. When we say last week or last month, we mean from the Election Day.
+We consider polls with good grades to be above B, but this is not possible for some states, so we use a more tolerant definition in those cases. When we say last week or last month, we mean from the Election Day (Nov 8, 2016).
 
 By aggregating the polls with different weights (e.g. according to their quality or distance from election), we would have endless forecasting possibilities, which explains the diversity found in the media before the election:
 
@@ -49,7 +47,7 @@ By aggregating the polls with different weights (e.g. according to their quality
  * [Princeton Election Consortium](https://www.independent.co.uk/news/world/americas/sam-wang-princeton-election-consortium-poll-hillary-clinton-donald-trump-victory-a7399671.html): 99% Clinton
  * [538](http://projects.fivethirtyeight.com/2016-election-forecast/): 71.4% Clinton, 28.6% Trump
 
-Of the mainstream forecasters, only 538 cannot be included in the same bucket of certain Clinton victory. Notice that the other forecasts are consistent with our own results shown in the previous table. How come the forecasters, including us, made such egregious mistakes? As in many statistical problems, the answer lies with the data: garbage in, garbage out.
+Of the mainstream forecasters, only 538 cannot be included in the bucket of certain Clinton victory. Notice that the other forecasts are consistent with our own results shown in the previous table. How come the forecasters, including us, made such egregious mistakes? As in many statistical problems, the answer lies with the data: garbage in, garbage out.
 
 ### Bias impact
 
@@ -59,7 +57,7 @@ We encompass all possible polling issues in a general bias term. We use a bias t
 
 We see that even a small polling bias has a huge effect on the election forecast. This explains why 538 had a more favorable Trump forecast as they [included a polling bias and did not treat the polls as independent samples](http://simplystatistics.org/2016/11/09/not-all-forecasters-got-it-wrong/), but this also indicates that even 538 probably underestimated the polling biases.
 
-You can check for yourself how the bias impacts the results of each state election on the map below. For each state we forecast the predicted percentage of votes of each candidate, with adjustable bias. Note that percentage of votes is different from the probability of winning in the state, which would also take the uncertainty of the prediction into account.
+You can check for yourself how the bias impacts the results of each state election on the map below. For each state we forecast the predicted percentage of votes of each candidate, with varying bias:
 
 ![](us_map_bias.gif)
 
@@ -155,8 +153,8 @@ generated quantities {
 
 We have found that even a modestly sophisticated statistical model does very little to counter unreliable data. A proper forecasting model for the American elections must include polling biases, as we have shown in a general way. To arrive at a precise number, you must either make assumptions on the polling methodology, or calibrate the polls weights using their historical reliability. This could be the reason that 538 had Trump winning at the highest probability of the mainstream media. We have also to consider that when you forecast 70% probability of winning, the prediction is expected to fail 30% of the time, so it is hard to evaluate models and forecasters using only one observation.
 
-Even though the 2016 election was one of most surprising polling misses in recent years, the result was not a black swan. Nassim Nicholas Taleb pointed out, before the election, that the mainstream forecasts were not reliable due to their significant volatility. According to his model based on option theory, this [volatility should have pulled the probabilities toward 50-50](https://web.archive.org/web/20161110051019/https://mishtalk.com/2016/08/07/nassim-telab-blasts-nate-silver-about-election-odds-in-series-of-tweets/). As a follow-up, if there is interest, we want to explore a time-series model where the voting intentions follow a random walk. To do this, we need to change the underlying model to allow the unseen random walk influence the polling results. Following [Andrew Gelman's suggestion](https://statmodeling.stat.columbia.edu/2009/04/29/conjugate_prior/), we can change the Dirichlet prior to a softmax prior, and then we can make the softmax parameters follow a random walk.
+Even though the 2016 election was one of most surprising polling misses in recent years, the result was not a black swan. Nassim Nicholas Taleb pointed out, before the election, that the mainstream forecasts were not reliable due to their significant volatility. According to his model based on option theory, this [volatility should have pulled the probabilities toward 50-50](https://web.archive.org/web/20161110051019/https://mishtalk.com/2016/08/07/nassim-telab-blasts-nate-silver-about-election-odds-in-series-of-tweets/). As a follow-up, if there is interest, we want to explore a time-series model where the voting intentions follow a random walk. To do this, we need to change the underlying model to allow the unseen random walk influence the polling results. Following Andrew Gelman's [suggestion](https://statmodeling.stat.columbia.edu/2009/04/29/conjugate_prior/), we can change the Dirichlet prior to a softmax prior, and then we can make the softmax parameters follow a random walk.
 
 #### Acknowledgements
 
-This blog post was written with [Ramon Oliveira](https://www.linkedin.com/in/ramon-de-oliveira/) back when we were working together in a data science consulting company (Datart) we co-founded.
+This blog post was written with the help of [Ramon Oliveira](https://www.linkedin.com/in/ramon-de-oliveira/) back when we were working in a data science consulting company (Datart) that we co-founded together.

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Pedro Tabacof&#39;s blog</title>
+<link>https://tabacof.github.io/index.html</link>
+<atom:link href="https://tabacof.github.io/index.xml" rel="self" type="application/rss+xml"/>
+<description>Pedro Tabacof&#39;s personal blog</description>
+<generator>quarto-1.2.335</generator>
+<lastBuildDate>Tue, 14 Mar 2023 23:00:00 GMT</lastBuildDate>
+<item>
+  <title>The Hierarchy of Machine Learning Needs</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>In 1943, Abraham Maslow created the <a href="https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs">hierarchy of human needs</a>, ranging from basic physiological needs to abstract concepts like self-actualization. In this article, I propose a hierarchy of machine learning needs:</p>
+<p><img src="https://tabacof.github.io/posts/hierarchy_needs_ml/ml_needs_pyramid2.png" class="img-fluid"></p>
+<p>A framework like this can be useful for answering questions like:</p>
+<ol type="1">
+<li>Will my job as a data scientist be automated in a few years?</li>
+<li>In terms of personal growth, should I focus on solving more Kaggle problems or more real-world problems?</li>
+<li>What kind of monitoring should I do after deploying a model in production?</li>
+</ol>
+<p>I try to answer these questions and more at the end of this article, but first, it’s necessary to define and better understand each need in the hierarchy.</p>
+<section id="the-hierarchy-of-needs" class="level2">
+<h2 class="anchored" data-anchor-id="the-hierarchy-of-needs">The hierarchy of needs</h2>
+<section id="business" class="level3">
+<h3 class="anchored" data-anchor-id="business">Business</h3>
+<p>Business sits at the base of the pyramid, as it’s the foundation everything is built upon. Directly or indirectly, data scientists must always strive to deliver value to the business. This way, we can impact customers positively, secure resources (whether human or computational), and advance in our careers. This pragmatic view may be discouraging for those seeking technical challenges only, but I propose that business challenges are more difficult and unique than those found in machine learning competitions.</p>
+<p>No e-commerce company aims solely to predict customer churn; the real goal is to take actions that reduce churn among the most valuable customers. Credit risk assessment alone isn’t very useful; deciding who will receive credit and for how much is the core of many financial institutions. The probability of lead conversion is just the first step in prioritizing and allocating sales resources in a B2B company. In all three examples, the focus is on intervention (causality) rather than just prediction (machine learning).</p>
+<p>I worked on a document classification project where there initially seemed to be no complicated business issues involved; achieving sufficient accuracy would ensure the project’s success. After talking to the actual users, I realized that the classification rationale was more important than the decision itself. In the same place, a project had previously failed for considering only the model’s AUC without any concern for its practical use. We shifted our focus and delivered a system that was genuinely useful for the users and the company by investing more in the UI and less in the modelling.</p>
+</section>
+<section id="target" class="level3">
+<h3 class="anchored" data-anchor-id="target">Target</h3>
+<p>The target is what the model will try to predict, which may not be obvious at first:</p>
+<ul>
+<li><strong>Churn</strong>: What should be the time window to define churn? What if the user becomes active again?</li>
+<li><strong>Credit</strong>: How long must one go without paying to be a default? What if the collections team gets all the money back?</li>
+<li><strong>Sales lead</strong>: At what point in the sales funnel do we define conversion? What if there is a refund?</li>
+<li><strong>Document classification</strong>: What should be done with sub-categories? Can we group smaller categories into “others”?</li>
+</ul>
+<p>Choosing the target is the most critical step in modelling. No features or models can save an inappropriate target. On the other hand, having an appropriate target allows even very simple models (such as linear regression) with basic features to have some impact and already be deployed to production.</p>
+</section>
+<section id="evaluationmetrics" class="level3">
+<h3 class="anchored" data-anchor-id="evaluationmetrics">Evaluation/Metrics</h3>
+<p>Evaluation is the framework that objectively assesses how well a model will perform when deployed. The evaluation process should closely resemble what happens after the model’s deployment. While the standard holdout or cross-validation splits provide a starting point, they are generally insufficient. If the problem evolves over time (as is the case for nearly all business problems), a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html">time-series split</a> should be employed. If the target is censored for six months, there should be a six-month gap between training and testing. If the data contains groups and the model will make predictions for new groups in the future, you should use a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html">group split</a>.</p>
+<p>Metrics judge how well a model is predicting its target. It’s not uncommon to use more than one evaluation metric for the same problem. For example, in a binary classification problem, one might use AUC to assess how well the model ranks examples and log loss to evaluate whether the probabilities are well calibrated. It’s also common to consider business metrics, such as expected conversion rate or the number of credit approvals. These metrics are harder to estimate offline and generally require some assumptions or experiments. Although handling these metrics may be more difficult, they serve as a more powerful guide than traditional machine learning metrics. Plus, communicating results with people from other areas becomes much easier!</p>
+</section>
+<section id="features" class="level3">
+<h3 class="anchored" data-anchor-id="features">Features</h3>
+<p>Features are the inputs of the model. They need to be predictive of the target. It’s crucial to avoid leakage, meaning that when deploying the model in production, features must appear in the same way they did during training. I’ve encountered leakage in a conversion prediction project where I used features that only appeared when the user converted. In other cases, the values were missing. The model learned that missing values were never associated with conversions and achieved a 100% AUC. However, this model had no real value for the business!</p>
+<p>Feature engineering can be partially automated with tools like <a href="https://www.featuretools.com/">Featuretools</a>. However, most of the work in creating new features depends on understanding the problem and the available data (including what can be crawled or purchased externally).</p>
+<p>Are more features always better? Not necessarily. More features may require more monitoring and engineering, which may not be a good trade-off in certain cases. It’s essential to balance the value of features (possibly with a business metric) with their operational and maintenance costs.</p>
+</section>
+<section id="models" class="level3">
+<h3 class="anchored" data-anchor-id="models">Models</h3>
+<p>In the end, given the constraints of business, target, evaluation/metrics, and features, the choice of models narrows considerably. If the business requires interpretability of predictions, you shouldn’t use a neural network. If the target is continuous, you want a regression model, not a classification model. If the metric evaluates the calibration of probabilities, you want a model that can learn a <a href="https://en.wikipedia.org/wiki/Scoring_rule#Proper_scoring_rules">proper scoring rule</a>. If you have more features than examples, you want a model that can ignore most features, like Lasso regression.</p>
+<p>The modelling process can be automated with tools like <a href="https://automl.github.io/auto-sklearn/master/">auto-sklearn</a> or <a href="https://pycaret.gitbook.io/docs/">PyCaret</a>, but only if it makes sense for the business. In some cases, gaining an additional percentage point in accuracy is less useful than having interpretable decisions, communicating with other areas about how the model works (including external regulators), training speed for “big data” cases, and prediction latency for real-time systems.</p>
+</section>
+</section>
+<section id="applications" class="level2">
+<h2 class="anchored" data-anchor-id="applications">Applications</h2>
+<p>We can apply the hierarchy of needs to better understand the reality of machine learning, which is difficult to learn solely from MOOCs or competitions:</p>
+<section id="the-spiral-of-applied-machine-learning" class="level3">
+<h3 class="anchored" data-anchor-id="the-spiral-of-applied-machine-learning">The Spiral of Applied Machine Learning</h3>
+<p>In practice, machine learning is not a linear process, starting with a business problem and ending with a model. The process is repeated several times, and each iteration feeds the next:</p>
+<p><img src="https://tabacof.github.io/posts/hierarchy_needs_ml/ml_applied_spiral2.png" class="img-fluid"></p>
+<p>This suggests starting simple on the modelling side. Always define a baseline first, which can be a business rule of thumb or a simple model (e.g.&nbsp;a linear regression or a decision tree classifier). The first proper model you build to compare against the baseline should be pragmatic, which depends on your domain:</p>
+<ul>
+<li><strong>Tabular data</strong>: Use LightGBM (watch my PyData London presentation <a href="https://www.youtube.com/watch?v=qGsHlvE8KZM">here</a>) or XGBoost</li>
+<li><strong>Time series forecasting</strong>: Use Auto-ARIMA or Prophet</li>
+<li><strong>Text classification</strong>: Use word counts and Naive Bayes, TF-IDF and logistic regression, or ChatGPT API</li>
+<li><strong>Image recognition</strong>: Use ResNet with transfer learning or ChatGPT4 API</li>
+</ul>
+<p>This will handle the “model” part of the spiral and probably capture most of the gains. Use your time to focus on the other components before coming back to the model: deploy it as soon as possible, get feedback from the stakeholders, explore the failure modes (error analysis), and then go over the target-evaluation-metrics-features-model process again.</p>
+</section>
+<section id="auto-ml" class="level3">
+<h3 class="anchored" data-anchor-id="auto-ml">Auto ML</h3>
+<p>Machine learning automation operates only at the highest levels of the pyramid: primarily in modelling, followed by feature engineering and selection. The other needs are much harder to automate and are the biggest differentiators among data scientists since they depend on domain knowledge. Even in the modelling part, there are cases where maximizing a single metric does not capture the whole story:</p>
+<p>Once, while I was in the process of updating models, an analyst noticed that there was a small sub-population where the new model provided predictions that made no sense. In terms of metrics, there was no doubt that the new model was better, but for the business, it was not good to make mistakes in this sub-population. In this case, since I was using a relatively interpretable model, I managed to discover the reason for the incorrect predictions (related to how the missing values were being handled) and could deploy an appropriate solution.</p>
+</section>
+<section id="monitoring" class="level3">
+<h3 class="anchored" data-anchor-id="monitoring">Monitoring</h3>
+<p>Monitoring a model in production should be done at all levels of the hierarchy. Monitoring is generally associated with evaluation metrics, but other needs should not be ignored. For example, in a credit card fraud problem, the target is generally censored for several months (since it takes time to determine whether fraud has occurred or not, as it is a manual process), meaning that metrics can only be calculated months after each model decision. In this case, it is important to evaluate how the target is changing over time (using proxies with shorter censoring), monitor whether the model’s output distribution remains stable over time, and whether the distribution of features remains the same, which is a significant challenge in itself. For more information on model monitoring, I highly recommend watching Lina Weichbrodt’s PyData Berlin <a href="https://www.youtube.com/watch?v=wWxqnZb-LSk">presentation</a>.</p>
+</section>
+<section id="kaggle" class="level3">
+<h3 class="anchored" data-anchor-id="kaggle">Kaggle</h3>
+<p>In the case of Kaggle, the entire challenge lies in modelling, feature engineering and evaluation. The metric and target are already given. The business aspect is not explicitly present. With this, we can see the limitations of Kaggle as training and evaluation for a data scientist who will work on real-world problems.</p>
+<p>Kaggle is a great tool for its purpose and is highly valued in the selection process for some positions. However, a data scientist needs to go beyond this and try to tackle other types of problems, those that are not well-formulated and therefore are fertile ground for exploring targets, metrics, and the use of predictive models in decision-making.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In this article, I tried to convey the perspective of a machine learning practitioner, undoubtedly biased by my own particular experience. However, I believe the points raised are relevant to many other data scientists, especially those coming from an academic background. I hope you can use the hierarchy of needs to better guide decisions made as practitioners or students in the field.</p>
+<p>This blog post originally appeared in the <a href="https://medium.com/data-hackers/a-hierarquia-de-necessidades-de-machine-learning-813a66369b83">Data Hackers Medium</a> in 2019. Full disclosure: the translation was done with the help of GPT4. I reviewed the final text and updated some sections, since I’ve personally learned and grown a lot since 2019. I’m open to feedback or suggestions for more applications of the hierarchy of needs framework.</p>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</guid>
+  <pubDate>Tue, 14 Mar 2023 23:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/hierarchy_needs_ml/ml_needs_pyramid2.png" medium="image" type="image/png" height="90" width="144"/>
+</item>
+<item>
+  <title>NeurIPS 2018: A Data Scientist’s Perspective</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/neurips_2018/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p><img src="https://tabacof.github.io/posts/neurips_2018/montreal.jpeg" class="img-fluid"></p>
+<p>Two weeks ago in Montreal, NeurIPS (formerly known as NIPS) took place, the world’s largest conference on machine learning and artificial intelligence. Major advancements in the field were presented, covering Deep Learning, GANs, and Reinforcement Learning, including both theory and practice. Over eight thousand people attended, more than a thousand papers were accepted, and dozens of workshops were held. Additionally, nearly all major tech companies were present, primarily aiming to recruit scientists and researchers.</p>
+<p>I went to NeurIPS to present the work <a href="https://arxiv.org/abs/1806.04646">Adversarial Attacks on Variational Autoencoders</a> at the LatinX in AI workshop, co-authored by <a href="https://www.linkedin.com/in/george-gondim/">George Gondim</a>, myself and our professor <a href="https://www.linkedin.com/in/eduardovalle/">Eduardo Valle</a>. At NeurIPS 2017, Prof.&nbsp;Valle presented two works we wrote together: <a href="https://arxiv.org/abs/1612.00155">Adversarial Images for Variational Autoencoders</a> at the Adversarial Training workshop and <a href="https://arxiv.org/abs/1612.01251">Known Unknowns: Uncertainty Quality</a> in Bayesian Neural Networks at the Bayesian Deep Learning workshop. It’s a great feeling to finally be able to present the work myself!</p>
+<p>Speaking of LatinX, this year diversity and inclusion were the hottest topics at the conference. We had three other workshops dedicated to this (Black in AI, Women in ML, Queer in AI), as well as smaller talks and gatherings on the subject. Despite this, more than half of the Black in AI participants couldn’t obtain visas in time or were denied, which had some <a href="https://www.bloomberg.com/news/articles/2018-11-30/visa-issues-cast-shadow-on-canada-s-moment-in-the-ai-spotlight#xj4y7vzkg">repercussions</a> and may influence future conference locations. At LatinX, the Latin American artificial intelligence meeting <a href="https://khipu.ai/">Khipu</a> was announced, scheduled to take place in Montevideo in November 2019. We Brazilians cannot miss this opportunity!</p>
+<p>The conference had its issues: tickets sold out in just 11 minutes; last-minute name change (and we were left without mugs because of it); overcrowded sessions, with people being kicked out due to “fire hazards”; numerous audiovisual problems (it would have been better to watch many talks from home). Despite all of this, the experience is certainly unique: there’s no other place in the world where you might bump into Geoff Hinton, Yoshua Bengio, and Yann LeCun in the halls. Of course, they’ll always be surrounded by fans and people wanting to take photos!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://tabacof.github.io/posts/neurips_2018/hinton.jpeg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Imagine you’re explaining your poster and Geoff Hinton appears behind you?</figcaption><p></p>
+</figure>
+</div>
+<p>Although these “celebrities” were present, their students were the ones presenting the academic work. With over a thousand papers at the main conference and hundreds at the workshops, it’s hard to know be aware of everything that happened there. I noted down more than 30 articles to review more carefully later. Although this is a large amount to read, it’s only a fraction of the total. For those who want a taste of what’s published there, here are some examples:</p>
+<p>Best papers (according to reviewers and program committee):</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1806.07366">Neural Ordinary Differential Equations</a></li>
+<li><a href="https://papers.nips.cc/paper/8200-non-delusional-q-learning-and-value-iteration">Non-delusional Q-learning and Value-iteration</a></li>
+<li><a href="https://arxiv.org/abs/1806.00291">Optimal Algorithms for Non-Smooth Distributed Optimization in Networks</a></li>
+<li><a href="https://papers.nips.cc/paper/7601-nearly-tight-sample-complexity-bounds-for-learning-mixtures-of-gaussians-via-sample-compression-schemes">Nearly Tight Sample Complexity Bounds for Learning Mixtures of Gaussians via Sample Compression Schemes</a></li>
+</ul>
+<p>Best papers (according to me):</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1805.06440">Regularization Learning Networks: Deep Learning for Tabular Datasets</a></li>
+<li><a href="https://arxiv.org/abs/1811.12188">Bayesian Neural Network Ensembles</a></li>
+<li><a href="https://arxiv.org/abs/1803.04307">The Everlasting Database: Statistical Validity at a Fair Price</a></li>
+<li><a href="https://papers.nips.cc/paper/7338-how-to-start-training-the-effect-of-initialization-and-architecture">How to Start Training: The Effect of Initialization and Architecture</a></li>
+</ul>
+<p>Besides the academic side, NeurIPS has a strong social aspect: parties and gatherings. Excluding the official closing, the parties were all sponsored by companies. I attended two (Nvidia and Element AI), with excellent food and drinks. There’s a bit of elitism: I only managed to attend these two parties thanks to a friend who works with big names in a Montreal lab. However, every day there were several options, with varying degrees of difficulty to get a ticket.</p>
+<p>In my opinion, the gatherings organized by participants through the conference app were the best part of the week, as they brought together people with similar interests and objectives. I attended <em>AI for Business and AI in Production</em>, both highly relevant to my work as a data scientist at Nubank. At those events, it’s possible to meet people from various backgrounds and profiles who share something with you, without the elitism of those exclusive parties.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://tabacof.github.io/posts/neurips_2018/ai_business.jpeg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">AI for Business lunch (I’m wearing purple in the top right photo)</figcaption><p></p>
+</figure>
+</div>
+<p>Finally, the last two days were dedicated to workshops. In them, you could delve deep into a specific topic and even learn about things not officially published anywhere yet. The workshop that left the greatest impression on me was <a href="https://nips.cc/Conferences/2018/Schedule?showEvent=10908">AI in Financial Services</a>. However, it had a strong bias toward North American and European realities, mostly discussing regulations and how machine learning could be done within these constraints. For example, in those countries, you need to explain the reasons for denying a loan, but how do you do that if the loan risk is calculated by a deep neural network? However, many countries like China, India, and Brazil don’t have such restrictions, so our challenges are different and were barely explored there. I can say that Nubank is at the forefront of applying machine learning to financial products globally.</p>
+<p>NeurIPS is an academic conference, not the best place to meet other data scientists, but rather the best place to find the top machine learning and AI researchers. I recommend the experience for those with an academic inclination, who have the habit of reading papers and plan to or have already published work in the field. If you have more practical interests, there are conferences and meetings that may be more useful professionally and more accessible, such as Strata, PAPIs.io or even KDD. The most important thing is to get out there and meet new people, but don’t forget to take some time to explore and enjoy the trip!</p>
+
+
+
+ ]]></description>
+  <guid>https://tabacof.github.io/posts/neurips_2018/index.html</guid>
+  <pubDate>Sun, 16 Dec 2018 23:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/neurips_2018/montreal.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>How (not) to forecast an election</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p><em>We use a hierarchical Bayesian model to show how a simple pro-Trump bias has a huge effect on forecasting election results. See the discussion on <a href="https://news.ycombinator.com/item?id=13049651">HackerNews</a>.</em></p>
+<section id="us-presidential-elections" class="level3">
+<h3 class="anchored" data-anchor-id="us-presidential-elections">US presidential elections</h3>
+<p>Unlike other countries, where presidential elections follow a simple majority rule, the American election follows a different set of rules that makes it very hard for outsiders to understand what is going on. However, the idea is quite simple: each state has a number of electoral college votes, totaling 538 votes across the nation. The winner candidate of each state election takes all of its electoral college votes (with two exceptions). If a candidate receives 270 electoral votes or more overall, he or she wins the election. This makes the election an interesting forecasting problem. Instead of predicting the total number of votes in each candidate, the problem is forecasting the results of each state individually.</p>
+<p>Our interest is not to forecast the 2016 election, which is not a random variable anymore (spoiler alert: Trump won). We want to show how a Bayesian forecasting model works, and propose a modification that explains why statistical models would fail so badly if there were polling biases.</p>
+</section>
+<section id="polling" class="level3">
+<h3 class="anchored" data-anchor-id="polling">Polling</h3>
+<p>In theory, a poll should randomly sample the voting population. However, in practice there are several possible polling problems that can compromise their use in naive statistical analyses:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Shy_Tory_factor"><strong>Shy Tory</strong></a> and <a href="https://en.wikipedia.org/wiki/Bradley_effect"><strong>Bradley</strong></a> effects: Voters are not comfortable with revealing their particular preference.</li>
+<li><strong>Selection bias</strong>: People who answer the pollsters are from an unrepresentative subgroup (e.g.&nbsp;people who answer landline phones).</li>
+<li><strong>Stratification errors</strong>: Wrong subpopulation determination when doing stratified sampling.</li>
+<li><strong>Candidate and (non)-voting correlation</strong>: As voting is not mandatory, the presidential preference of some people may be correlated with their chance of (not) voting.</li>
+<li><strong>Temporal preference change</strong>: The preferences change over time (a lot of people make up their minds in the last week).</li>
+<li><strong>Sample noise</strong>: Any sample from a population will be noisy and its statistics will not be identical to the population statistics.</li>
+</ul>
+<p>Simple forecasts usually only consider the last item when estimating the margins of error or uncertainty. If you only consider this and nothing more, multiple polls will be treated as independent and unbiased, and the more polls you use, the smaller the forecasting errors will be, until there is almost certainty. The other effects are biases that will make the average of multiple polls unreliable and possibly useless. As they are not directly available for modeling, the only way to estimate them is by making strong assumptions or using polling results from previous elections. We do not attempt to model exactly those issues here, we rather include all of them in a bias term that is shared across all polls, and show that even a small bias term favorable to Trump completely changes the forecast.</p>
+</section>
+<section id="forecast" class="level3">
+<h3 class="anchored" data-anchor-id="forecast">Forecast</h3>
+<p>We leave the details of our hierarchical Bayesian forecasting model at the end, for the advanced reader. Now we show the results of its forecasts. However, depending on which polls we include, we have very different results. The polls to use in a forecasting model should be recent and of good quality (conducted with appropriate methodology and with past successes). As a proxy of quality, we use the grades from <a href="https://projects.fivethirtyeight.com/pollster-ratings/">538</a>.</p>
+<p>We found that the simple choice of which polls to use has a very large impact on the probability of victory of each candidate:</p>
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Polling choice</th>
+<th>Clinton</th>
+<th>Trump</th>
+<th>Neither</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Last poll with good grade</td>
+<td>87.3%</td>
+<td>10.5%</td>
+<td>2.2%</td>
+</tr>
+<tr class="even">
+<td>Polls with the best 3 grades (over the last month)</td>
+<td>99.3%</td>
+<td>0.6%</td>
+<td>0.1%</td>
+</tr>
+<tr class="odd">
+<td>All polls from last week</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+</tr>
+</tbody>
+</table>
+<p>We consider polls with good grades to be above B, but this is not possible for some states, so we use a more tolerant definition in those cases. When we say last week or last month, we mean from the Election Day (Nov 8, 2016).</p>
+<p>By aggregating the polls with different weights (e.g.&nbsp;according to their quality or distance from election), we would have endless forecasting possibilities, which explains the diversity found in the media before the election:</p>
+<ul>
+<li><a href="http://www.nytimes.com/interactive/2016/upshot/presidential-polls-forecast.html?_r=0">New York Times</a>: 85% Clinton, 15% Trump</li>
+<li><a href="https://elections.huffingtonpost.com/2016/forecast/president">Huffington Post</a>: 98% Clinton, 1.7% Trump</li>
+<li><a href="https://www.independent.co.uk/news/world/americas/sam-wang-princeton-election-consortium-poll-hillary-clinton-donald-trump-victory-a7399671.html">Princeton Election Consortium</a>: 99% Clinton</li>
+<li><a href="http://projects.fivethirtyeight.com/2016-election-forecast/">538</a>: 71.4% Clinton, 28.6% Trump</li>
+</ul>
+<p>Of the mainstream forecasters, only 538 cannot be included in the bucket of certain Clinton victory. Notice that the other forecasts are consistent with our own results shown in the previous table. How come the forecasters, including us, made such egregious mistakes? As in many statistical problems, the answer lies with the data: garbage in, garbage out.</p>
+</section>
+<section id="bias-impact" class="level3">
+<h3 class="anchored" data-anchor-id="bias-impact">Bias impact</h3>
+<p>We encompass all possible polling issues in a general bias term. We use a bias term that is favorable to Trump on election day because that is clearly what happened on November 8. This can be interpreted as a hidden preference for Trump that is not captured by the polls by all the issues explained before. Instead of fixing the bias to an arbitrary value, we use a uniform random variable. We start with zero bias, where Clinton is almost surely the victor, and increase its span until Trump is almost certainly the victor:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://tabacof.github.io/posts/how_not_to_forecast_election/bias_influence.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>We see that even a small polling bias has a huge effect on the election forecast. This explains why 538 had a more favorable Trump forecast as they <a href="http://simplystatistics.org/2016/11/09/not-all-forecasters-got-it-wrong/">included a polling bias and did not treat the polls as independent samples</a>, but this also indicates that even 538 probably underestimated the polling biases.</p>
+<p>You can check for yourself how the bias impacts the results of each state election on the map below. For each state we forecast the predicted percentage of votes of each candidate, with varying bias:</p>
+<p><img src="https://tabacof.github.io/posts/how_not_to_forecast_election/us_map_bias.gif" class="img-fluid"></p>
+</section>
+<section id="hierarchical-bayesian-forecasting-model" class="level3">
+<h3 class="anchored" data-anchor-id="hierarchical-bayesian-forecasting-model">Hierarchical Bayesian forecasting model</h3>
+<p>We can use a hierarchical Bayesian model to aggregate the information of each state poll to form a globally coherent forecast. Overall, each poll’s likelihood is modeled as a multinomial, with Dirichlet prior (per state) and uniform hyperprior (per nation). This way, prior information is shared across states and we can use weakly informative hyperpriors. We start with an overall national preference over each candidate, modeled as three independent wide uniform distributions:</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/eq1.png" alt="" width="250">
+</p>
+<p>Then, we have the voting intention in each state, with the national preference as prior:</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/eq2.png" alt="" width="250">
+</p>
+<p>Finally, each poll is modeled as one independent sample of the voting intention of the state:</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/eq3.png" alt="" width="300">
+</p>
+<p>We infer the posteriors of the unknown parameters (state voting intentions and national preferences) given the observed variables (the polls we decided to include). The posterior is our knowledge of the unseen variables after observing statistically related variables. Depending on the choice of which polls to include as observations, as we explained before, the posteriors and thus the forecast will be different.</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/elections_graphical_model.svg" alt="" width="500">
+</p>
+<p>To forecast the probability of each candidate winning the state election, we use the same multinomial likelihood that was used for the inference. However, now the voting intentions are the posterior given the polls, and number of voters is chosen to match 2012 election numbers. Thus, for each state we sample the predicted number of votes of each candidate on election day using the following formula:</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/eq4.png" alt="" width="350">
+</p>
+<p>The candidate with more votes takes all the electoral colleges of the state (we ignore the particularities of Nebraska and Maine). We sum the electoral colleges votes of each candidates, and if a candidate wins 270 votes or more, he or she is the winner. We repeat this process multiple times in order to determine the probability of each candidate winning the election.</p>
+<p>To add the bias term in our forecast to account for all the polling issues already cited, we make a simple change to the predictive model:</p>
+<p align="center">
+<img src="https://tabacof.github.io/posts/how_not_to_forecast_election/eq5.png" alt="" width="400">
+</p>
+<p>This bias always stochastically favors Trump. We must subtract the same value from Clinton in order to guarantee <em>θ<sup>bias</sup></em> remains a valid probability simplex. In our experiments above, we vary <em>ϵ</em> from 0 to 5%.</p>
+</section>
+<section id="stan-code" class="level3">
+<h3 class="anchored" data-anchor-id="stan-code">Stan Code</h3>
+<p>Take a look at our code and feel free to play with it. Here is how we implemented our model in <a href="https://mc-stan.org/">Stan</a>:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode stan code-with-copy"><code class="sourceCode stan"><span id="cb1-1"><span class="kw" style="color: #003B4F;">data</span> {</span>
+<span id="cb1-2">    <span class="dt" style="color: #AD0000;">int</span> nb_polls; <span class="co" style="color: #5E5E5E;">// Number of polls</span></span>
+<span id="cb1-3">    <span class="dt" style="color: #AD0000;">int</span> nb_states; <span class="co" style="color: #5E5E5E;">// Number of states (51 because of D.C.)</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;">int</span> nb_candidates; <span class="co" style="color: #5E5E5E;">// Number of candidates (3: Trump, Clinton, Ind.)</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;">int</span> polls_states[nb_polls]; <span class="co" style="color: #5E5E5E;">// Poll -&gt; state map</span></span>
+<span id="cb1-6">    <span class="dt" style="color: #AD0000;">int</span> votes[nb_polls, nb_candidates]; <span class="co" style="color: #5E5E5E;">// Polled votes for each candidate</span></span>
+<span id="cb1-7">    <span class="dt" style="color: #AD0000;">int</span> nb_voters[nb_states]; <span class="co" style="color: #5E5E5E;">// Number of voters for forecasting</span></span>
+<span id="cb1-8">    <span class="dt" style="color: #AD0000;">real</span> bias; <span class="co" style="color: #5E5E5E;">// Polling bias</span></span>
+<span id="cb1-9">}</span>
+<span id="cb1-10"><span class="kw" style="color: #003B4F;">parameters</span> {</span>
+<span id="cb1-11">    <span class="dt" style="color: #AD0000;">simplex</span>[nb_candidates] theta[nb_states]; <span class="co" style="color: #5E5E5E;">//1 - Trump, 2 - Clinton, 3 - Ind.</span></span>
+<span id="cb1-12">    <span class="dt" style="color: #AD0000;">vector</span>[nb_candidates] alpha;</span>
+<span id="cb1-13">}</span>
+<span id="cb1-14"><span class="kw" style="color: #003B4F;">model</span> {</span>
+<span id="cb1-15">    <span class="cf" style="color: #003B4F;">for</span>(c <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_candidates)</span>
+<span id="cb1-16">        alpha[c] ~ uniform(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1000</span>); <span class="co" style="color: #5E5E5E;">// Weakly informative hyperprior</span></span>
+<span id="cb1-17"></span>
+<span id="cb1-18">    <span class="cf" style="color: #003B4F;">for</span>(s <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_states)</span>
+<span id="cb1-19">        theta[s] ~ dirichlet(alpha); <span class="co" style="color: #5E5E5E;">// Dirichlet prior per state</span></span>
+<span id="cb1-20"></span>
+<span id="cb1-21">    <span class="cf" style="color: #003B4F;">for</span>(p <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_polls) <span class="co" style="color: #5E5E5E;">// Multinomial observations (polled values)</span></span>
+<span id="cb1-22">        votes[p] ~ multinomial(theta[polls_states[p]]);</span>
+<span id="cb1-23">}</span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;">generated quantities</span> {</span>
+<span id="cb1-25">    <span class="dt" style="color: #AD0000;">int</span> votes_pred[nb_states, nb_candidates]; <span class="co" style="color: #5E5E5E;">// Predicted number of votes on election day</span></span>
+<span id="cb1-26">    <span class="dt" style="color: #AD0000;">real</span> epsilon[nb_states]; <span class="co" style="color: #5E5E5E;">// Bias random variable</span></span>
+<span id="cb1-27">    <span class="dt" style="color: #AD0000;">simplex</span>[nb_candidates] theta_bias[nb_states]; <span class="co" style="color: #5E5E5E;">// Biased voting intentions</span></span>
+<span id="cb1-28"></span>
+<span id="cb1-29">    <span class="co" style="color: #5E5E5E;">// The deltas below are used to ensure that the biased thetas form a valid simplex</span></span>
+<span id="cb1-30">    <span class="dt" style="color: #AD0000;">real</span> delta_t[nb_states];</span>
+<span id="cb1-31">    <span class="dt" style="color: #AD0000;">real</span> delta_h[nb_states];</span>
+<span id="cb1-32">    <span class="dt" style="color: #AD0000;">real</span> delta[nb_states];</span>
+<span id="cb1-33"></span>
+<span id="cb1-34">    <span class="cf" style="color: #003B4F;">for</span>(s <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_states) {</span>
+<span id="cb1-35">        <span class="cf" style="color: #003B4F;">if</span>(bias == <span class="fl" style="color: #AD0000;">0.0</span>)</span>
+<span id="cb1-36">            epsilon[s] &lt;- <span class="fl" style="color: #AD0000;">0.0</span>;</span>
+<span id="cb1-37">        <span class="cf" style="color: #003B4F;">else</span></span>
+<span id="cb1-38">            epsilon[s] &lt;- uniform_rng(<span class="dv" style="color: #AD0000;">0</span>, bias); <span class="co" style="color: #5E5E5E;">// Bias value for this state</span></span>
+<span id="cb1-39"></span>
+<span id="cb1-40">        <span class="co" style="color: #5E5E5E;">// We must ensure that theta will remain a valid probability simplex,</span></span>
+<span id="cb1-41">        <span class="co" style="color: #5E5E5E;">// so we limit delta in a way theta will never be below 0 or above 1</span></span>
+<span id="cb1-42">        delta_t[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;">1</span>] - fmax(<span class="fl" style="color: #AD0000;">0.0</span>, fmin(<span class="fl" style="color: #AD0000;">1.0</span>, theta[s][<span class="dv" style="color: #AD0000;">1</span>] + epsilon[s])));</span>
+<span id="cb1-43">        delta_h[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;">2</span>] - fmin(<span class="fl" style="color: #AD0000;">1.0</span>, fmax(<span class="fl" style="color: #AD0000;">0.0</span>, theta[s][<span class="dv" style="color: #AD0000;">2</span>] - epsilon[s])));</span>
+<span id="cb1-44">        delta[s] &lt;- fmin(delta_t[s], delta_h[s]);</span>
+<span id="cb1-45"></span>
+<span id="cb1-46">        theta_bias[s][<span class="dv" style="color: #AD0000;">1</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">1</span>] + delta[s];</span>
+<span id="cb1-47">        theta_bias[s][<span class="dv" style="color: #AD0000;">2</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">2</span>] - delta[s];</span>
+<span id="cb1-48">        theta_bias[s][<span class="dv" style="color: #AD0000;">3</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">3</span>];</span>
+<span id="cb1-49"></span>
+<span id="cb1-50">        votes_pred[s] &lt;- multinomial_rng(theta_bias[s], nb_voters[s]);</span>
+<span id="cb1-51">    }</span>
+<span id="cb1-52">}</span></code></pre></div>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>We have found that even a modestly sophisticated statistical model does very little to counter unreliable data. A proper forecasting model for the American elections must include polling biases, as we have shown in a general way. To arrive at a precise number, you must either make assumptions on the polling methodology, or calibrate the polls weights using their historical reliability. This could be the reason that 538 had Trump winning at the highest probability of the mainstream media. We have also to consider that when you forecast 70% probability of winning, the prediction is expected to fail 30% of the time, so it is hard to evaluate models and forecasters using only one observation.</p>
+<p>Even though the 2016 election was one of most surprising polling misses in recent years, the result was not a black swan. Nassim Nicholas Taleb pointed out, before the election, that the mainstream forecasts were not reliable due to their significant volatility. According to his model based on option theory, this <a href="https://web.archive.org/web/20161110051019/https://mishtalk.com/2016/08/07/nassim-telab-blasts-nate-silver-about-election-odds-in-series-of-tweets/">volatility should have pulled the probabilities toward 50-50</a>. As a follow-up, if there is interest, we want to explore a time-series model where the voting intentions follow a random walk. To do this, we need to change the underlying model to allow the unseen random walk influence the polling results. Following Andrew Gelman’s <a href="https://statmodeling.stat.columbia.edu/2009/04/29/conjugate_prior/">suggestion</a>, we can change the Dirichlet prior to a softmax prior, and then we can make the softmax parameters follow a random walk.</p>
+<section id="acknowledgements" class="level4">
+<h4 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h4>
+<p>This blog post was written with the help of <a href="https://www.linkedin.com/in/ramon-de-oliveira/">Ramon Oliveira</a> back when we were working in a data science consulting company (Datart) that we co-founded together.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</guid>
+  <pubDate>Tue, 15 Nov 2016 23:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/how_not_to_forecast_election/us_map_bias.gif" medium="image" type="image/gif"/>
+</item>
+</channel>
+</rss>

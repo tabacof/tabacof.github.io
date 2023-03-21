@@ -4,6 +4,8 @@ project:
 
 website:
   title: "Pedro Tabacof's blog"
+  site-url: https://tabacof.github.io/
+  description: "Pedro Tabacof's personal blog"
   navbar:
     right:
       - about.qmd

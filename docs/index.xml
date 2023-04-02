@@ -10,7 +10,7 @@
 <atom:link href="https://tabacof.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>Pedro Tabacof&#39;s personal blog</description>
 <generator>quarto-1.2.335</generator>
-<lastBuildDate>Sun, 26 Mar 2023 22:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 26 Mar 2023 23:00:00 GMT</lastBuildDate>
 <item>
   <title>Name classification with ChatGPT</title>
   <dc:creator>Pedro Tabacof</dc:creator>
@@ -225,7 +225,7 @@ Name: label, dtype: int64</code></pre>
 <span id="cb12-8"></span>
 <span id="cb12-9">total_words <span class="op" style="color: #5E5E5E;">=</span> words_df[<span class="st" style="color: #20794D;">"count"</span>].<span class="bu" style="color: null;">sum</span>()</span>
 <span id="cb12-10"></span>
-<span id="cb12-11">words_df <span class="op" style="color: #5E5E5E;">=</span> words_df.assign(freq<span class="op" style="color: #5E5E5E;">=</span>words_df.count<span class="op" style="color: #5E5E5E;">/</span>total_words)</span>
+<span id="cb12-11">words_df <span class="op" style="color: #5E5E5E;">=</span> words_df.assign(freq<span class="op" style="color: #5E5E5E;">=</span>words_df[<span class="st" style="color: #20794D;">"count"</span>]<span class="op" style="color: #5E5E5E;">/</span>total_words)</span>
 <span id="cb12-12"></span>
 <span id="cb12-13">person_words <span class="op" style="color: #5E5E5E;">=</span> (</span>
 <span id="cb12-14">    words_df[words_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>].sort_values(<span class="st" style="color: #20794D;">"freq"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>).head(<span class="dv" style="color: #AD0000;">25</span>)</span>
@@ -797,54 +797,63 @@ if (outputEl) {{
 <span id="cb29-28"></span>
 <span id="cb29-29">    openai.api_key <span class="op" style="color: #5E5E5E;">=</span> os.getenv(<span class="st" style="color: #20794D;">"OPENAI_API_KEY"</span>)</span>
 <span id="cb29-30"></span>
-<span id="cb29-31">    <span class="co" style="color: #5E5E5E;"># Max tokens as 20000 is enough in practice for 10 names plus the prompt</span></span>
-<span id="cb29-32">    <span class="co" style="color: #5E5E5E;"># Temperature is set to 0 to reduce ChatGPT's "creativity"</span></span>
-<span id="cb29-33">    <span class="co" style="color: #5E5E5E;"># Model `gpt-3.5-turbo` is the latest ChatGPT model, which is 10x cheaper than GPT3</span></span>
-<span id="cb29-34">    response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
-<span id="cb29-35">        model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb29-36">    )</span>
-<span id="cb29-37"></span>
-<span id="cb29-38">    <span class="co" style="color: #5E5E5E;"># Since we gave examples as "name: class", ChatGPT almost always follows this pattern in its answers</span></span>
-<span id="cb29-39">    text_result <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
-<span id="cb29-40">    clean_text <span class="op" style="color: #5E5E5E;">=</span> [</span>
-<span id="cb29-41">        line.lower().split(<span class="st" style="color: #20794D;">":"</span>) <span class="cf" style="color: #003B4F;">for</span> line <span class="kw" style="color: #003B4F;">in</span> text_result.split(<span class="st" style="color: #20794D;">"</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>) <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> line</span>
-<span id="cb29-42">    ]</span>
-<span id="cb29-43"></span>
-<span id="cb29-44">    <span class="co" style="color: #5E5E5E;"># Fallback query: if I cannot find enough names on the response, I ask for each name separately</span></span>
-<span id="cb29-45">    <span class="co" style="color: #5E5E5E;"># Without it, we'd have parsing failures once every 10 or 20 batches</span></span>
-<span id="cb29-46">    <span class="cf" style="color: #003B4F;">if</span> <span class="bu" style="color: null;">len</span>(clean_text) <span class="op" style="color: #5E5E5E;">&lt;</span> <span class="bu" style="color: null;">len</span>(batch_df):</span>
-<span id="cb29-47">        clean_text <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb29-48">        <span class="cf" style="color: #003B4F;">for</span> _, row <span class="kw" style="color: #003B4F;">in</span> batch_df.iterrows():</span>
-<span id="cb29-49">            prompt <span class="op" style="color: #5E5E5E;">=</span> base_prompt.copy()</span>
-<span id="cb29-50">            prompt <span class="op" style="color: #5E5E5E;">+=</span> [{<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: row.clean_name}]</span>
-<span id="cb29-51"></span>
-<span id="cb29-52">            response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
-<span id="cb29-53">                model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb29-54">            )</span>
-<span id="cb29-55"></span>
-<span id="cb29-56">            row_response <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
-<span id="cb29-57">            <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> row_response:</span>
-<span id="cb29-58">                clean_text.append(</span>
-<span id="cb29-59">                    [row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="dv" style="color: #AD0000;">0</span>], row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]]</span>
-<span id="cb29-60">                )</span>
-<span id="cb29-61">            <span class="cf" style="color: #003B4F;">else</span>:</span>
-<span id="cb29-62">                clean_text.append([row.clean_name, <span class="st" style="color: #20794D;">"company"</span>])  <span class="co" style="color: #5E5E5E;"># defaults to company</span></span>
-<span id="cb29-63"></span>
-<span id="cb29-64">    <span class="co" style="color: #5E5E5E;"># To ensure I'm matching the query and the corresponding answers correctly,</span></span>
-<span id="cb29-65">    <span class="co" style="color: #5E5E5E;"># I find the closest sentences in the Levenshtein distance sense</span></span>
-<span id="cb29-66">    batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.copy()</span>
-<span id="cb29-67">    batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.merge(pd.DataFrame({<span class="st" style="color: #20794D;">"resp"</span>: clean_text}), how<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"cross"</span>)</span>
-<span id="cb29-68">    batch_df[<span class="st" style="color: #20794D;">"resp_name"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="dv" style="color: #AD0000;">0</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
-<span id="cb29-69">    batch_df[<span class="st" style="color: #20794D;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
-<span id="cb29-70">    batch_df[<span class="st" style="color: #20794D;">"dist"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.<span class="bu" style="color: null;">apply</span>(</span>
-<span id="cb29-71">        <span class="kw" style="color: #003B4F;">lambda</span> row: lev.distance(row.clean_name, row.resp_name), axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span></span>
-<span id="cb29-72">    )</span>
-<span id="cb29-73">    batch_df[<span class="st" style="color: #20794D;">"rank"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.groupby(<span class="st" style="color: #20794D;">"clean_name"</span>)[<span class="st" style="color: #20794D;">"dist"</span>].rank(</span>
-<span id="cb29-74">        method<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"first"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span></span>
-<span id="cb29-75">    )</span>
-<span id="cb29-76">    batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.query(<span class="st" style="color: #20794D;">"rank==1.0"</span>)[[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"resp_pred"</span>]]</span>
-<span id="cb29-77"></span>
-<span id="cb29-78">    <span class="cf" style="color: #003B4F;">return</span> batch_df</span></code></pre></div>
+<span id="cb29-31">    <span class="cf" style="color: #003B4F;">try</span>:</span>
+<span id="cb29-32">        <span class="co" style="color: #5E5E5E;"># Max tokens as 20000 is enough in practice for 10 names plus the prompt</span></span>
+<span id="cb29-33">        <span class="co" style="color: #5E5E5E;"># Temperature is set to 0 to reduce ChatGPT's "creativity"</span></span>
+<span id="cb29-34">        <span class="co" style="color: #5E5E5E;"># Model `gpt-3.5-turbo` is the latest ChatGPT model, which is 10x cheaper than GPT3</span></span>
+<span id="cb29-35">        response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
+<span id="cb29-36">            model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb29-37">        )</span>
+<span id="cb29-38"></span>
+<span id="cb29-39">        <span class="co" style="color: #5E5E5E;"># Since we gave examples as "name: class", ChatGPT almost always follows this pattern in its answers</span></span>
+<span id="cb29-40">        text_result <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
+<span id="cb29-41">        clean_text <span class="op" style="color: #5E5E5E;">=</span> [</span>
+<span id="cb29-42">            line.lower().split(<span class="st" style="color: #20794D;">":"</span>) <span class="cf" style="color: #003B4F;">for</span> line <span class="kw" style="color: #003B4F;">in</span> text_result.split(<span class="st" style="color: #20794D;">"</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>) <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> line</span>
+<span id="cb29-43">        ]</span>
+<span id="cb29-44"></span>
+<span id="cb29-45">        <span class="co" style="color: #5E5E5E;"># Fallback query: if I cannot find enough names on the response, I ask for each name separately</span></span>
+<span id="cb29-46">        <span class="co" style="color: #5E5E5E;"># Without it, we'd have parsing failures once every 10 or 20 batches</span></span>
+<span id="cb29-47">        <span class="cf" style="color: #003B4F;">if</span> <span class="bu" style="color: null;">len</span>(clean_text) <span class="op" style="color: #5E5E5E;">&lt;</span> <span class="bu" style="color: null;">len</span>(batch_df):</span>
+<span id="cb29-48">            clean_text <span class="op" style="color: #5E5E5E;">=</span> []</span>
+<span id="cb29-49">            <span class="cf" style="color: #003B4F;">for</span> _, row <span class="kw" style="color: #003B4F;">in</span> batch_df.iterrows():</span>
+<span id="cb29-50">                prompt <span class="op" style="color: #5E5E5E;">=</span> base_prompt.copy()</span>
+<span id="cb29-51">                prompt <span class="op" style="color: #5E5E5E;">+=</span> [{<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: row.clean_name}]</span>
+<span id="cb29-52"></span>
+<span id="cb29-53">                response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
+<span id="cb29-54">                    model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb29-55">                )</span>
+<span id="cb29-56"></span>
+<span id="cb29-57">                row_response <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
+<span id="cb29-58">                <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> row_response:</span>
+<span id="cb29-59">                    clean_text.append(</span>
+<span id="cb29-60">                        [row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="dv" style="color: #AD0000;">0</span>], row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]]</span>
+<span id="cb29-61">                    )</span>
+<span id="cb29-62">                <span class="cf" style="color: #003B4F;">else</span>:</span>
+<span id="cb29-63">                    clean_text.append([row.clean_name, <span class="st" style="color: #20794D;">"company"</span>])  <span class="co" style="color: #5E5E5E;"># defaults to company</span></span>
+<span id="cb29-64"></span>
+<span id="cb29-65">        <span class="co" style="color: #5E5E5E;"># To ensure I'm matching the query and the corresponding answers correctly,</span></span>
+<span id="cb29-66">        <span class="co" style="color: #5E5E5E;"># I find the closest sentences in the Levenshtein distance sense</span></span>
+<span id="cb29-67">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.copy()</span>
+<span id="cb29-68">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.merge(pd.DataFrame({<span class="st" style="color: #20794D;">"resp"</span>: clean_text}), how<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"cross"</span>)</span>
+<span id="cb29-69">        batch_df[<span class="st" style="color: #20794D;">"resp_name"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="dv" style="color: #AD0000;">0</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
+<span id="cb29-70">        batch_df[<span class="st" style="color: #20794D;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
+<span id="cb29-71">        batch_df[<span class="st" style="color: #20794D;">"dist"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.<span class="bu" style="color: null;">apply</span>(</span>
+<span id="cb29-72">            <span class="kw" style="color: #003B4F;">lambda</span> row: lev.distance(row.clean_name, row.resp_name), axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb29-73">        )</span>
+<span id="cb29-74">        batch_df[<span class="st" style="color: #20794D;">"rank"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.groupby(<span class="st" style="color: #20794D;">"clean_name"</span>)[<span class="st" style="color: #20794D;">"dist"</span>].rank(</span>
+<span id="cb29-75">            method<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"first"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span></span>
+<span id="cb29-76">        )</span>
+<span id="cb29-77">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.query(<span class="st" style="color: #20794D;">"rank==1.0"</span>)[[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"resp_pred"</span>]]</span>
+<span id="cb29-78">        </span>
+<span id="cb29-79">    <span class="co" style="color: #5E5E5E;"># Catches all errors</span></span>
+<span id="cb29-80">    <span class="co" style="color: #5E5E5E;"># Errors only arise due to failures from OpenAI API and should be quite rare</span></span>
+<span id="cb29-81">    <span class="co" style="color: #5E5E5E;"># Ideally, we should keep retrying with exponential backoff</span></span>
+<span id="cb29-82">    <span class="cf" style="color: #003B4F;">except</span> <span class="pp" style="color: #AD0000;">Exception</span> <span class="im" style="color: #00769E;">as</span> e:</span>
+<span id="cb29-83">        <span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"Exception:"</span>, <span class="bu" style="color: null;">str</span>(e))</span>
+<span id="cb29-84">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.copy()</span>
+<span id="cb29-85">        batch_df[<span class="st" style="color: #20794D;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"company"</span> <span class="co" style="color: #5E5E5E;"># defaults to company</span></span>
+<span id="cb29-86"></span>
+<span id="cb29-87">    <span class="cf" style="color: #003B4F;">return</span> batch_df</span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:13:27.341914Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:13:27.341562Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:09.741944Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:09.740938Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:13:27.341885Z&quot;}" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-tags="[]" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">chatgpt_num_workers <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">32</span></span>
@@ -898,7 +907,7 @@ Name: resp_pred, dtype: int64</code></pre>
 </div>
 <p>For the vast majority of cases, ChatGPT answers as I request: person or company. In very rare cases, it states it doesn’t know, it’s not clear or could be both. What are such examples in practice?</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:32:10.695676Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:32:10.695365Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:10.716362Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:10.715426Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:32:10.695656Z&quot;}" data-tags="[]" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">chatgpt_preds[<span class="op" style="color: #5E5E5E;">~</span>chatgpt_preds.resp_pred.isin([<span class="st" style="color: #20794D;">"person"</span>, <span class="st" style="color: #20794D;">"company"</span>])].head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">chatgpt_preds[<span class="op" style="color: #5E5E5E;">~</span>chatgpt_preds.resp_pred.isin([<span class="st" style="color: #20794D;">"person"</span>, <span class="st" style="color: #20794D;">"company"</span>])][[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"resp_pred"</span>]].head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 
 <div>
@@ -1024,7 +1033,7 @@ Name: resp_pred, dtype: int64</code></pre>
 
  ]]></description>
   <guid>https://tabacof.github.io/posts/name_classification/name_classification.html</guid>
-  <pubDate>Sun, 26 Mar 2023 22:00:00 GMT</pubDate>
+  <pubDate>Sun, 26 Mar 2023 23:00:00 GMT</pubDate>
   <media:content url="https://tabacof.github.io/posts/name_classification/chatgpt_final.png" medium="image" type="image/png" height="159" width="144"/>
 </item>
 <item>
@@ -1122,7 +1131,7 @@ Name: resp_pred, dtype: int64</code></pre>
 
  ]]></description>
   <guid>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</guid>
-  <pubDate>Tue, 14 Mar 2023 23:00:00 GMT</pubDate>
+  <pubDate>Wed, 15 Mar 2023 00:00:00 GMT</pubDate>
   <media:content url="https://tabacof.github.io/posts/hierarchy_needs_ml/ml_needs_pyramid2.png" medium="image" type="image/png" height="90" width="144"/>
 </item>
 <item>
@@ -1175,7 +1184,7 @@ Name: resp_pred, dtype: int64</code></pre>
 
  ]]></description>
   <guid>https://tabacof.github.io/posts/neurips_2018/index.html</guid>
-  <pubDate>Sun, 16 Dec 2018 23:00:00 GMT</pubDate>
+  <pubDate>Mon, 17 Dec 2018 00:00:00 GMT</pubDate>
   <media:content url="https://tabacof.github.io/posts/neurips_2018/montreal.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -1367,7 +1376,7 @@ Name: resp_pred, dtype: int64</code></pre>
 
  ]]></description>
   <guid>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</guid>
-  <pubDate>Tue, 15 Nov 2016 23:00:00 GMT</pubDate>
+  <pubDate>Wed, 16 Nov 2016 00:00:00 GMT</pubDate>
   <media:content url="https://tabacof.github.io/posts/how_not_to_forecast_election/us_map_bias.gif" medium="image" type="image/gif"/>
 </item>
 </channel>

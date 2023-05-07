@@ -13,9 +13,15 @@ about:
     - icon: github
       text: Github
       href: https://github.com/tabacof/
+    - icon: google
+      text: Google scholar
+      href: https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en&authuser=1
 
 ---
 
 Personal blog of Pedro Tabacof.
 
+Check out my academic work [here](https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en&authuser=1).
+
 Reach out to me via Linkedin, Twitter, or last name at gmail dot com.
+

@@ -9,7 +9,7 @@
 <link>https://tabacof.github.io/index.html</link>
 <atom:link href="https://tabacof.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>Pedro Tabacof&#39;s personal blog</description>
-<generator>quarto-1.2.335</generator>
+<generator>quarto-1.3.340</generator>
 <lastBuildDate>Sun, 26 Mar 2023 23:00:00 GMT</lastBuildDate>
 <item>
   <title>Name classification with ChatGPT</title>
@@ -68,98 +68,211 @@
 </div>
 <p>I do some preprocessing, inspired by the open-source repo I got the datasets inspiration from: 1. Lower case the people dataset since the companies dataset is all lower case (otherwise I’d suggest keeping the original case, as that can be informative). 2. Remove odd characters and unnecessary spaces. 3. Remove empty and null rows.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T15:46:08.758888Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T15:46:08.758612Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T15:46:49.515402Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T15:46:49.514694Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T15:46:08.758860Z&quot;}" data-tags="[]" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">companies <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"companies_sorted.csv"</span>, usecols<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">"name"</span>])</span>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">companies <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"companies_sorted.csv"</span>, usecols<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>])</span>
 <span id="cb5-2"></span>
-<span id="cb5-3">people <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb5-4">    pd.read_csv(<span class="st" style="color: #20794D;">"data.tsv"</span>, sep<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"</span><span class="ch" style="color: #20794D;">\t</span><span class="st" style="color: #20794D;">"</span>, usecols<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">"primaryName"</span>])</span>
-<span id="cb5-5">    <span class="co" style="color: #5E5E5E;"># Since the companies are all lower case, we do the same here to be fair</span></span>
-<span id="cb5-6">    .assign(name<span class="op" style="color: #5E5E5E;">=</span><span class="kw" style="color: #003B4F;">lambda</span> df: df.primaryName.<span class="bu" style="color: null;">str</span>.lower()).drop(<span class="st" style="color: #20794D;">"primaryName"</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb5-3">people <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb5-4">    pd.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data.tsv"</span>, sep<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>, usecols<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"primaryName"</span>])</span>
+<span id="cb5-5">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Since the companies are all lower case, we do the same here to be fair</span></span>
+<span id="cb5-6">    .assign(name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> df: df.primaryName.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.lower()).drop(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"primaryName"</span>, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
 <span id="cb5-7">)</span>
 <span id="cb5-8"></span>
-<span id="cb5-9">df <span class="op" style="color: #5E5E5E;">=</span> pd.concat(</span>
-<span id="cb5-10">    (companies.assign(label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"company"</span>), people.assign(label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"person"</span>))</span>
-<span id="cb5-11">).sample(frac<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1.0</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">42</span>)</span>
+<span id="cb5-9">df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.concat(</span>
+<span id="cb5-10">    (companies.assign(label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span>), people.assign(label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>))</span>
+<span id="cb5-11">).sample(frac<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span>, random_state<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span>)</span>
 <span id="cb5-12"></span>
-<span id="cb5-13">invalid_letters_pattern <span class="op" style="color: #5E5E5E;">=</span> <span class="vs" style="color: #20794D;">r"""[^a-z0-9\s\'\-\.\&amp;]"""</span></span>
-<span id="cb5-14">multiple_spaces_pattern <span class="op" style="color: #5E5E5E;">=</span> <span class="vs" style="color: #20794D;">r"""\s+"""</span></span>
+<span id="cb5-13">invalid_letters_pattern <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r"""[^a-z0-9\s\'\-\.\&amp;]"""</span></span>
+<span id="cb5-14">multiple_spaces_pattern <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r"""\s+"""</span></span>
 <span id="cb5-15"></span>
-<span id="cb5-16">df[<span class="st" style="color: #20794D;">"clean_name"</span>] <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb5-17">    df.name.<span class="bu" style="color: null;">str</span>.lower()</span>
-<span id="cb5-18">    .<span class="bu" style="color: null;">str</span>.replace(invalid_letters_pattern, <span class="st" style="color: #20794D;">" "</span>, regex<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb5-19">    .<span class="bu" style="color: null;">str</span>.replace(multiple_spaces_pattern, <span class="st" style="color: #20794D;">" "</span>, regex<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb5-20">    .<span class="bu" style="color: null;">str</span>.strip()</span>
+<span id="cb5-16">df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb5-17">    df.name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.lower()</span>
+<span id="cb5-18">    .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.replace(invalid_letters_pattern, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" "</span>, regex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb5-19">    .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.replace(multiple_spaces_pattern, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" "</span>, regex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb5-20">    .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.strip()</span>
 <span id="cb5-21">)</span>
 <span id="cb5-22"></span>
-<span id="cb5-23">df <span class="op" style="color: #5E5E5E;">=</span> df[</span>
-<span id="cb5-24">    <span class="op" style="color: #5E5E5E;">~</span>df.clean_name.isin([<span class="st" style="color: #20794D;">""</span>, <span class="st" style="color: #20794D;">"nan"</span>, <span class="st" style="color: #20794D;">"null"</span>]) <span class="op" style="color: #5E5E5E;">&amp;</span> <span class="op" style="color: #5E5E5E;">~</span>df.clean_name.isna() <span class="op" style="color: #5E5E5E;">&amp;</span> <span class="op" style="color: #5E5E5E;">~</span>df.label.isna()</span>
-<span id="cb5-25">][[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>]]</span>
+<span id="cb5-23">df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[</span>
+<span id="cb5-24">    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>df.clean_name.isin([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"nan"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"null"</span>]) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>df.clean_name.isna() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>df.label.isna()</span>
+<span id="cb5-25">][[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>]]</span>
 <span id="cb5-26"></span>
-<span id="cb5-27">df.head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<span id="cb5-27">df.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>name</th>
-      <th>label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>10103038</th>
-      <td>jinjin wang</td>
-      <td>person</td>
-    </tr>
-    <tr>
-      <th>5566324</th>
-      <td>native waterscapes, inc.</td>
-      <td>company</td>
-    </tr>
-    <tr>
-      <th>8387911</th>
-      <td>jeff killian</td>
-      <td>person</td>
-    </tr>
-    <tr>
-      <th>6783284</th>
-      <td>lisa mareck</td>
-      <td>person</td>
-    </tr>
-    <tr>
-      <th>9824680</th>
-      <td>pablo sánchez</td>
-      <td>person</td>
-    </tr>
-    <tr>
-      <th>6051614</th>
-      <td>dvc sales</td>
-      <td>company</td>
-    </tr>
-    <tr>
-      <th>6479728</th>
-      <td>orso balla</td>
-      <td>person</td>
-    </tr>
-    <tr>
-      <th>4014268</th>
-      <td>two by three media</td>
-      <td>company</td>
-    </tr>
-    <tr>
-      <th>2093936</th>
-      <td>house of light and design</td>
-      <td>company</td>
-    </tr>
-    <tr>
-      <th>11914237</th>
-      <td>hamdy faried</td>
-      <td>person</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">label</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10103038</td>
+<td>jinjin wang</td>
+<td>person</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5566324</td>
+<td>native waterscapes, inc.</td>
+<td>company</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8387911</td>
+<td>jeff killian</td>
+<td>person</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6783284</td>
+<td>lisa mareck</td>
+<td>person</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9824680</td>
+<td>pablo sánchez</td>
+<td>person</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6051614</td>
+<td>dvc sales</td>
+<td>company</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6479728</td>
+<td>orso balla</td>
+<td>person</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4014268</td>
+<td>two by three media</td>
+<td>company</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2093936</td>
+<td>house of light and design</td>
+<td>company</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11914237</td>
+<td>hamdy faried</td>
+<td>person</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -174,30 +287,94 @@ Name: label, dtype: int64</code></pre>
 </div>
 <p>I sample 550k people and companies to make the dataset balanced and then split into 1M training and 100k testing examples.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">train_df <span class="op" style="color: #5E5E5E;">=</span> pd.concat(</span>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">train_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.concat(</span>
 <span id="cb8-2">    (</span>
-<span id="cb8-3">        df[df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"company"</span>].sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1_100_000</span> <span class="op" style="color: #5E5E5E;">//</span> <span class="dv" style="color: #AD0000;">2</span>),</span>
-<span id="cb8-4">        df[df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>].sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1_100_000</span> <span class="op" style="color: #5E5E5E;">//</span> <span class="dv" style="color: #AD0000;">2</span>),</span>
+<span id="cb8-3">        df[df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span>].sample(n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1_100_000</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb8-4">        df[df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>].sample(n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1_100_000</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
 <span id="cb8-5">    )</span>
 <span id="cb8-6">)</span>
 <span id="cb8-7"></span>
-<span id="cb8-8">train_df, test_df <span class="op" style="color: #5E5E5E;">=</span> train_test_split(train_df, test_size<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100_000</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">42</span>)</span></code></pre></div>
+<span id="cb8-8">train_df, test_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> train_test_split(train_df, test_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100_000</span>, random_state<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span>)</span></code></pre></div>
 </div>
 <p>I save the processed datasets for easier iteration. Tip: If you have large datasets, always try to save your preprocessed datasets to disk to prevent wasted computation.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T15:47:51.187096Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T15:47:51.186444Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T15:47:59.789460Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T15:47:59.788908Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T15:47:51.187071Z&quot;}" data-tags="[]" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;"># Saving the processed dataframes locally for quicker iterations</span></span>
-<span id="cb9-2">train_df.to_csv(<span class="st" style="color: #20794D;">"train_df.csv"</span>, index<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
-<span id="cb9-3">test_df.to_csv(<span class="st" style="color: #20794D;">"test_df.csv"</span>, index<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Saving the processed dataframes locally for quicker iterations</span></span>
+<span id="cb9-2">train_df.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"train_df.csv"</span>, index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb9-3">test_df.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test_df.csv"</span>, index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
 <span id="cb9-4"></span>
-<span id="cb9-5"><span class="co" style="color: #5E5E5E;"># Freeing up the memory used by the dataframes</span></span>
-<span id="cb9-6"><span class="kw" style="color: #003B4F;">del</span> companies, people, df, train_df, test_df</span>
+<span id="cb9-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Freeing up the memory used by the dataframes</span></span>
+<span id="cb9-6"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">del</span> companies, people, df, train_df, test_df</span>
 <span id="cb9-7">gc.collect()</span></code></pre></div>
 </div>
 <p>Since I freed up the memory of all datasets, I need to reload them:</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:10:25.186280Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:10:25.185453Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:10:26.009014Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:10:26.008022Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:10:25.186243Z&quot;}" data-tags="[]" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Just run from here if the datasets already exist locally</span></span>
-<span id="cb10-2">train_df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"train_df.csv"</span>)</span>
-<span id="cb10-3">test_df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"test_df.csv"</span>)</span>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Just run from here if the datasets already exist locally</span></span>
+<span id="cb10-2">train_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"train_df.csv"</span>)</span>
+<span id="cb10-3">test_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test_df.csv"</span>)</span>
 <span id="cb10-4"></span>
 <span id="cb10-5">train_df.shape, test_df.shape</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -215,23 +392,85 @@ Name: label, dtype: int64</code></pre>
 </ol>
 <p>Anyway, beware the <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">Falsehoods Programmers Believe About Names</a>.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T15:48:00.586375Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T15:48:00.585726Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T15:48:07.578834Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T15:48:07.578078Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T15:48:00.586341Z&quot;}" data-tags="[]" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">words_df <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb12-2">    train_df.assign(word<span class="op" style="color: #5E5E5E;">=</span>train_df.clean_name.<span class="bu" style="color: null;">str</span>.split(<span class="st" style="color: #20794D;">" +"</span>))</span>
-<span id="cb12-3">    .explode(<span class="st" style="color: #20794D;">"word"</span>)</span>
-<span id="cb12-4">    .groupby([<span class="st" style="color: #20794D;">"word"</span>, <span class="st" style="color: #20794D;">"label"</span>])</span>
-<span id="cb12-5">    .agg(count<span class="op" style="color: #5E5E5E;">=</span>(<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"count"</span>))</span>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">words_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb12-2">    train_df.assign(word<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>train_df.clean_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" +"</span>))</span>
+<span id="cb12-3">    .explode(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"word"</span>)</span>
+<span id="cb12-4">    .groupby([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"word"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>])</span>
+<span id="cb12-5">    .agg(count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"count"</span>))</span>
 <span id="cb12-6">    .reset_index()</span>
 <span id="cb12-7">)</span>
 <span id="cb12-8"></span>
-<span id="cb12-9">total_words <span class="op" style="color: #5E5E5E;">=</span> words_df[<span class="st" style="color: #20794D;">"count"</span>].<span class="bu" style="color: null;">sum</span>()</span>
+<span id="cb12-9">total_words <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> words_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"count"</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>()</span>
 <span id="cb12-10"></span>
-<span id="cb12-11">words_df <span class="op" style="color: #5E5E5E;">=</span> words_df.assign(freq<span class="op" style="color: #5E5E5E;">=</span>words_df[<span class="st" style="color: #20794D;">"count"</span>]<span class="op" style="color: #5E5E5E;">/</span>total_words)</span>
+<span id="cb12-11">words_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> words_df.assign(freq<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>words_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"count"</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>total_words)</span>
 <span id="cb12-12"></span>
-<span id="cb12-13">person_words <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb12-14">    words_df[words_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>].sort_values(<span class="st" style="color: #20794D;">"freq"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>).head(<span class="dv" style="color: #AD0000;">25</span>)</span>
+<span id="cb12-13">person_words <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb12-14">    words_df[words_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>].sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"freq"</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>).head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>)</span>
 <span id="cb12-15">)</span>
-<span id="cb12-16">company_words <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb12-17">    words_df[words_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"company"</span>].sort_values(<span class="st" style="color: #20794D;">"freq"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>).head(<span class="dv" style="color: #AD0000;">25</span>)</span>
+<span id="cb12-16">company_words <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb12-17">    words_df[words_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span>].sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"freq"</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>).head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>)</span>
 <span id="cb12-18">)</span></code></pre></div>
 </div>
 <p>First, let’s take a look at the word counts by label:</p>
@@ -334,17 +573,75 @@ if (outputEl) {{
 <p>Typically, we use TF-IDF instead of word counting for document classification. Since names are quite short and repetitive words (e.g.&nbsp;“John”) are predictive, I believe it not to be useful here. Indeed, a quick test showed no improvement to accuracy by using TF-IDF.</p>
 <p>Another varation is to use n-grams for either words or characters: they’re left as a suggestion to the reader.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T15:52:27.633931Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T15:52:27.633012Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T15:52:40.024198Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T15:52:40.023536Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T15:52:27.633886Z&quot;}" data-tags="[]" data-execution_count="39">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">text_transformer <span class="op" style="color: #5E5E5E;">=</span> CountVectorizer(analyzer<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"word"</span>, max_features<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>)</span>
-<span id="cb13-2">X_train <span class="op" style="color: #5E5E5E;">=</span> text_transformer.fit_transform(train_df[<span class="st" style="color: #20794D;">"clean_name"</span>])</span>
-<span id="cb13-3">X_test <span class="op" style="color: #5E5E5E;">=</span> text_transformer.transform(test_df[<span class="st" style="color: #20794D;">"clean_name"</span>])</span>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">text_transformer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> CountVectorizer(analyzer<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"word"</span>, max_features<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span>)</span>
+<span id="cb13-2">X_train <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> text_transformer.fit_transform(train_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>])</span>
+<span id="cb13-3">X_test <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> text_transformer.transform(test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>])</span>
 <span id="cb13-4"></span>
-<span id="cb13-5">logreg <span class="op" style="color: #5E5E5E;">=</span> LogisticRegression(C<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.1</span>, max_iter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1000</span>).fit(</span>
-<span id="cb13-6">    X_train, train_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span></span>
+<span id="cb13-5">logreg <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> LogisticRegression(C<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>, max_iter<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>).fit(</span>
+<span id="cb13-6">    X_train, train_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span></span>
 <span id="cb13-7">)</span>
-<span id="cb13-8">preds <span class="op" style="color: #5E5E5E;">=</span> logreg.predict(X_test)</span>
+<span id="cb13-8">preds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> logreg.predict(X_test)</span>
 <span id="cb13-9"></span>
-<span id="cb13-10">baseline_accuracy <span class="op" style="color: #5E5E5E;">=</span> accuracy_score(test_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>, preds)</span>
-<span id="cb13-11"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"Baseline accuracy is </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(<span class="dv" style="color: #AD0000;">100</span><span class="op" style="color: #5E5E5E;">*</span>baseline_accuracy, <span class="dv" style="color: #AD0000;">2</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">%"</span>)</span></code></pre></div>
+<span id="cb13-10">baseline_accuracy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> accuracy_score(test_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>, preds)</span>
+<span id="cb13-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Baseline accuracy is </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">round</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>baseline_accuracy, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Baseline accuracy is 89.49%</code></pre>
 </div>
@@ -352,90 +649,123 @@ if (outputEl) {{
 <p>89.5% accuracy is not bad for a linear model! Remember, since the datasets are balanced, a baseline accuracy without any information would be 50%. Now, whether this is good or bad in an absolute sense, it depends on the actual application of the model. It also depends on the distribution of the words this model would actually see in production. The datasets I used are quite general, containing all kinds of people and company names. In a real application, the names could be more constrained (e.g.&nbsp;only coming from a particular country).</p>
 <p>Now, let’s see what mistakes the model makes (<em>error analysis</em>). It’s always interesting to look at examples where the model makes the worst mistakes. If we have a tabular dataset, it might be difficult to interpret what is going on, but, for perceptual data a human can understand (text, image, sound), this leads to invaluable insights into the model.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T15:52:40.053381Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T15:52:40.052661Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T15:52:40.097064Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T15:52:40.096478Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T15:52:40.053351Z&quot;}" data-tags="[]" data-execution_count="40">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">test_df[<span class="st" style="color: #20794D;">"proba_person"</span>] <span class="op" style="color: #5E5E5E;">=</span> logreg.predict_proba(X_test)[:, <span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb15-2">test_df[<span class="st" style="color: #20794D;">"abs_error"</span>] <span class="op" style="color: #5E5E5E;">=</span> np.where(</span>
-<span id="cb15-3">    test_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>, <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> test_df.proba_person, test_df.proba_person</span>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"proba_person"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> logreg.predict_proba(X_test)[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb15-2">test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abs_error"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.where(</span>
+<span id="cb15-3">    test_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> test_df.proba_person, test_df.proba_person</span>
 <span id="cb15-4">)</span>
 <span id="cb15-5"></span>
-<span id="cb15-6">test_df.sort_values(<span class="st" style="color: #20794D;">"abs_error"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)[</span>
-<span id="cb15-7">    [<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"proba_person"</span>]</span>
-<span id="cb15-8">].head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<span id="cb15-6">test_df.sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abs_error"</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)[</span>
+<span id="cb15-7">    [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"proba_person"</span>]</span>
+<span id="cb15-8">].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="40">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>clean_name</th>
-      <th>label</th>
-      <th>proba_person</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>60581</th>
-      <td>co co mangina</td>
-      <td>person</td>
-      <td>0.000206</td>
-    </tr>
-    <tr>
-      <th>49398</th>
-      <td>buster benton and the sons of blues</td>
-      <td>person</td>
-      <td>0.000984</td>
-    </tr>
-    <tr>
-      <th>6192</th>
-      <td>best horizon consulting</td>
-      <td>person</td>
-      <td>0.001613</td>
-    </tr>
-    <tr>
-      <th>83883</th>
-      <td>les enfants du centre de loisirs de chevreuse</td>
-      <td>person</td>
-      <td>0.002633</td>
-    </tr>
-    <tr>
-      <th>84646</th>
-      <td>manuel antonio nieto castro</td>
-      <td>company</td>
-      <td>0.997350</td>
-    </tr>
-    <tr>
-      <th>32669</th>
-      <td>chris joseph</td>
-      <td>company</td>
-      <td>0.996298</td>
-    </tr>
-    <tr>
-      <th>8545</th>
-      <td>hub kapp and the wheels</td>
-      <td>person</td>
-      <td>0.004568</td>
-    </tr>
-    <tr>
-      <th>77512</th>
-      <td>michael simon p.a.</td>
-      <td>company</td>
-      <td>0.994109</td>
-    </tr>
-    <tr>
-      <th>71392</th>
-      <td>dylan ryan teleservices</td>
-      <td>company</td>
-      <td>0.993017</td>
-    </tr>
-    <tr>
-      <th>64777</th>
-      <td>netherlands national field hockey team</td>
-      <td>person</td>
-      <td>0.007220</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">label</th>
+<th data-quarto-table-cell-role="th">proba_person</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60581</td>
+<td>co co mangina</td>
+<td>person</td>
+<td>0.000206</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49398</td>
+<td>buster benton and the sons of blues</td>
+<td>person</td>
+<td>0.000984</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6192</td>
+<td>best horizon consulting</td>
+<td>person</td>
+<td>0.001613</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">83883</td>
+<td>les enfants du centre de loisirs de chevreuse</td>
+<td>person</td>
+<td>0.002633</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">84646</td>
+<td>manuel antonio nieto castro</td>
+<td>company</td>
+<td>0.997350</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">32669</td>
+<td>chris joseph</td>
+<td>company</td>
+<td>0.996298</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8545</td>
+<td>hub kapp and the wheels</td>
+<td>person</td>
+<td>0.004568</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">77512</td>
+<td>michael simon p.a.</td>
+<td>company</td>
+<td>0.994109</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">71392</td>
+<td>dylan ryan teleservices</td>
+<td>company</td>
+<td>0.993017</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">64777</td>
+<td>netherlands national field hockey team</td>
+<td>person</td>
+<td>0.007220</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -446,11 +776,43 @@ if (outputEl) {{
 <h2 class="anchored" data-anchor-id="fastai-lstm-fine-tuning">FastAI LSTM fine tuning</h2>
 <p>For the first more complex machine learning model, let’s start with FastAI due to is simple interface. Following the suggestion of this <a href="https://docs.fast.ai/tutorial.text.html">article</a>, I used an AWD_LSTM model which was pre-trained as a language model that predicts the next word using Wikipedia as dataset. Then, I fine-tune the model with our classification problem. FastAI fine-tune works in the following way: in the first epoch, it only trains the head (the newly inserted neural network on top of the pre-trained language model), then, for all subsequent epochs, it trains the whole model together. FastAI uses many <a href="https://www.reddit.com/r/learnmachinelearning/comments/mbhfso/advanced_takeaways_from_fastai_book/">tricks</a> to make the training more effective, which is all wrapped in a simple function call. While convenient, it makes understanding what is going on behind the scenes and any customization more difficult.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T16:37:08.652460Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T16:37:08.651638Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T16:39:27.371611Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T16:39:27.370749Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T16:37:08.652423Z&quot;}" data-tags="[]" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">fastai_df <span class="op" style="color: #5E5E5E;">=</span> pd.concat((train_df.assign(valid<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>), test_df.assign(valid<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)))</span>
-<span id="cb16-2">dls <span class="op" style="color: #5E5E5E;">=</span> TextDataLoaders.from_df(</span>
-<span id="cb16-3">    fastai_df, text_col<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"clean_name"</span>, label_col<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"label"</span>, valid_col<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"valid"</span></span>
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">fastai_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.concat((train_df.assign(valid<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>), test_df.assign(valid<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)))</span>
+<span id="cb16-2">dls <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> TextDataLoaders.from_df(</span>
+<span id="cb16-3">    fastai_df, text_col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, label_col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>, valid_col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"valid"</span></span>
 <span id="cb16-4">)</span>
-<span id="cb16-5">learn <span class="op" style="color: #5E5E5E;">=</span> text_classifier_learner(dls, AWD_LSTM, drop_mult<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>, metrics<span class="op" style="color: #5E5E5E;">=</span>accuracy)</span></code></pre></div>
+<span id="cb16-5">learn <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> text_classifier_learner(dls, AWD_LSTM, drop_mult<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, metrics<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>accuracy)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 
 <style>
@@ -474,7 +836,11 @@ if (outputEl) {{
 </div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T16:39:27.374479Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T16:39:27.373289Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:22:28.994097Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:22:28.992769Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T16:39:27.374448Z&quot;}" data-tags="[]" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">learn.fine_tune(<span class="dv" style="color: #AD0000;">5</span>, <span class="fl" style="color: #AD0000;">1e-2</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">learn.fine_tune(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1e-2</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 
 <style>
@@ -494,26 +860,25 @@ if (outputEl) {{
 </style>
 </div>
 <div class="cell-output cell-output-display">
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>accuracy</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.513145</td>
-      <td>0.397019</td>
-      <td>0.802810</td>
-      <td>03:37</td>
-    </tr>
-  </tbody>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.513145</td>
+<td>0.397019</td>
+<td>0.802810</td>
+<td>03:37</td>
+</tr>
+</tbody>
 </table>
 </div>
 <div class="cell-output cell-output-display">
@@ -535,54 +900,53 @@ if (outputEl) {{
 </style>
 </div>
 <div class="cell-output cell-output-display">
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>accuracy</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.167889</td>
-      <td>0.137422</td>
-      <td>0.952030</td>
-      <td>07:53</td>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>0.157485</td>
-      <td>0.145000</td>
-      <td>0.956200</td>
-      <td>07:50</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>0.122625</td>
-      <td>0.139295</td>
-      <td>0.963160</td>
-      <td>07:53</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>0.112604</td>
-      <td>0.112886</td>
-      <td>0.968730</td>
-      <td>07:53</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>0.111916</td>
-      <td>0.111421</td>
-      <td>0.970460</td>
-      <td>07:53</td>
-    </tr>
-  </tbody>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.167889</td>
+<td>0.137422</td>
+<td>0.952030</td>
+<td>07:53</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.157485</td>
+<td>0.145000</td>
+<td>0.956200</td>
+<td>07:50</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.122625</td>
+<td>0.139295</td>
+<td>0.963160</td>
+<td>07:53</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.112604</td>
+<td>0.112886</td>
+<td>0.968730</td>
+<td>07:53</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>0.111916</td>
+<td>0.111421</td>
+<td>0.970460</td>
+<td>07:53</td>
+</tr>
+</tbody>
 </table>
 </div>
 </div>
@@ -593,161 +957,276 @@ if (outputEl) {{
 <p>Hugging Face offers hundreds of possible deep learning models for inference and fine-tuning. I chose DistilBERT due to time and GPU memory constraints. By default, Hugging Face trainer will fine-tune all the weights of the model, but now I just want to train the classification head, which is a two-layer fully-connected neural network (aka MLP). The reason is twofold: 1. We’re dealing with a simple problem and 2. I don’t want to leave the model training for too long to make reproducibility simpler and reduce GPU costs. I worked backwards from the previous results: Since FastAI took roughly one hour, I wanted to use the same GPU time budget here.</p>
 <p>To only train the classification head, I had to use the PyTorch interface, which allows for more flexibility. First, I download DistilBERTs tokenizer, apply it to our dataset, then download the model itself, mark all layers as requiring no gradient (i.e.&nbsp;not trainable), and then train the classification head.</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:02.819965Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:02.819729Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:02.823711Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:02.823084Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:02.819943Z&quot;}" data-tags="[]" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">32</span></span>
-<span id="cb18-2">num_epochs <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">3</span></span>
-<span id="cb18-3">learning_rate <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">3e-5</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">batch_size <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32</span></span>
+<span id="cb18-2">num_epochs <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb18-3">learning_rate <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3e-5</span></span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:22:29.013201Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:22:29.012717Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:22:31.953800Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:22:31.952783Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:22:29.013177Z&quot;}" data-tags="[]" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">tokenizer <span class="op" style="color: #5E5E5E;">=</span> AutoTokenizer.from_pretrained(<span class="st" style="color: #20794D;">"distilbert-base-uncased"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">tokenizer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> AutoTokenizer.from_pretrained(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"distilbert-base-uncased"</span>)</span></code></pre></div>
 </div>
 <p>First, I apply the DistilBERT tokenizer to our datasets:</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:22:31.955194Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:22:31.954959Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:02.743815Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:02.742866Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:22:31.955173Z&quot;}" data-tags="[]">
-<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">tokenized_train_df <span class="op" style="color: #5E5E5E;">=</span> tokenizer(</span>
-<span id="cb20-2">    text<span class="op" style="color: #5E5E5E;">=</span>train_df[<span class="st" style="color: #20794D;">"clean_name"</span>].tolist(), padding<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, truncation<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span></span>
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">tokenized_train_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> tokenizer(</span>
+<span id="cb20-2">    text<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>train_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>].tolist(), padding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, truncation<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span></span>
 <span id="cb20-3">)</span>
-<span id="cb20-4">tokenized_test_df <span class="op" style="color: #5E5E5E;">=</span> tokenizer(</span>
-<span id="cb20-5">    text<span class="op" style="color: #5E5E5E;">=</span>test_df[<span class="st" style="color: #20794D;">"clean_name"</span>].tolist(), padding<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, truncation<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span></span>
+<span id="cb20-4">tokenized_test_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> tokenizer(</span>
+<span id="cb20-5">    text<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>].tolist(), padding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, truncation<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span></span>
 <span id="cb20-6">)</span></code></pre></div>
 </div>
 <p>Now, I create a PyTorch dataset that is the able to hand the input format given by the tokenizer (tokens + attention mask), alongside the labels:</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:02.751698Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:02.751490Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:02.818766Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:02.818044Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:02.751679Z&quot;}" data-tags="[]" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">train_dataset <span class="op" style="color: #5E5E5E;">=</span> NamesDataset(</span>
-<span id="cb21-2">    tokenized_train_df, (train_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>).astype(<span class="bu" style="color: null;">int</span>)</span>
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">train_dataset <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> NamesDataset(</span>
+<span id="cb21-2">    tokenized_train_df, (train_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>).astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
 <span id="cb21-3">)</span>
-<span id="cb21-4">test_dataset <span class="op" style="color: #5E5E5E;">=</span> NamesDataset(tokenized_test_df, (test_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>).astype(<span class="bu" style="color: null;">int</span>))</span></code></pre></div>
+<span id="cb21-4">test_dataset <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> NamesDataset(tokenized_test_df, (test_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>).astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>))</span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:02.824756Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:02.824519Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:02.829112Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:02.828380Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:02.824735Z&quot;}" data-tags="[]" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">train_dataloader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(train_dataset, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size)</span>
-<span id="cb22-2">test_dataloader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(test_dataset, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">train_dataloader <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DataLoader(train_dataset, shuffle<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, batch_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>batch_size)</span>
+<span id="cb22-2">test_dataloader <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DataLoader(test_dataset, batch_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>batch_size)</span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:02.831513Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:02.831301Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:08.318791Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:08.317900Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:02.831494Z&quot;}" data-tags="[]" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">model <span class="op" style="color: #5E5E5E;">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
-<span id="cb23-2">    <span class="st" style="color: #20794D;">"distilbert-base-uncased"</span>, num_labels<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span></span>
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">model <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> AutoModelForSequenceClassification.from_pretrained(</span>
+<span id="cb23-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"distilbert-base-uncased"</span>, num_labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
 <span id="cb23-3">)</span></code></pre></div>
 </div>
 <p>I set all the base model parameters as non-trainable (so that only the classification head is trained):</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:08.320118Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:08.319864Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T17:23:08.324955Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T17:23:08.323979Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:08.320095Z&quot;}" data-tags="[]">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="cf" style="color: #003B4F;">for</span> param <span class="kw" style="color: #003B4F;">in</span> model.distilbert.parameters():</span>
-<span id="cb24-2">    param.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">False</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> param <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> model.distilbert.parameters():</span>
+<span id="cb24-2">    param.requires_grad <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span></span></code></pre></div>
 </div>
 <p>Finally, I actually train the model (see full training and evaluation code in the <a href="https://github.com/tabacof/tabacof.github.io/tree/master/posts/name_classification/name_classification.ipynb">notebook</a>):</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T17:23:08.428203Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T17:23:08.427984Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T18:12:00.436974Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T18:12:00.436086Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T17:23:08.428183Z&quot;}" data-tags="[]" data-execution_count="16">
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"dbbeee2658e3486aad4f3a7ccd2dc8a5","version_major":2,"version_minor":0}
+{"model_id":"dbbeee2658e3486aad4f3a7ccd2dc8a5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"24237a4b3a724aeb9b4b923790b7b185","version_major":2,"version_minor":0}
+{"model_id":"24237a4b3a724aeb9b4b923790b7b185","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>epoch 0: test accuracy is 96.527%</code></pre>
+<pre><code>epoch 0: test accuracy is 96.527%
+epoch 1: test accuracy is 96.776%
+epoch 2: test accuracy is 96.854%</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"413b957189b247e9a16e8e1625b62910","version_major":2,"version_minor":0}
+{"model_id":"413b957189b247e9a16e8e1625b62910","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>epoch 1: test accuracy is 96.776%</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"756a19c402b544abb01732919845c906","version_major":2,"version_minor":0}
+{"model_id":"756a19c402b544abb01732919845c906","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>epoch 2: test accuracy is 96.854%</code></pre>
 </div>
 </div>
 <p>We got 96.8% accuracy, essentially the same as FastAI LSTM model. This implies the extra complexity here was for nought. Of course, this problem is a simple one: If I had a more complex problem, I’m sure using a stronger pre-trained language model would give an edge relative to the simpler LSTM trained on Wikipedia. Also, by not fine-tuning the whole network, we miss out on the full power of the transformer. But this suggests that you shouldn’t write off FastAI without trying, which, as I show above, is quite simple.</p>
 <p>Let’s see which mistakes this model is making:</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:06:37.659242Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:06:37.658864Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:06:37.705362Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:06:37.704552Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:06:37.659213Z&quot;}" data-tags="[]" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">test_df[<span class="st" style="color: #20794D;">"proba_person"</span>] <span class="op" style="color: #5E5E5E;">=</span> test_preds</span>
-<span id="cb28-2">test_df[<span class="st" style="color: #20794D;">"abs_error"</span>] <span class="op" style="color: #5E5E5E;">=</span> np.where(</span>
-<span id="cb28-3">    test_df.label <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">"person"</span>, <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> test_df.proba_person, test_df.proba_person</span>
-<span id="cb28-4">)</span>
-<span id="cb28-5">test_df.sort_values(<span class="st" style="color: #20794D;">"abs_error"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)[</span>
-<span id="cb28-6">    [<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"proba_person"</span>]</span>
-<span id="cb28-7">].head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"proba_person"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> test_preds</span>
+<span id="cb26-2">test_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abs_error"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.where(</span>
+<span id="cb26-3">    test_df.label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> test_df.proba_person, test_df.proba_person</span>
+<span id="cb26-4">)</span>
+<span id="cb26-5">test_df.sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abs_error"</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)[</span>
+<span id="cb26-6">    [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"proba_person"</span>]</span>
+<span id="cb26-7">].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>clean_name</th>
-      <th>label</th>
-      <th>proba_person</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>6192</th>
-      <td>best horizon consulting</td>
-      <td>person</td>
-      <td>0.000008</td>
-    </tr>
-    <tr>
-      <th>47006</th>
-      <td>rolf schneebiegl &amp; seine original schwarzwald-musi</td>
-      <td>person</td>
-      <td>0.000326</td>
-    </tr>
-    <tr>
-      <th>58512</th>
-      <td>development</td>
-      <td>person</td>
-      <td>0.000363</td>
-    </tr>
-    <tr>
-      <th>9404</th>
-      <td>xin yuan yao</td>
-      <td>company</td>
-      <td>0.999556</td>
-    </tr>
-    <tr>
-      <th>59585</th>
-      <td>cheng hsong</td>
-      <td>company</td>
-      <td>0.999490</td>
-    </tr>
-    <tr>
-      <th>46757</th>
-      <td>compagnie lyonnaise du cin ma</td>
-      <td>person</td>
-      <td>0.000550</td>
-    </tr>
-    <tr>
-      <th>38224</th>
-      <td>pawel siwczak</td>
-      <td>company</td>
-      <td>0.999389</td>
-    </tr>
-    <tr>
-      <th>25983</th>
-      <td>sarah hussain</td>
-      <td>company</td>
-      <td>0.999311</td>
-    </tr>
-    <tr>
-      <th>23870</th>
-      <td>manjeet singh</td>
-      <td>company</td>
-      <td>0.999295</td>
-    </tr>
-    <tr>
-      <th>73909</th>
-      <td>glassworks</td>
-      <td>person</td>
-      <td>0.000776</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">label</th>
+<th data-quarto-table-cell-role="th">proba_person</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6192</td>
+<td>best horizon consulting</td>
+<td>person</td>
+<td>0.000008</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">47006</td>
+<td>rolf schneebiegl &amp; seine original schwarzwald-musi</td>
+<td>person</td>
+<td>0.000326</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">58512</td>
+<td>development</td>
+<td>person</td>
+<td>0.000363</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9404</td>
+<td>xin yuan yao</td>
+<td>company</td>
+<td>0.999556</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">59585</td>
+<td>cheng hsong</td>
+<td>company</td>
+<td>0.999490</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">46757</td>
+<td>compagnie lyonnaise du cin ma</td>
+<td>person</td>
+<td>0.000550</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38224</td>
+<td>pawel siwczak</td>
+<td>company</td>
+<td>0.999389</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25983</td>
+<td>sarah hussain</td>
+<td>company</td>
+<td>0.999311</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23870</td>
+<td>manjeet singh</td>
+<td>company</td>
+<td>0.999295</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">73909</td>
+<td>glassworks</td>
+<td>person</td>
+<td>0.000776</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -767,111 +1246,483 @@ if (outputEl) {{
 <p>Finally, how can I extract the labels from ChatGPT’s response? It might answer differently, for example, by fixing a misspelling or by using uppercase instead of lowercase (system prompt notwithstanding). In general, it answers in the same order, but can I rely on that completely for all 100k examples? To be safe, I do a simple string matching based on the Levenshtein distance to match the names I query with ChatGPT’s responses.</p>
 <p>To reproduce the code below, you need to have an OpenAI account and OPENAI_API_KEY set in your environment</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:13:27.022173Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:13:27.021364Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:13:27.036586Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:13:27.035636Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:13:27.022138Z&quot;}" data-tags="[]" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">system_prompt <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"""</span></span>
-<span id="cb29-2"><span class="st" style="color: #20794D;">You are a named entity recognition expert.</span></span>
-<span id="cb29-3"><span class="st" style="color: #20794D;">You only answer in lowercase.</span></span>
-<span id="cb29-4"><span class="st" style="color: #20794D;">You only classify names as "company" or "person".</span></span>
-<span id="cb29-5"><span class="st" style="color: #20794D;">"""</span></span>
-<span id="cb29-6"></span>
-<span id="cb29-7">task_prompt <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"Classify the following names into company or person:"</span></span>
-<span id="cb29-8"></span>
-<span id="cb29-9">examples_prompt <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"""google: company</span></span>
-<span id="cb29-10"><span class="st" style="color: #20794D;">john smith: person</span></span>
-<span id="cb29-11"><span class="st" style="color: #20794D;">openai: company</span></span>
-<span id="cb29-12"><span class="st" style="color: #20794D;">pedro tabacof: person"""</span></span>
-<span id="cb29-13"></span>
-<span id="cb29-14">base_prompt <span class="op" style="color: #5E5E5E;">=</span> [</span>
-<span id="cb29-15">    {<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"system"</span>, <span class="st" style="color: #20794D;">"content"</span>: system_prompt},</span>
-<span id="cb29-16">    {<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: task_prompt},</span>
-<span id="cb29-17">    {<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"assistant"</span>, <span class="st" style="color: #20794D;">"content"</span>: examples_prompt},</span>
-<span id="cb29-18">    {<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: task_prompt},</span>
-<span id="cb29-19">]</span>
-<span id="cb29-20"></span>
-<span id="cb29-21">all_preds <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb29-22"></span>
-<span id="cb29-23"></span>
-<span id="cb29-24"><span class="kw" style="color: #003B4F;">def</span> get_chatgpt_preds(batch_df):</span>
-<span id="cb29-25">    <span class="co" style="color: #5E5E5E;">""" Gets predictions for a whole batch of names using ChatGPT's API"""</span></span>
-<span id="cb29-26">    prompt <span class="op" style="color: #5E5E5E;">=</span> base_prompt.copy()</span>
-<span id="cb29-27">    prompt <span class="op" style="color: #5E5E5E;">+=</span> [{<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: <span class="st" style="color: #20794D;">"</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.join(batch_df.clean_name)}]</span>
-<span id="cb29-28"></span>
-<span id="cb29-29">    openai.api_key <span class="op" style="color: #5E5E5E;">=</span> os.getenv(<span class="st" style="color: #20794D;">"OPENAI_API_KEY"</span>)</span>
-<span id="cb29-30"></span>
-<span id="cb29-31">    <span class="cf" style="color: #003B4F;">try</span>:</span>
-<span id="cb29-32">        <span class="co" style="color: #5E5E5E;"># Max tokens as 20000 is enough in practice for 10 names plus the prompt</span></span>
-<span id="cb29-33">        <span class="co" style="color: #5E5E5E;"># Temperature is set to 0 to reduce ChatGPT's "creativity"</span></span>
-<span id="cb29-34">        <span class="co" style="color: #5E5E5E;"># Model `gpt-3.5-turbo` is the latest ChatGPT model, which is 10x cheaper than GPT3</span></span>
-<span id="cb29-35">        response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
-<span id="cb29-36">            model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb29-37">        )</span>
-<span id="cb29-38"></span>
-<span id="cb29-39">        <span class="co" style="color: #5E5E5E;"># Since we gave examples as "name: class", ChatGPT almost always follows this pattern in its answers</span></span>
-<span id="cb29-40">        text_result <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
-<span id="cb29-41">        clean_text <span class="op" style="color: #5E5E5E;">=</span> [</span>
-<span id="cb29-42">            line.lower().split(<span class="st" style="color: #20794D;">":"</span>) <span class="cf" style="color: #003B4F;">for</span> line <span class="kw" style="color: #003B4F;">in</span> text_result.split(<span class="st" style="color: #20794D;">"</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>) <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> line</span>
-<span id="cb29-43">        ]</span>
-<span id="cb29-44"></span>
-<span id="cb29-45">        <span class="co" style="color: #5E5E5E;"># Fallback query: if I cannot find enough names on the response, I ask for each name separately</span></span>
-<span id="cb29-46">        <span class="co" style="color: #5E5E5E;"># Without it, we'd have parsing failures once every 10 or 20 batches</span></span>
-<span id="cb29-47">        <span class="cf" style="color: #003B4F;">if</span> <span class="bu" style="color: null;">len</span>(clean_text) <span class="op" style="color: #5E5E5E;">&lt;</span> <span class="bu" style="color: null;">len</span>(batch_df):</span>
-<span id="cb29-48">            clean_text <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb29-49">            <span class="cf" style="color: #003B4F;">for</span> _, row <span class="kw" style="color: #003B4F;">in</span> batch_df.iterrows():</span>
-<span id="cb29-50">                prompt <span class="op" style="color: #5E5E5E;">=</span> base_prompt.copy()</span>
-<span id="cb29-51">                prompt <span class="op" style="color: #5E5E5E;">+=</span> [{<span class="st" style="color: #20794D;">"role"</span>: <span class="st" style="color: #20794D;">"user"</span>, <span class="st" style="color: #20794D;">"content"</span>: row.clean_name}]</span>
-<span id="cb29-52"></span>
-<span id="cb29-53">                response <span class="op" style="color: #5E5E5E;">=</span> openai.ChatCompletion.create(</span>
-<span id="cb29-54">                    model<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2000</span>, temperature<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb29-55">                )</span>
-<span id="cb29-56"></span>
-<span id="cb29-57">                row_response <span class="op" style="color: #5E5E5E;">=</span> response[<span class="st" style="color: #20794D;">"choices"</span>][<span class="dv" style="color: #AD0000;">0</span>][<span class="st" style="color: #20794D;">"message"</span>][<span class="st" style="color: #20794D;">"content"</span>]</span>
-<span id="cb29-58">                <span class="cf" style="color: #003B4F;">if</span> <span class="st" style="color: #20794D;">":"</span> <span class="kw" style="color: #003B4F;">in</span> row_response:</span>
-<span id="cb29-59">                    clean_text.append(</span>
-<span id="cb29-60">                        [row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="dv" style="color: #AD0000;">0</span>], row_response.split(<span class="st" style="color: #20794D;">":"</span>)[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]]</span>
-<span id="cb29-61">                    )</span>
-<span id="cb29-62">                <span class="cf" style="color: #003B4F;">else</span>:</span>
-<span id="cb29-63">                    clean_text.append([row.clean_name, <span class="st" style="color: #20794D;">"company"</span>])  <span class="co" style="color: #5E5E5E;"># defaults to company</span></span>
-<span id="cb29-64"></span>
-<span id="cb29-65">        <span class="co" style="color: #5E5E5E;"># To ensure I'm matching the query and the corresponding answers correctly,</span></span>
-<span id="cb29-66">        <span class="co" style="color: #5E5E5E;"># I find the closest sentences in the Levenshtein distance sense</span></span>
-<span id="cb29-67">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.copy()</span>
-<span id="cb29-68">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.merge(pd.DataFrame({<span class="st" style="color: #20794D;">"resp"</span>: clean_text}), how<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"cross"</span>)</span>
-<span id="cb29-69">        batch_df[<span class="st" style="color: #20794D;">"resp_name"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="dv" style="color: #AD0000;">0</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
-<span id="cb29-70">        batch_df[<span class="st" style="color: #20794D;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.resp.<span class="bu" style="color: null;">str</span>[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>].<span class="bu" style="color: null;">str</span>.strip()</span>
-<span id="cb29-71">        batch_df[<span class="st" style="color: #20794D;">"dist"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.<span class="bu" style="color: null;">apply</span>(</span>
-<span id="cb29-72">            <span class="kw" style="color: #003B4F;">lambda</span> row: lev.distance(row.clean_name, row.resp_name), axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span></span>
-<span id="cb29-73">        )</span>
-<span id="cb29-74">        batch_df[<span class="st" style="color: #20794D;">"rank"</span>] <span class="op" style="color: #5E5E5E;">=</span> batch_df.groupby(<span class="st" style="color: #20794D;">"clean_name"</span>)[<span class="st" style="color: #20794D;">"dist"</span>].rank(</span>
-<span id="cb29-75">            method<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"first"</span>, ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span></span>
-<span id="cb29-76">        )</span>
-<span id="cb29-77">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.query(<span class="st" style="color: #20794D;">"rank==1.0"</span>)[[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"resp_pred"</span>]]</span>
-<span id="cb29-78">        </span>
-<span id="cb29-79">    <span class="co" style="color: #5E5E5E;"># Catches all errors</span></span>
-<span id="cb29-80">    <span class="co" style="color: #5E5E5E;"># Errors only arise due to failures from OpenAI API and should be quite rare</span></span>
-<span id="cb29-81">    <span class="co" style="color: #5E5E5E;"># Ideally, we should keep retrying with exponential backoff</span></span>
-<span id="cb29-82">    <span class="cf" style="color: #003B4F;">except</span> <span class="pp" style="color: #AD0000;">Exception</span> <span class="im" style="color: #00769E;">as</span> e:</span>
-<span id="cb29-83">        <span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"Exception:"</span>, <span class="bu" style="color: null;">str</span>(e))</span>
-<span id="cb29-84">        batch_df <span class="op" style="color: #5E5E5E;">=</span> batch_df.copy()</span>
-<span id="cb29-85">        batch_df[<span class="st" style="color: #20794D;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"company"</span> <span class="co" style="color: #5E5E5E;"># defaults to company</span></span>
-<span id="cb29-86"></span>
-<span id="cb29-87">    <span class="cf" style="color: #003B4F;">return</span> batch_df</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">system_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span>
+<span id="cb27-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">You are a named entity recognition expert.</span></span>
+<span id="cb27-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">You only answer in lowercase.</span></span>
+<span id="cb27-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">You only classify names as "company" or "person".</span></span>
+<span id="cb27-5"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span>
+<span id="cb27-6"></span>
+<span id="cb27-7">task_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Classify the following names into company or person:"</span></span>
+<span id="cb27-8"></span>
+<span id="cb27-9">examples_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""google: company</span></span>
+<span id="cb27-10"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">john smith: person</span></span>
+<span id="cb27-11"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">openai: company</span></span>
+<span id="cb27-12"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">pedro tabacof: person"""</span></span>
+<span id="cb27-13"></span>
+<span id="cb27-14">base_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb27-15">    {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"system"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: system_prompt},</span>
+<span id="cb27-16">    {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: task_prompt},</span>
+<span id="cb27-17">    {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"assistant"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: examples_prompt},</span>
+<span id="cb27-18">    {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: task_prompt},</span>
+<span id="cb27-19">]</span>
+<span id="cb27-20"></span>
+<span id="cb27-21">all_preds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb27-22"></span>
+<span id="cb27-23"></span>
+<span id="cb27-24"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">def</span> get_chatgpt_preds(batch_df):</span>
+<span id="cb27-25">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">""" Gets predictions for a whole batch of names using ChatGPT's API"""</span></span>
+<span id="cb27-26">    prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> base_prompt.copy()</span>
+<span id="cb27-27">    prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> [{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.join(batch_df.clean_name)}]</span>
+<span id="cb27-28"></span>
+<span id="cb27-29">    openai.api_key <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.getenv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"OPENAI_API_KEY"</span>)</span>
+<span id="cb27-30"></span>
+<span id="cb27-31">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">try</span>:</span>
+<span id="cb27-32">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Max tokens as 20000 is enough in practice for 10 names plus the prompt</span></span>
+<span id="cb27-33">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Temperature is set to 0 to reduce ChatGPT's "creativity"</span></span>
+<span id="cb27-34">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Model `gpt-3.5-turbo` is the latest ChatGPT model, which is 10x cheaper than GPT3</span></span>
+<span id="cb27-35">        response <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> openai.ChatCompletion.create(</span>
+<span id="cb27-36">            model<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2000</span>, temperature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb27-37">        )</span>
+<span id="cb27-38"></span>
+<span id="cb27-39">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Since we gave examples as "name: class", ChatGPT almost always follows this pattern in its answers</span></span>
+<span id="cb27-40">        text_result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> response[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"choices"</span>][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"message"</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>]</span>
+<span id="cb27-41">        clean_text <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb27-42">            line.lower().split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">":"</span>) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> line <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> text_result.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">":"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> line</span>
+<span id="cb27-43">        ]</span>
+<span id="cb27-44"></span>
+<span id="cb27-45">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Fallback query: if I cannot find enough names on the response, I ask for each name separately</span></span>
+<span id="cb27-46">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Without it, we'd have parsing failures once every 10 or 20 batches</span></span>
+<span id="cb27-47">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(clean_text) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(batch_df):</span>
+<span id="cb27-48">            clean_text <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb27-49">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> _, row <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> batch_df.iterrows():</span>
+<span id="cb27-50">                prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> base_prompt.copy()</span>
+<span id="cb27-51">                prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> [{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: row.clean_name}]</span>
+<span id="cb27-52"></span>
+<span id="cb27-53">                response <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> openai.ChatCompletion.create(</span>
+<span id="cb27-54">                    model<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gpt-3.5-turbo"</span>, messages<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>prompt, max_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2000</span>, temperature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb27-55">                )</span>
+<span id="cb27-56"></span>
+<span id="cb27-57">                row_response <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> response[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"choices"</span>][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"message"</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>]</span>
+<span id="cb27-58">                <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">":"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> row_response:</span>
+<span id="cb27-59">                    clean_text.append(</span>
+<span id="cb27-60">                        [row_response.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">":"</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], row_response.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">":"</span>)[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]]</span>
+<span id="cb27-61">                    )</span>
+<span id="cb27-62">                <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span>:</span>
+<span id="cb27-63">                    clean_text.append([row.clean_name, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span>])  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># defaults to company</span></span>
+<span id="cb27-64"></span>
+<span id="cb27-65">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># To ensure I'm matching the query and the corresponding answers correctly,</span></span>
+<span id="cb27-66">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># I find the closest sentences in the Levenshtein distance sense</span></span>
+<span id="cb27-67">        batch_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.copy()</span>
+<span id="cb27-68">        batch_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.merge(pd.DataFrame({<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp"</span>: clean_text}), how<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cross"</span>)</span>
+<span id="cb27-69">        batch_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp_name"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.resp.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.strip()</span>
+<span id="cb27-70">        batch_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.resp.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.strip()</span>
+<span id="cb27-71">        batch_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dist"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(</span>
+<span id="cb27-72">            <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> row: lev.distance(row.clean_name, row.resp_name), axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb27-73">        )</span>
+<span id="cb27-74">        batch_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rank"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.groupby(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>)[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dist"</span>].rank(</span>
+<span id="cb27-75">            method<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span></span>
+<span id="cb27-76">        )</span>
+<span id="cb27-77">        batch_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.query(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rank==1.0"</span>)[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp_pred"</span>]]</span>
+<span id="cb27-78">        </span>
+<span id="cb27-79">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Catches all errors</span></span>
+<span id="cb27-80">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Errors only arise due to failures from OpenAI API and should be quite rare</span></span>
+<span id="cb27-81">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Ideally, we should keep retrying with exponential backoff</span></span>
+<span id="cb27-82">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">except</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Exception</span> <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> e:</span>
+<span id="cb27-83">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Exception:"</span>, <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>(e))</span>
+<span id="cb27-84">        batch_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> batch_df.copy()</span>
+<span id="cb27-85">        batch_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp_pred"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># defaults to company</span></span>
+<span id="cb27-86"></span>
+<span id="cb27-87">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">return</span> batch_df</span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:13:27.341914Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:13:27.341562Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:09.741944Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:09.740938Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:13:27.341885Z&quot;}" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-tags="[]" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">chatgpt_num_workers <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">32</span></span>
-<span id="cb30-2">chatgpt_batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">10</span></span>
-<span id="cb30-3">split_size <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">len</span>(test_df) <span class="op" style="color: #5E5E5E;">//</span> chatgpt_batch_size</span>
-<span id="cb30-4">test_batches <span class="op" style="color: #5E5E5E;">=</span> np.array_split(test_df, split_size)</span>
-<span id="cb30-5"></span>
-<span id="cb30-6">chatgpt_preds <span class="op" style="color: #5E5E5E;">=</span> Parallel(n_jobs<span class="op" style="color: #5E5E5E;">=</span>chatgpt_num_workers, verbose<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)(</span>
-<span id="cb30-7">    delayed(get_chatgpt_preds)(batch_df) <span class="cf" style="color: #003B4F;">for</span> batch_df <span class="kw" style="color: #003B4F;">in</span> test_batches</span>
-<span id="cb30-8">)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">chatgpt_num_workers <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32</span></span>
+<span id="cb28-2">chatgpt_batch_size <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb28-3">split_size <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(test_df) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span> chatgpt_batch_size</span>
+<span id="cb28-4">test_batches <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.array_split(test_df, split_size)</span>
+<span id="cb28-5"></span>
+<span id="cb28-6">chatgpt_preds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Parallel(n_jobs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>chatgpt_num_workers, verbose<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)(</span>
+<span id="cb28-7">    delayed(get_chatgpt_preds)(batch_df) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> batch_df <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> test_batches</span>
+<span id="cb28-8">)</span></code></pre></div>
 </div>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:32:09.745365Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:32:09.744361Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:10.667999Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:10.667019Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:32:09.745331Z&quot;}" data-tags="[]" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">chatgpt_preds <span class="op" style="color: #5E5E5E;">=</span> pd.concat(chatgpt_preds)</span>
-<span id="cb31-2">chatgpt_accuracy <span class="op" style="color: #5E5E5E;">=</span> (chatgpt_preds.resp_pred <span class="op" style="color: #5E5E5E;">==</span> chatgpt_preds.label).<span class="bu" style="color: null;">sum</span>() <span class="op" style="color: #5E5E5E;">/</span> <span class="bu" style="color: null;">len</span>(</span>
-<span id="cb31-3">    chatgpt_preds</span>
-<span id="cb31-4">)</span>
-<span id="cb31-5"></span>
-<span id="cb31-6"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"ChatGPT accuracy is </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(<span class="dv" style="color: #AD0000;">100</span><span class="op" style="color: #5E5E5E;">*</span>chatgpt_accuracy, <span class="dv" style="color: #AD0000;">2</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">%"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">chatgpt_preds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.concat(chatgpt_preds)</span>
+<span id="cb29-2">chatgpt_accuracy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (chatgpt_preds.resp_pred <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> chatgpt_preds.label).<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(</span>
+<span id="cb29-3">    chatgpt_preds</span>
+<span id="cb29-4">)</span>
+<span id="cb29-5"></span>
+<span id="cb29-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"ChatGPT accuracy is </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">round</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>chatgpt_accuracy, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>ChatGPT accuracy is 97.52%</code></pre>
 </div>
@@ -880,7 +1731,9 @@ if (outputEl) {{
 <p>ChatGPT is also quite cheap to run: the cost to classify the 100k examples was just under $5. It took 18 min to score all the examples, which could probably be improved by better parallelism. If you don’t use any parallelism at all, it will be much slower.</p>
 <p>Let’s see the raw responses ChatGPT gives:</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:32:10.669564Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:32:10.669237Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:10.693548Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:10.692696Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:32:10.669535Z&quot;}" data-tags="[]" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1">chatgpt_preds.resp_pred.value_counts().head(<span class="dv" style="color: #AD0000;">20</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">chatgpt_preds.resp_pred.value_counts().head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <pre><code>person                                                                                                                            50955
 company                                                                                                                           48913
@@ -907,83 +1760,98 @@ Name: resp_pred, dtype: int64</code></pre>
 </div>
 <p>For the vast majority of cases, ChatGPT answers as I request: person or company. In very rare cases, it states it doesn’t know, it’s not clear or could be both. What are such examples in practice?</p>
 <div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2023-03-10T19:32:10.695676Z&quot;,&quot;iopub.status.busy&quot;:&quot;2023-03-10T19:32:10.695365Z&quot;,&quot;iopub.status.idle&quot;:&quot;2023-03-10T19:32:10.716362Z&quot;,&quot;shell.execute_reply&quot;:&quot;2023-03-10T19:32:10.715426Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2023-03-10T19:32:10.695656Z&quot;}" data-tags="[]" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">chatgpt_preds[<span class="op" style="color: #5E5E5E;">~</span>chatgpt_preds.resp_pred.isin([<span class="st" style="color: #20794D;">"person"</span>, <span class="st" style="color: #20794D;">"company"</span>])][[<span class="st" style="color: #20794D;">"clean_name"</span>, <span class="st" style="color: #20794D;">"label"</span>, <span class="st" style="color: #20794D;">"resp_pred"</span>]].head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1">chatgpt_preds[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>chatgpt_preds.resp_pred.isin([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"person"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"company"</span>])][[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"clean_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"resp_pred"</span>]].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>clean_name</th>
-      <th>label</th>
-      <th>resp_pred</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>55</th>
-      <td>alkj rskolen ringk bing</td>
-      <td>company</td>
-      <td>neither (not a valid name)</td>
-    </tr>
-    <tr>
-      <th>55</th>
-      <td>81355</td>
-      <td>person</td>
-      <td>cannot be classified without more context</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>telepathic teddy bear</td>
-      <td>person</td>
-      <td>neither</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>agebim</td>
-      <td>company</td>
-      <td>it is not clear whether it is a company or a person.</td>
-    </tr>
-    <tr>
-      <th>44</th>
-      <td>i quit smoking</td>
-      <td>company</td>
-      <td>neither company nor person</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>saint peters church</td>
-      <td>company</td>
-      <td>company (assuming it's a church organization)</td>
-    </tr>
-    <tr>
-      <th>88</th>
-      <td>holy trinity lutheran church akron oh</td>
-      <td>company</td>
-      <td>company (assuming it's a church organization)</td>
-    </tr>
-    <tr>
-      <th>55</th>
-      <td>displayname</td>
-      <td>company</td>
-      <td>company or person (not enough context to determine)</td>
-    </tr>
-    <tr>
-      <th>66</th>
-      <td>ken katzen fine art</td>
-      <td>company</td>
-      <td>company or person (not enough context to determine)</td>
-    </tr>
-    <tr>
-      <th>66</th>
-      <td>columbus high school</td>
-      <td>company</td>
-      <td>company (assuming it's a school)</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">label</th>
+<th data-quarto-table-cell-role="th">resp_pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">55</td>
+<td>alkj rskolen ringk bing</td>
+<td>company</td>
+<td>neither (not a valid name)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">55</td>
+<td>81355</td>
+<td>person</td>
+<td>cannot be classified without more context</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>telepathic teddy bear</td>
+<td>person</td>
+<td>neither</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>agebim</td>
+<td>company</td>
+<td>it is not clear whether it is a company or a person.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">44</td>
+<td>i quit smoking</td>
+<td>company</td>
+<td>neither company nor person</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>saint peters church</td>
+<td>company</td>
+<td>company (assuming it's a church organization)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">88</td>
+<td>holy trinity lutheran church akron oh</td>
+<td>company</td>
+<td>company (assuming it's a church organization)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">55</td>
+<td>displayname</td>
+<td>company</td>
+<td>company or person (not enough context to determine)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>ken katzen fine art</td>
+<td>company</td>
+<td>company or person (not enough context to determine)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">66</td>
+<td>columbus high school</td>
+<td>company</td>
+<td>company (assuming it's a school)</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -1034,7 +1902,6 @@ Name: resp_pred, dtype: int64</code></pre>
  ]]></description>
   <guid>https://tabacof.github.io/posts/name_classification/name_classification.html</guid>
   <pubDate>Sun, 26 Mar 2023 23:00:00 GMT</pubDate>
-  <media:content url="https://tabacof.github.io/posts/name_classification/chatgpt_final.png" medium="image" type="image/png" height="159" width="144"/>
 </item>
 <item>
   <title>The Hierarchy of Machine Learning Needs</title>
@@ -1132,7 +1999,6 @@ Name: resp_pred, dtype: int64</code></pre>
  ]]></description>
   <guid>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</guid>
   <pubDate>Wed, 15 Mar 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://tabacof.github.io/posts/hierarchy_needs_ml/ml_needs_pyramid2.png" medium="image" type="image/png" height="90" width="144"/>
 </item>
 <item>
   <title>NeurIPS 2018: A Data Scientist’s Perspective</title>
@@ -1151,7 +2017,7 @@ Name: resp_pred, dtype: int64</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://tabacof.github.io/posts/neurips_2018/hinton.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Imagine you’re explaining your poster and Geoff Hinton appears behind you?</figcaption><p></p>
+<figcaption class="figure-caption">Imagine you’re explaining your poster and Geoff Hinton appears behind you?</figcaption>
 </figure>
 </div>
 <p>Although these “celebrities” were present, their students were the ones presenting the academic work. With over a thousand papers at the main conference and hundreds at the workshops, it’s hard to know be aware of everything that happened there. I noted down more than 30 articles to review more carefully later. Although this is a large amount to read, it’s only a fraction of the total. For those who want a taste of what’s published there, here are some examples:</p>
@@ -1174,7 +2040,7 @@ Name: resp_pred, dtype: int64</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://tabacof.github.io/posts/neurips_2018/ai_business.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">AI for Business lunch (I’m wearing purple in the top right photo)</figcaption><p></p>
+<figcaption class="figure-caption">AI for Business lunch (I’m wearing purple in the top right photo)</figcaption>
 </figure>
 </div>
 <p>Finally, the last two days were dedicated to workshops. In them, you could delve deep into a specific topic and even learn about things not officially published anywhere yet. The workshop that left the greatest impression on me was <a href="https://nips.cc/Conferences/2018/Schedule?showEvent=10908">AI in Financial Services</a>. However, it had a strong bias toward North American and European realities, mostly discussing regulations and how machine learning could be done within these constraints. For example, in those countries, you need to explain the reasons for denying a loan, but how do you do that if the loan risk is calculated by a deep neural network? However, many countries like China, India, and Brazil don’t have such restrictions, so our challenges are different and were barely explored there. I can say that Nubank is at the forefront of applying machine learning to financial products globally.</p>
@@ -1185,7 +2051,6 @@ Name: resp_pred, dtype: int64</code></pre>
  ]]></description>
   <guid>https://tabacof.github.io/posts/neurips_2018/index.html</guid>
   <pubDate>Mon, 17 Dec 2018 00:00:00 GMT</pubDate>
-  <media:content url="https://tabacof.github.io/posts/neurips_2018/montreal.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>How (not) to forecast an election</title>
@@ -1309,54 +2174,194 @@ Name: resp_pred, dtype: int64</code></pre>
 <section id="stan-code" class="level3">
 <h3 class="anchored" data-anchor-id="stan-code">Stan Code</h3>
 <p>Take a look at our code and feel free to play with it. Here is how we implemented our model in <a href="https://mc-stan.org/">Stan</a>:</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode stan code-with-copy"><code class="sourceCode stan"><span id="cb1-1"><span class="kw" style="color: #003B4F;">data</span> {</span>
-<span id="cb1-2">    <span class="dt" style="color: #AD0000;">int</span> nb_polls; <span class="co" style="color: #5E5E5E;">// Number of polls</span></span>
-<span id="cb1-3">    <span class="dt" style="color: #AD0000;">int</span> nb_states; <span class="co" style="color: #5E5E5E;">// Number of states (51 because of D.C.)</span></span>
-<span id="cb1-4">    <span class="dt" style="color: #AD0000;">int</span> nb_candidates; <span class="co" style="color: #5E5E5E;">// Number of candidates (3: Trump, Clinton, Ind.)</span></span>
-<span id="cb1-5">    <span class="dt" style="color: #AD0000;">int</span> polls_states[nb_polls]; <span class="co" style="color: #5E5E5E;">// Poll -&gt; state map</span></span>
-<span id="cb1-6">    <span class="dt" style="color: #AD0000;">int</span> votes[nb_polls, nb_candidates]; <span class="co" style="color: #5E5E5E;">// Polled votes for each candidate</span></span>
-<span id="cb1-7">    <span class="dt" style="color: #AD0000;">int</span> nb_voters[nb_states]; <span class="co" style="color: #5E5E5E;">// Number of voters for forecasting</span></span>
-<span id="cb1-8">    <span class="dt" style="color: #AD0000;">real</span> bias; <span class="co" style="color: #5E5E5E;">// Polling bias</span></span>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode stan code-with-copy"><code class="sourceCode stan"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">data</span> {</span>
+<span id="cb1-2">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> nb_polls; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Number of polls</span></span>
+<span id="cb1-3">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> nb_states; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Number of states (51 because of D.C.)</span></span>
+<span id="cb1-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> nb_candidates; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Number of candidates (3: Trump, Clinton, Ind.)</span></span>
+<span id="cb1-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> polls_states[nb_polls]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Poll -&gt; state map</span></span>
+<span id="cb1-6">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> votes[nb_polls, nb_candidates]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Polled votes for each candidate</span></span>
+<span id="cb1-7">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> nb_voters[nb_states]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Number of voters for forecasting</span></span>
+<span id="cb1-8">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span> bias; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Polling bias</span></span>
 <span id="cb1-9">}</span>
-<span id="cb1-10"><span class="kw" style="color: #003B4F;">parameters</span> {</span>
-<span id="cb1-11">    <span class="dt" style="color: #AD0000;">simplex</span>[nb_candidates] theta[nb_states]; <span class="co" style="color: #5E5E5E;">//1 - Trump, 2 - Clinton, 3 - Ind.</span></span>
-<span id="cb1-12">    <span class="dt" style="color: #AD0000;">vector</span>[nb_candidates] alpha;</span>
+<span id="cb1-10"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">parameters</span> {</span>
+<span id="cb1-11">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">simplex</span>[nb_candidates] theta[nb_states]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//1 - Trump, 2 - Clinton, 3 - Ind.</span></span>
+<span id="cb1-12">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">vector</span>[nb_candidates] alpha;</span>
 <span id="cb1-13">}</span>
-<span id="cb1-14"><span class="kw" style="color: #003B4F;">model</span> {</span>
-<span id="cb1-15">    <span class="cf" style="color: #003B4F;">for</span>(c <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_candidates)</span>
-<span id="cb1-16">        alpha[c] ~ uniform(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1000</span>); <span class="co" style="color: #5E5E5E;">// Weakly informative hyperprior</span></span>
+<span id="cb1-14"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">model</span> {</span>
+<span id="cb1-15">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(c <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:nb_candidates)</span>
+<span id="cb1-16">        alpha[c] ~ uniform(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>); <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Weakly informative hyperprior</span></span>
 <span id="cb1-17"></span>
-<span id="cb1-18">    <span class="cf" style="color: #003B4F;">for</span>(s <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_states)</span>
-<span id="cb1-19">        theta[s] ~ dirichlet(alpha); <span class="co" style="color: #5E5E5E;">// Dirichlet prior per state</span></span>
+<span id="cb1-18">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(s <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:nb_states)</span>
+<span id="cb1-19">        theta[s] ~ dirichlet(alpha); <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Dirichlet prior per state</span></span>
 <span id="cb1-20"></span>
-<span id="cb1-21">    <span class="cf" style="color: #003B4F;">for</span>(p <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_polls) <span class="co" style="color: #5E5E5E;">// Multinomial observations (polled values)</span></span>
+<span id="cb1-21">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(p <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:nb_polls) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Multinomial observations (polled values)</span></span>
 <span id="cb1-22">        votes[p] ~ multinomial(theta[polls_states[p]]);</span>
 <span id="cb1-23">}</span>
-<span id="cb1-24"><span class="kw" style="color: #003B4F;">generated quantities</span> {</span>
-<span id="cb1-25">    <span class="dt" style="color: #AD0000;">int</span> votes_pred[nb_states, nb_candidates]; <span class="co" style="color: #5E5E5E;">// Predicted number of votes on election day</span></span>
-<span id="cb1-26">    <span class="dt" style="color: #AD0000;">real</span> epsilon[nb_states]; <span class="co" style="color: #5E5E5E;">// Bias random variable</span></span>
-<span id="cb1-27">    <span class="dt" style="color: #AD0000;">simplex</span>[nb_candidates] theta_bias[nb_states]; <span class="co" style="color: #5E5E5E;">// Biased voting intentions</span></span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">generated quantities</span> {</span>
+<span id="cb1-25">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> votes_pred[nb_states, nb_candidates]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Predicted number of votes on election day</span></span>
+<span id="cb1-26">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span> epsilon[nb_states]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Bias random variable</span></span>
+<span id="cb1-27">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">simplex</span>[nb_candidates] theta_bias[nb_states]; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Biased voting intentions</span></span>
 <span id="cb1-28"></span>
-<span id="cb1-29">    <span class="co" style="color: #5E5E5E;">// The deltas below are used to ensure that the biased thetas form a valid simplex</span></span>
-<span id="cb1-30">    <span class="dt" style="color: #AD0000;">real</span> delta_t[nb_states];</span>
-<span id="cb1-31">    <span class="dt" style="color: #AD0000;">real</span> delta_h[nb_states];</span>
-<span id="cb1-32">    <span class="dt" style="color: #AD0000;">real</span> delta[nb_states];</span>
+<span id="cb1-29">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// The deltas below are used to ensure that the biased thetas form a valid simplex</span></span>
+<span id="cb1-30">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span> delta_t[nb_states];</span>
+<span id="cb1-31">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span> delta_h[nb_states];</span>
+<span id="cb1-32">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span> delta[nb_states];</span>
 <span id="cb1-33"></span>
-<span id="cb1-34">    <span class="cf" style="color: #003B4F;">for</span>(s <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span>:nb_states) {</span>
-<span id="cb1-35">        <span class="cf" style="color: #003B4F;">if</span>(bias == <span class="fl" style="color: #AD0000;">0.0</span>)</span>
-<span id="cb1-36">            epsilon[s] &lt;- <span class="fl" style="color: #AD0000;">0.0</span>;</span>
-<span id="cb1-37">        <span class="cf" style="color: #003B4F;">else</span></span>
-<span id="cb1-38">            epsilon[s] &lt;- uniform_rng(<span class="dv" style="color: #AD0000;">0</span>, bias); <span class="co" style="color: #5E5E5E;">// Bias value for this state</span></span>
+<span id="cb1-34">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(s <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:nb_states) {</span>
+<span id="cb1-35">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(bias == <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>)</span>
+<span id="cb1-36">            epsilon[s] &lt;- <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>;</span>
+<span id="cb1-37">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span></span>
+<span id="cb1-38">            epsilon[s] &lt;- uniform_rng(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, bias); <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Bias value for this state</span></span>
 <span id="cb1-39"></span>
-<span id="cb1-40">        <span class="co" style="color: #5E5E5E;">// We must ensure that theta will remain a valid probability simplex,</span></span>
-<span id="cb1-41">        <span class="co" style="color: #5E5E5E;">// so we limit delta in a way theta will never be below 0 or above 1</span></span>
-<span id="cb1-42">        delta_t[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;">1</span>] - fmax(<span class="fl" style="color: #AD0000;">0.0</span>, fmin(<span class="fl" style="color: #AD0000;">1.0</span>, theta[s][<span class="dv" style="color: #AD0000;">1</span>] + epsilon[s])));</span>
-<span id="cb1-43">        delta_h[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;">2</span>] - fmin(<span class="fl" style="color: #AD0000;">1.0</span>, fmax(<span class="fl" style="color: #AD0000;">0.0</span>, theta[s][<span class="dv" style="color: #AD0000;">2</span>] - epsilon[s])));</span>
+<span id="cb1-40">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// We must ensure that theta will remain a valid probability simplex,</span></span>
+<span id="cb1-41">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// so we limit delta in a way theta will never be below 0 or above 1</span></span>
+<span id="cb1-42">        delta_t[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] - fmax(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>, fmin(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span>, theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] + epsilon[s])));</span>
+<span id="cb1-43">        delta_h[s] &lt;- fabs(theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] - fmin(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span>, fmax(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>, theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] - epsilon[s])));</span>
 <span id="cb1-44">        delta[s] &lt;- fmin(delta_t[s], delta_h[s]);</span>
 <span id="cb1-45"></span>
-<span id="cb1-46">        theta_bias[s][<span class="dv" style="color: #AD0000;">1</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">1</span>] + delta[s];</span>
-<span id="cb1-47">        theta_bias[s][<span class="dv" style="color: #AD0000;">2</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">2</span>] - delta[s];</span>
-<span id="cb1-48">        theta_bias[s][<span class="dv" style="color: #AD0000;">3</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;">3</span>];</span>
+<span id="cb1-46">        theta_bias[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] + delta[s];</span>
+<span id="cb1-47">        theta_bias[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] - delta[s];</span>
+<span id="cb1-48">        theta_bias[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>] &lt;- theta[s][<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>];</span>
 <span id="cb1-49"></span>
 <span id="cb1-50">        votes_pred[s] &lt;- multinomial_rng(theta_bias[s], nb_voters[s]);</span>
 <span id="cb1-51">    }</span>

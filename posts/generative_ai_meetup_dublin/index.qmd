@@ -1,0 +1,17 @@
+---
+title: "Generative AI Meetup Dublin"
+author: "Pedro Tabacof"
+date: "2023-05-16"
+categories: []
+draft: true
+---
+
+Resources for the Generative AI meetup in Dublin on May 16, 2023:
+
+ * [Intercom ML jobs](https://www.intercom.com/careers-engineering)
+   * Senior / staff
+   * Engineering / scientist
+   * Dublin / London
+ * [Blog post](https://tabacof.github.io/posts/name_classification/name_classification.html)
+ * [Notebook](https://github.com/tabacof/tabacof.github.io/blob/master/posts/name_classification/name_classification.ipynb)
+ * [Slides](https://docs.google.com/presentation/d/1XqGVhfV75PeanvDrrzL6hnRX_bMA3iMZw2o_tpyNdXw/edit?usp=sharing)

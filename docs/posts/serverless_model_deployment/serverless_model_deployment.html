@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Pedro Tabacof">
-<meta name="dcterms.date" content="2023-05-07">
+<meta name="dcterms.date" content="2023-06-04">
 <meta name="keywords" content="model deployment, AWS, Lambda, API gateway, MLOps">
 <meta name="description" content="Serverless model deployment with AWS Lambda and API gateway">
 
@@ -226,6 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#api-gateway-1" id="toc-api-gateway-1" class="nav-link" data-scroll-target="#api-gateway-1">API Gateway</a></li>
   </ul></li>
+  <li><a href="#monitoring" id="toc-monitoring" class="nav-link" data-scroll-target="#monitoring">Monitoring</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
@@ -317,25 +318,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="aws-lambda" class="level2">
 <h2 class="anchored" data-anchor-id="aws-lambda">AWS Lambda</h2>
-<p>AWS Lambda allows you to run code on the cloud without having to manage webservers. You send a Python function to AWS and, one minute later, can invoke it from anywhere. Lambda has strong but not unlimited scalability, so you generally don’t have to worry about up or downscaling servers to handle variable load.</p>
-<p>Most importantly, you pay for what you use. You pay per time spent in each function call. The price varies by other things such as memory used and network traffic, but use the following rule-of-thumb as a ballpark estimate for a typical workload: <strong>~1M requests → ~$1</strong>.</p>
-<p>You can create Lambda functions manually in the web interface or programatically using <code>boto</code>. I strongly recommend the latter: you get reproducibility and more explicit contorl. There are two ways to create a Lambda function:</p>
+<p>AWS Lambda allows you to run functions on the cloud without having to manage webservers. You send a Python function to AWS and, one minute later, can invoke it from anywhere. Lambda has strong but not unlimited scalability, so you generally don’t have to worry about up or downscaling servers to handle variable load.</p>
+<p>Most importantly, you only pay for what you use. The cost is proportional to the time spent in each function call. The price varies by other things such as memory used and network traffic, but you can use the following rule-of-thumb as a ballpark estimate for a typical workload: <strong>~1M requests → ~$1</strong>.</p>
+<p>You can create Lambda functions manually in the web interface or programatically using <code>boto3</code>. I strongly recommend the latter: you get reproducibility and more explicit control. There are two ways to create a Lambda function:</p>
 <ol type="1">
 <li>Zipping your script and artefacts (including library dependencies) into a file</li>
 <li>Creating a Docker image with your script and artefacts</li>
 </ol>
-<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> and the limits are looser. Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
-<p>When I first built Deploir, only zipping was available. One of my technical breakthroughs was compressing the numerical and ML libs to make them fit the constraints. I hope nobody else has to experience this pain again.</p>
+<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the standard Lambda limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> file and the limits are much looser. Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
+<p>When I first built Deploir, only zipping was available. One of my technical breakthroughs was compressing the numerical and ML libs to make them fit the file size and memory constraints. I hope nobody else has to experience the same pain again!</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="lambda.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Choices for deployment: go with Docker</figcaption>
+<figcaption class="figure-caption">Lambda deployment choices: go with Docker</figcaption>
 </figure>
 </div>
 </section>
 <section id="api-gateway" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway">API Gateway</h2>
-<p>API Gateway allows you to wrap a REST endpoint around a Lambda function. Use it to distribute and control usage of Lambdas inside and outside your org. You can define API keys to use the endpoint, rate-limits, throttle, etc.</p>
+<p>API Gateway allows you to wrap a REST endpoint around a Lambda function. Use it to distribute and control usage of Lambdas inside and outside your org. You can define API keys to use the endpoint with associated usage plans where you can set rate limits, throttling and quotas. The integration between API gateway and Lambda is seamless: it will pass along the request payload to the Lambda function <code>event</code> argument and it will return the request response from the Lambda return dictionary.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="api_gateway.jpg" class="img-fluid figure-img"></p>
@@ -38027,6 +38028,16 @@ Name: proportion, dtype: float64</code></pre>
 <p><strong>Success!</strong> We have an endpoing serving our model at scale without a server.</p>
 </section>
 </section>
+<section id="monitoring" class="level1">
+<h1>Monitoring</h1>
+<p>We can use AWS CloudWatch to monitor usage, check the logs and create alarms:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="cloudwatch.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Default CloudWatch dashboard for Lambda</figcaption>
+</figure>
+</div>
+</section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
 <p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
@@ -38035,7 +38046,7 @@ Name: proportion, dtype: float64</code></pre>
 <p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your usecase, feel free to use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>I would like to give my gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, YOUR_NAME_HERE if you review it :).</p>
+<p>I would like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, YOUR_NAME_HERE if you review it :).</p>
 
 
 </section>

@@ -207,9 +207,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#aws-lambda" id="toc-aws-lambda" class="nav-link" data-scroll-target="#aws-lambda">AWS Lambda</a></li>
   <li><a href="#api-gateway" id="toc-api-gateway" class="nav-link" data-scroll-target="#api-gateway">API Gateway</a></li>
+  <li><a href="#trade-offs" id="toc-trade-offs" class="nav-link" data-scroll-target="#trade-offs">Trade-offs</a>
+  <ul class="collapse">
   <li><a href="#why-serverless-model-deployment" id="toc-why-serverless-model-deployment" class="nav-link" data-scroll-target="#why-serverless-model-deployment">Why serverless model deployment?</a></li>
   <li><a href="#why-not" id="toc-why-not" class="nav-link" data-scroll-target="#why-not">Why not?</a></li>
-  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  </ul></li>
+  <li><a href="#model-example" id="toc-model-example" class="nav-link" data-scroll-target="#model-example">Model example</a>
   <ul class="collapse">
   <li><a href="#scikit-learn-text-classifier" id="toc-scikit-learn-text-classifier" class="nav-link" data-scroll-target="#scikit-learn-text-classifier">Scikit-learn text classifier</a>
   <ul class="collapse">
@@ -225,8 +228,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#docker-image" id="toc-docker-image" class="nav-link" data-scroll-target="#docker-image">Docker image</a></li>
   </ul></li>
   <li><a href="#api-gateway-1" id="toc-api-gateway-1" class="nav-link" data-scroll-target="#api-gateway-1">API Gateway</a></li>
-  </ul></li>
   <li><a href="#monitoring" id="toc-monitoring" class="nav-link" data-scroll-target="#monitoring">Monitoring</a></li>
+  </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
@@ -295,8 +298,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>But it’s inevitable for some applications where you only know what you need a prediction for in real-time:</p>
 <ul>
 <li>Credit card transaction fraud</li>
-<li>Customer support routing</li>
 <li>Real-time bidding for ad auctions</li>
+<li>Chatbots</li>
 </ul>
 </section>
 <section id="batch-models" class="level3">
@@ -305,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="batch.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Typical batch ML application using Spark</figcaption>
+<figcaption class="figure-caption">Typical batch ML application using Airflow/Spark</figcaption>
 </figure>
 </div>
 <p><strong>Use batch models if you can</strong>: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a webserver or endpoint, only one or few steps in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
@@ -340,25 +343,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="api_gateway.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">API gateway architecture</figcaption>
+<figcaption class="figure-caption">API gateway: the lifetime of a request</figcaption>
 </figure>
 </div>
 </section>
-<section id="why-serverless-model-deployment" class="level2">
-<h2 class="anchored" data-anchor-id="why-serverless-model-deployment">Why serverless model deployment?</h2>
-<p>You should go serverless if you cannot bear the costs of maintaing a Python server. Here are some examples that all have applied to me personally to decide to use Lambda in the past:</p>
+<section id="trade-offs" class="level2">
+<h2 class="anchored" data-anchor-id="trade-offs">Trade-offs</h2>
+<p>Going serverless has many trade-offs. Check out <a href="https://www.serverless.com/blog/when-why-not-use-serverless">When (and why) not to go serverless</a> for a more general take. For ML deployment, we can more precise about the trade-offs we face:</p>
+<section id="why-serverless-model-deployment" class="level3">
+<h3 class="anchored" data-anchor-id="why-serverless-model-deployment">Why serverless model deployment?</h3>
+<p>You should go serverless if you cannot bear the costs of maintaing a Python server, whether they are servers if your are a poor entrepeneur or MLE costs if you need to build a fancy Scala server as Python is not allowed. Here are some examples that all have applied to me personally to go with Lambda in the past:</p>
 <ul>
 <li>You are a DS and need to deploy a model but Python servers are not allowed</li>
 <li>You are an indie hacker and want to sell something with high scalability but no baseline costs</li>
 <li>You are a MLE and want to create a system where DSs upload a model pickle and get an endpoint ready in seconds</li>
 </ul>
 </section>
-<section id="why-not" class="level2">
-<h2 class="anchored" data-anchor-id="why-not">Why not?</h2>
-<p>You should choose <a href="https://boringtechnology.club/">boring technology</a> by default. Therefore, if you can use a Flask/FastAPI for your real-time model, do it! In general, if you need more flexibility, operate at <a href="https://world.hey.com/dhh/even-amazon-can-t-make-sense-of-serverless-or-microservices-59625580">absurd scale</a> or at the limits of technology (e.g.&nbsp;running LLMs on GPUs), Lambda is not for you.</p>
+<section id="why-not" class="level3">
+<h3 class="anchored" data-anchor-id="why-not">Why not?</h3>
+<p>You should choose <a href="https://boringtechnology.club/">boring technology</a> by default. If you can use a Flask/FastAPI for your real-time model, do it! There will be a lot more resources, examples, and people with tacit knowledge out there.</p>
+<p>In general, if you need more flexibility to hack around the server, need fine-grained control (like ensure latency is always under a certain value), operate at <a href="https://world.hey.com/dhh/even-amazon-can-t-make-sense-of-serverless-or-microservices-59625580">absurd scales</a>, or are at the limits of technology (e.g.&nbsp;running LLMs on GPUs), Lambda is not for you.</p>
 </section>
-<section id="example" class="level1">
-<h1>Example</h1>
+</section>
+<section id="model-example" class="level1">
+<h1>Model example</h1>
 <p>Now let’s go over the process of building and deploying a serverless model.</p>
 <section id="scikit-learn-text-classifier" class="level2">
 <h2 class="anchored" data-anchor-id="scikit-learn-text-classifier">Scikit-learn text classifier</h2>
@@ -37836,207 +37844,216 @@ Name: proportion, dtype: float64</code></pre>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function name (not public facing)</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>function_name <span class="op">=</span> <span class="st">'lambda-fn-sklearn-predict'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="33">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the Lambda function</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> lambda_client.create_function(</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    FunctionName<span class="op">=</span>function_name,</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    Role<span class="op">=</span>role_arn,</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    PackageType<span class="op">=</span><span class="st">'Image'</span>,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    Code<span class="op">=</span>{</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ImageUri'</span>: <span class="ss">f'</span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">.dkr.ecr.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>ecr_image_name<span class="sc">}</span><span class="ss">:latest'</span></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    Description<span class="op">=</span><span class="st">'SKLearn predict Lambda function'</span>,</span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    Timeout<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    MemorySize<span class="op">=</span><span class="dv">256</span>,</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    Publish<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-tags="[]" data-execution_count="115">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve (if already exists) or create the Lambda function</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> lambda_client.get_function(FunctionName<span class="op">=</span>function_name)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Lambda function </span><span class="sc">{</span>function_name<span class="sc">}</span><span class="ss"> already exists"</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> lambda_client.exceptions.ResourceNotFoundException:</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> lambda_client.create_function(</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>        FunctionName<span class="op">=</span>function_name,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>        Role<span class="op">=</span>role_arn,</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>        PackageType<span class="op">=</span><span class="st">'Image'</span>,</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>        Code<span class="op">=</span>{</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">'ImageUri'</span>: <span class="ss">f'</span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">.dkr.ecr.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>ecr_image_name<span class="sc">}</span><span class="ss">:latest'</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>        Description<span class="op">=</span><span class="st">'SKLearn predict Lambda function'</span>,</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>        Timeout<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>        MemorySize<span class="op">=</span><span class="dv">256</span>,</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>        Publish<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Lambda function </span><span class="sc">{</span>function_name<span class="sc">}</span><span class="ss"> created!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Lambda function lambda-fn-sklearn-predict created!</code></pre>
 </div>
-<p>The create_function is not instant. Wait a few seconds before running the invocation command:</p>
+</div>
+<p>The create_function returns instantly but the function will be in the pending state for a few seconds. To be sure, wait 30 seconds before running the invocation command:</p>
 <div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>time.sleep(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>time.sleep(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="104">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the event to pass to the Lambda function</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> [<span class="st">"""Did that FAQ ever got modified to re-define strong atheists as not those who</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="st">| assert the nonexistence of God, but as those who assert that they BELIEVE in </span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="st">| the nonexistence of God?"""</span>]</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Invoke the Lambda function</span></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> lambda_client.invoke(</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    FunctionName<span class="op">=</span>function_name,</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    InvocationType<span class="op">=</span><span class="st">'RequestResponse'</span>,</span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    Payload<span class="op">=</span>json.dumps({<span class="st">"body"</span>: example})</span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the response from the Lambda function</span></span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> json.loads(response[<span class="st">'Payload'</span>].read())</span>
-<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result[<span class="st">"body"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-tags="[]" data-execution_count="116">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the event to pass to the Lambda function</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> [<span class="st">"""Did that FAQ ever got modified to re-define strong atheists as not those who</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="st">| assert the nonexistence of God, but as those who assert that they BELIEVE in </span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="st">| the nonexistence of God?"""</span>]</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Invoke the Lambda function</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> lambda_client.invoke(</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    FunctionName<span class="op">=</span>function_name,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    InvocationType<span class="op">=</span><span class="st">'RequestResponse'</span>,</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    Payload<span class="op">=</span>json.dumps({<span class="st">"body"</span>: example})</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the response from the Lambda function</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> json.loads(response[<span class="st">'Payload'</span>].read())</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result[<span class="st">"body"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>["alt.atheism"]</code></pre>
 </div>
 </div>
-<p>Great, now we have a deployed Lambda function that can make predictions! The next step is using API gateway to make an endpoint out of it.</p>
+<p>Great, now we have a deployed Lambda function that we can use to make predictions! The next step is using API gateway to wrap an endpoint around it.</p>
 </section>
 </section>
 <section id="api-gateway-1" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway-1">API Gateway</h2>
-<p>To create a POST endpoint on API gateway, you will need a few more commands. Note that you only have to do it once.</p>
+<p>To create a POST endpoint on API gateway, you will need a few more commands. While the commands below seems overly bureaucratic and hard to remember, consider that you only have to do it once and you can always go to ChatGPT for help.</p>
 <div class="cell" data-tags="[]" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the API Gateway client</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>apigw_client <span class="op">=</span> boto3.client(<span class="st">'apigateway'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the API Gateway client</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>apigw_client <span class="op">=</span> boto3.client(<span class="st">'apigateway'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-tags="[]" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the name of the API (not public facing)</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>rest_api_name <span class="op">=</span> function_name <span class="op">+</span> <span class="st">'-api'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the name of the API (not public facing)</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>rest_api_name <span class="op">=</span> function_name <span class="op">+</span> <span class="st">'-api'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="70">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, lets verify whether we already have an endpoint with this name</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> apigw_client.get_rest_apis()</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>create_api_gw <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> item <span class="kw">in</span> response[<span class="st">'items'</span>]:</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> item[<span class="st">'name'</span>] <span class="op">==</span> rest_api_name:</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>        rest_api_id <span class="op">=</span> item[<span class="st">'id'</span>]</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>        create_api_gw <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-tags="[]" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, lets verify whether we already have an endpoint with this name</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> apigw_client.get_rest_apis()</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>create_api_gw <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> item <span class="kw">in</span> response[<span class="st">'items'</span>]:</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> item[<span class="st">'name'</span>] <span class="op">==</span> rest_api_name:</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>        rest_api_id <span class="op">=</span> item[<span class="st">'id'</span>]</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>        create_api_gw <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-tags="[]" data-execution_count="89">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the REST API if it doesn't exist</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> create_api_gw:</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_rest_api(</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>rest_api_name,</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'API Gateway that triggers a lambda function'</span>,</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    rest_api_id <span class="op">=</span> response[<span class="st">'id'</span>]</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a resource</span></span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.get_resources(restApiId<span class="op">=</span>rest_api_id)</span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    root_id <span class="op">=</span> response[<span class="st">'items'</span>][<span class="dv">0</span>][<span class="st">'id'</span>]</span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_resource(</span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>        parentId<span class="op">=</span>root_id,</span>
-<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>        pathPart<span class="op">=</span>endpoint,</span>
-<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>    resource_id <span class="op">=</span> response[<span class="st">'id'</span>]</span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create the POST method</span></span>
-<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.put_method(</span>
-<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
-<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>        resourceId<span class="op">=</span>resource_id,</span>
-<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>        httpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
-<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>        authorizationType<span class="op">=</span><span class="st">'NONE'</span>, <span class="co"># </span><span class="al">WARNING</span><span class="co">: this will allow public access!</span></span>
-<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>        apiKeyRequired<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the Lambda function ARN</span></span>
-<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a>    lambda_function <span class="op">=</span> lambda_client.get_function(FunctionName<span class="op">=</span>function_name)</span>
-<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a>    lambda_arn <span class="op">=</span> lambda_function[<span class="st">'Configuration'</span>][<span class="st">'FunctionArn'</span>]</span>
-<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up integration with the Lambda function</span></span>
-<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a>    uri <span class="op">=</span> <span class="ss">f"arn:aws:apigateway:</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">:lambda:path/2015-03-31/functions/</span><span class="sc">{</span>lambda_arn<span class="sc">}</span><span class="ss">/invocations"</span></span>
-<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.put_integration(</span>
-<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
-<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a>        resourceId<span class="op">=</span>resource_id,</span>
-<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a>        httpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
-<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">type</span><span class="op">=</span><span class="st">'AWS_PROXY'</span>,</span>
-<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a>        integrationHttpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
-<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>        uri<span class="op">=</span>uri,</span>
-<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Deploy the API</span></span>
-<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_deployment(</span>
-<span id="cb48-46"><a href="#cb48-46" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
-<span id="cb48-47"><a href="#cb48-47" aria-hidden="true" tabindex="-1"></a>        stageName<span class="op">=</span>stage,</span>
-<span id="cb48-48"><a href="#cb48-48" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-49"><a href="#cb48-49" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-50"><a href="#cb48-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create API key</span></span>
-<span id="cb48-51"><a href="#cb48-51" aria-hidden="true" tabindex="-1"></a>    api_key <span class="op">=</span> apigw_client.create_api_key(</span>
-<span id="cb48-52"><a href="#cb48-52" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>rest_api_name <span class="op">+</span> <span class="st">'-key'</span>,</span>
-<span id="cb48-53"><a href="#cb48-53" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'API key'</span>,</span>
-<span id="cb48-54"><a href="#cb48-54" aria-hidden="true" tabindex="-1"></a>        enabled<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb48-55"><a href="#cb48-55" aria-hidden="true" tabindex="-1"></a>        generateDistinctId<span class="op">=</span><span class="va">True</span></span>
-<span id="cb48-56"><a href="#cb48-56" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-57"><a href="#cb48-57" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-58"><a href="#cb48-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create usage plan</span></span>
-<span id="cb48-59"><a href="#cb48-59" aria-hidden="true" tabindex="-1"></a>    usage_plan <span class="op">=</span> apigw_client.create_usage_plan(</span>
-<span id="cb48-60"><a href="#cb48-60" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'API usage plan'</span>,</span>
-<span id="cb48-61"><a href="#cb48-61" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'Harsh rate limits and daily quota for public facing API'</span>,</span>
-<span id="cb48-62"><a href="#cb48-62" aria-hidden="true" tabindex="-1"></a>        apiStages<span class="op">=</span>[</span>
-<span id="cb48-63"><a href="#cb48-63" aria-hidden="true" tabindex="-1"></a>            {</span>
-<span id="cb48-64"><a href="#cb48-64" aria-hidden="true" tabindex="-1"></a>                <span class="st">'apiId'</span>: rest_api_id,</span>
-<span id="cb48-65"><a href="#cb48-65" aria-hidden="true" tabindex="-1"></a>                <span class="st">'stage'</span>: stage,</span>
-<span id="cb48-66"><a href="#cb48-66" aria-hidden="true" tabindex="-1"></a>            },</span>
-<span id="cb48-67"><a href="#cb48-67" aria-hidden="true" tabindex="-1"></a>        ],</span>
-<span id="cb48-68"><a href="#cb48-68" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Very harsh rate limits since this will be public facing</span></span>
-<span id="cb48-69"><a href="#cb48-69" aria-hidden="true" tabindex="-1"></a>        throttle<span class="op">=</span>{</span>
-<span id="cb48-70"><a href="#cb48-70" aria-hidden="true" tabindex="-1"></a>            <span class="st">'burstLimit'</span>: <span class="dv">10</span>,</span>
-<span id="cb48-71"><a href="#cb48-71" aria-hidden="true" tabindex="-1"></a>            <span class="st">'rateLimit'</span>: <span class="fl">10.0</span></span>
-<span id="cb48-72"><a href="#cb48-72" aria-hidden="true" tabindex="-1"></a>        },</span>
-<span id="cb48-73"><a href="#cb48-73" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Low daily limits for the same reason</span></span>
-<span id="cb48-74"><a href="#cb48-74" aria-hidden="true" tabindex="-1"></a>        quota<span class="op">=</span>{</span>
-<span id="cb48-75"><a href="#cb48-75" aria-hidden="true" tabindex="-1"></a>            <span class="st">'limit'</span>: <span class="dv">100</span>,</span>
-<span id="cb48-76"><a href="#cb48-76" aria-hidden="true" tabindex="-1"></a>            <span class="st">'period'</span>: <span class="st">'DAY'</span></span>
-<span id="cb48-77"><a href="#cb48-77" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb48-78"><a href="#cb48-78" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-79"><a href="#cb48-79" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-80"><a href="#cb48-80" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Associate the usage plan with the API key</span></span>
-<span id="cb48-81"><a href="#cb48-81" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_usage_plan_key(</span>
-<span id="cb48-82"><a href="#cb48-82" aria-hidden="true" tabindex="-1"></a>        usagePlanId<span class="op">=</span>usage_plan[<span class="st">'id'</span>],</span>
-<span id="cb48-83"><a href="#cb48-83" aria-hidden="true" tabindex="-1"></a>        keyId<span class="op">=</span>api_key[<span class="st">'id'</span>],</span>
-<span id="cb48-84"><a href="#cb48-84" aria-hidden="true" tabindex="-1"></a>        keyType<span class="op">=</span><span class="st">'API_KEY'</span></span>
-<span id="cb48-85"><a href="#cb48-85" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-86"><a href="#cb48-86" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb48-87"><a href="#cb48-87" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Grant API Gateway permission to invoke the Lambda function</span></span>
-<span id="cb48-88"><a href="#cb48-88" aria-hidden="true" tabindex="-1"></a>    source_arn <span class="op">=</span> <span class="ss">f'arn:aws:execute-api:</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>rest_api_id<span class="sc">}</span><span class="ss">/*'</span></span>
-<span id="cb48-89"><a href="#cb48-89" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> lambda_client.add_permission(</span>
-<span id="cb48-90"><a href="#cb48-90" aria-hidden="true" tabindex="-1"></a>        FunctionName<span class="op">=</span>function_name,</span>
-<span id="cb48-91"><a href="#cb48-91" aria-hidden="true" tabindex="-1"></a>        StatementId<span class="op">=</span><span class="st">'apigateway-lambda-invoke-permission'</span>,</span>
-<span id="cb48-92"><a href="#cb48-92" aria-hidden="true" tabindex="-1"></a>        Action<span class="op">=</span><span class="st">'lambda:InvokeFunction'</span>,</span>
-<span id="cb48-93"><a href="#cb48-93" aria-hidden="true" tabindex="-1"></a>        Principal<span class="op">=</span><span class="st">'apigateway.amazonaws.com'</span>,</span>
-<span id="cb48-94"><a href="#cb48-94" aria-hidden="true" tabindex="-1"></a>        SourceArn<span class="op">=</span>source_arn</span>
-<span id="cb48-95"><a href="#cb48-95" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the REST API if it doesn't exist</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> create_api_gw:</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_rest_api(</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>rest_api_name,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'API Gateway that triggers a lambda function'</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    rest_api_id <span class="op">=</span> response[<span class="st">'id'</span>]</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a resource</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.get_resources(restApiId<span class="op">=</span>rest_api_id)</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>    root_id <span class="op">=</span> response[<span class="st">'items'</span>][<span class="dv">0</span>][<span class="st">'id'</span>]</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_resource(</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>        parentId<span class="op">=</span>root_id,</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>        pathPart<span class="op">=</span>endpoint,</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>    resource_id <span class="op">=</span> response[<span class="st">'id'</span>]</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create the POST method</span></span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.put_method(</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>        resourceId<span class="op">=</span>resource_id,</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>        httpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>        authorizationType<span class="op">=</span><span class="st">'NONE'</span>, <span class="co"># </span><span class="al">WARNING</span><span class="co">: this will allow public access!</span></span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>        apiKeyRequired<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the Lambda function ARN</span></span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a>    lambda_function <span class="op">=</span> lambda_client.get_function(FunctionName<span class="op">=</span>function_name)</span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>    lambda_arn <span class="op">=</span> lambda_function[<span class="st">'Configuration'</span>][<span class="st">'FunctionArn'</span>]</span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up integration with the Lambda function</span></span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a>    uri <span class="op">=</span> <span class="ss">f"arn:aws:apigateway:</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">:lambda:path/2015-03-31/functions/</span><span class="sc">{</span>lambda_arn<span class="sc">}</span><span class="ss">/invocations"</span></span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.put_integration(</span>
+<span id="cb49-36"><a href="#cb49-36" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
+<span id="cb49-37"><a href="#cb49-37" aria-hidden="true" tabindex="-1"></a>        resourceId<span class="op">=</span>resource_id,</span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a>        httpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
+<span id="cb49-39"><a href="#cb49-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">type</span><span class="op">=</span><span class="st">'AWS_PROXY'</span>,</span>
+<span id="cb49-40"><a href="#cb49-40" aria-hidden="true" tabindex="-1"></a>        integrationHttpMethod<span class="op">=</span><span class="st">'POST'</span>,</span>
+<span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a>        uri<span class="op">=</span>uri,</span>
+<span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-43"><a href="#cb49-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-44"><a href="#cb49-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Deploy the API</span></span>
+<span id="cb49-45"><a href="#cb49-45" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_deployment(</span>
+<span id="cb49-46"><a href="#cb49-46" aria-hidden="true" tabindex="-1"></a>        restApiId<span class="op">=</span>rest_api_id,</span>
+<span id="cb49-47"><a href="#cb49-47" aria-hidden="true" tabindex="-1"></a>        stageName<span class="op">=</span>stage,</span>
+<span id="cb49-48"><a href="#cb49-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-49"><a href="#cb49-49" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-50"><a href="#cb49-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create API key</span></span>
+<span id="cb49-51"><a href="#cb49-51" aria-hidden="true" tabindex="-1"></a>    api_key <span class="op">=</span> apigw_client.create_api_key(</span>
+<span id="cb49-52"><a href="#cb49-52" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>rest_api_name <span class="op">+</span> <span class="st">'-key'</span>,</span>
+<span id="cb49-53"><a href="#cb49-53" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'API key'</span>,</span>
+<span id="cb49-54"><a href="#cb49-54" aria-hidden="true" tabindex="-1"></a>        enabled<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb49-55"><a href="#cb49-55" aria-hidden="true" tabindex="-1"></a>        generateDistinctId<span class="op">=</span><span class="va">True</span></span>
+<span id="cb49-56"><a href="#cb49-56" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-57"><a href="#cb49-57" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-58"><a href="#cb49-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create usage plan</span></span>
+<span id="cb49-59"><a href="#cb49-59" aria-hidden="true" tabindex="-1"></a>    usage_plan <span class="op">=</span> apigw_client.create_usage_plan(</span>
+<span id="cb49-60"><a href="#cb49-60" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">'API usage plan'</span>,</span>
+<span id="cb49-61"><a href="#cb49-61" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">'Harsh rate limits and daily quota for public facing API'</span>,</span>
+<span id="cb49-62"><a href="#cb49-62" aria-hidden="true" tabindex="-1"></a>        apiStages<span class="op">=</span>[</span>
+<span id="cb49-63"><a href="#cb49-63" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb49-64"><a href="#cb49-64" aria-hidden="true" tabindex="-1"></a>                <span class="st">'apiId'</span>: rest_api_id,</span>
+<span id="cb49-65"><a href="#cb49-65" aria-hidden="true" tabindex="-1"></a>                <span class="st">'stage'</span>: stage,</span>
+<span id="cb49-66"><a href="#cb49-66" aria-hidden="true" tabindex="-1"></a>            },</span>
+<span id="cb49-67"><a href="#cb49-67" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb49-68"><a href="#cb49-68" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Very harsh rate limits since this will be public facing</span></span>
+<span id="cb49-69"><a href="#cb49-69" aria-hidden="true" tabindex="-1"></a>        throttle<span class="op">=</span>{</span>
+<span id="cb49-70"><a href="#cb49-70" aria-hidden="true" tabindex="-1"></a>            <span class="st">'burstLimit'</span>: <span class="dv">10</span>,</span>
+<span id="cb49-71"><a href="#cb49-71" aria-hidden="true" tabindex="-1"></a>            <span class="st">'rateLimit'</span>: <span class="fl">10.0</span></span>
+<span id="cb49-72"><a href="#cb49-72" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb49-73"><a href="#cb49-73" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Low daily limits for the same reason</span></span>
+<span id="cb49-74"><a href="#cb49-74" aria-hidden="true" tabindex="-1"></a>        quota<span class="op">=</span>{</span>
+<span id="cb49-75"><a href="#cb49-75" aria-hidden="true" tabindex="-1"></a>            <span class="st">'limit'</span>: <span class="dv">100</span>,</span>
+<span id="cb49-76"><a href="#cb49-76" aria-hidden="true" tabindex="-1"></a>            <span class="st">'period'</span>: <span class="st">'DAY'</span></span>
+<span id="cb49-77"><a href="#cb49-77" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb49-78"><a href="#cb49-78" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-79"><a href="#cb49-79" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-80"><a href="#cb49-80" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Associate the usage plan with the API key</span></span>
+<span id="cb49-81"><a href="#cb49-81" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> apigw_client.create_usage_plan_key(</span>
+<span id="cb49-82"><a href="#cb49-82" aria-hidden="true" tabindex="-1"></a>        usagePlanId<span class="op">=</span>usage_plan[<span class="st">'id'</span>],</span>
+<span id="cb49-83"><a href="#cb49-83" aria-hidden="true" tabindex="-1"></a>        keyId<span class="op">=</span>api_key[<span class="st">'id'</span>],</span>
+<span id="cb49-84"><a href="#cb49-84" aria-hidden="true" tabindex="-1"></a>        keyType<span class="op">=</span><span class="st">'API_KEY'</span></span>
+<span id="cb49-85"><a href="#cb49-85" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-86"><a href="#cb49-86" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb49-87"><a href="#cb49-87" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Grant API Gateway permission to invoke the Lambda function</span></span>
+<span id="cb49-88"><a href="#cb49-88" aria-hidden="true" tabindex="-1"></a>    source_arn <span class="op">=</span> <span class="ss">f'arn:aws:execute-api:</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>rest_api_id<span class="sc">}</span><span class="ss">/*'</span></span>
+<span id="cb49-89"><a href="#cb49-89" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> lambda_client.add_permission(</span>
+<span id="cb49-90"><a href="#cb49-90" aria-hidden="true" tabindex="-1"></a>        FunctionName<span class="op">=</span>function_name,</span>
+<span id="cb49-91"><a href="#cb49-91" aria-hidden="true" tabindex="-1"></a>        StatementId<span class="op">=</span><span class="st">'apigateway-lambda-invoke-permission'</span>,</span>
+<span id="cb49-92"><a href="#cb49-92" aria-hidden="true" tabindex="-1"></a>        Action<span class="op">=</span><span class="st">'lambda:InvokeFunction'</span>,</span>
+<span id="cb49-93"><a href="#cb49-93" aria-hidden="true" tabindex="-1"></a>        Principal<span class="op">=</span><span class="st">'apigateway.amazonaws.com'</span>,</span>
+<span id="cb49-94"><a href="#cb49-94" aria-hidden="true" tabindex="-1"></a>        SourceArn<span class="op">=</span>source_arn</span>
+<span id="cb49-95"><a href="#cb49-95" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-tags="[]" data-execution_count="90">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The URL by default will follow this pattern:</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="ss">f"https://</span><span class="sc">{</span>rest_api_id<span class="sc">}</span><span class="ss">.execute-api.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>stage<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">/"</span></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The URL by default will follow this pattern:</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="ss">f"https://</span><span class="sc">{</span>rest_api_id<span class="sc">}</span><span class="ss">.execute-api.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>stage<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">/"</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>https://9g9npm4j2h.execute-api.eu-west-1.amazonaws.com/test/predict/</code></pre>
 </div>
 </div>
 <p>Now we have an endpoint in production! Anyone, even you, can use it. To have skin in the game, I’m leaving this endpoint in public. Try out make a request yourself. Here is how you can do it:</p>
 <div class="cell" data-tags="[]" data-execution_count="91">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">WARNING</span><span class="co">: you shouldn't print or commit API keys in general</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This is for demonstration purposes only</span></span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"API key: </span><span class="sc">{</span>api_key[<span class="st">'value'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">WARNING</span><span class="co">: you shouldn't print or commit API keys in general</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This is for demonstration purposes only</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"API key: </span><span class="sc">{</span>api_key[<span class="st">'value'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>API key: Kqrrc4uDk5aFZpH0NLfXW4CvgZphPbrc731nY5Yx</code></pre>
 </div>
 </div>
 <div class="cell" data-tags="[]" data-execution_count="103">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Content-type'</span>: <span class="st">'application/json'</span>, </span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x-api-key'</span>: api_key[<span class="st">'value'</span>],</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>[<span class="st">"test atheism god"</span>])</span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Content-type'</span>: <span class="st">'application/json'</span>, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x-api-key'</span>: api_key[<span class="st">'value'</span>],</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>[<span class="st">"test atheism god"</span>])</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="103">
 <pre><code>['alt.atheism']</code></pre>
 </div>
 </div>
-<p><strong>Success!</strong> We have an endpoing serving our model at scale without a server.</p>
+<p><strong>Success!</strong> I have an endpoing serving my model at scale without the hassles and costs of running a webserver.</p>
 </section>
-</section>
-<section id="monitoring" class="level1">
-<h1>Monitoring</h1>
-<p>We can use AWS CloudWatch to monitor usage, check the logs and create alarms:</p>
+<section id="monitoring" class="level2">
+<h2 class="anchored" data-anchor-id="monitoring">Monitoring</h2>
+<p>We can use AWS CloudWatch to monitor Lambda and API gateway usage, check the logs and create alarms:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="cloudwatch.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Default CloudWatch dashboard for Lambda</figcaption>
 </figure>
 </div>
+<p>For ML metrics such as accuracy and problems such as covariate shigt, we would need a different solution. See this <a href="https://github.com/awesome-mlops/awesome-ml-monitoring">repo</a> for some suggestions. With AWS, you will only be able to monitor the “SRE” aspects of your deployment. Don’t ignore that part: the <a href="https://sre.google/sre-book/monitoring-distributed-systems/">Four Golden Signals</a> are as important to ML as they are to any other web application.</p>
+</section>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
@@ -38046,7 +38063,7 @@ Name: proportion, dtype: float64</code></pre>
 <p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your usecase, feel free to use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>I would like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, YOUR_NAME_HERE if you review it :).</p>
+<p>I would like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, <a href="https://www.linkedin.com/in/garcia-dias/">Rafael Garcia-Dias</a>, YOUR_NAME_HERE if you review it :).</p>
 
 
 </section>

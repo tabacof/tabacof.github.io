@@ -181,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 7, 2023</p>
+        <p class="date">June 4, 2023</p>
       </div>
     </div>
     
@@ -198,6 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#motivation-my-failed-side-hustle" id="toc-motivation-my-failed-side-hustle" class="nav-link active" data-scroll-target="#motivation-my-failed-side-hustle">Motivation: my failed side hustle</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   <li><a href="#real-time-vs-batch-models" id="toc-real-time-vs-batch-models" class="nav-link" data-scroll-target="#real-time-vs-batch-models">Real-time vs batch models</a>
   <ul class="collapse">
   <li><a href="#real-time-models" id="toc-real-time-models" class="nav-link" data-scroll-target="#real-time-models">Real-time models</a></li>
@@ -218,14 +219,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#deploying-the-model-using-serverless-aws" id="toc-deploying-the-model-using-serverless-aws" class="nav-link" data-scroll-target="#deploying-the-model-using-serverless-aws">Deploying the model using serverless AWS</a>
   <ul class="collapse">
-  <li><a href="#creating-iam-role" id="toc-creating-iam-role" class="nav-link" data-scroll-target="#creating-iam-role">Creating IAM role</a></li>
+  <li><a href="#iam-role" id="toc-iam-role" class="nav-link" data-scroll-target="#iam-role">IAM role</a></li>
   <li><a href="#lambda" id="toc-lambda" class="nav-link" data-scroll-target="#lambda">Lambda</a>
   <ul class="collapse">
   <li><a href="#docker-image" id="toc-docker-image" class="nav-link" data-scroll-target="#docker-image">Docker image</a></li>
   </ul></li>
   <li><a href="#api-gateway-1" id="toc-api-gateway-1" class="nav-link" data-scroll-target="#api-gateway-1">API Gateway</a></li>
   </ul></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul class="collapse">
+  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -235,18 +239,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>In this post, I will explore how to deploy a machine learning model using AWS Lambda and API Gateway. I will go over the following steps:</p>
+<p><em>Check out the notebook <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/serverless_model_deployment.ipynb">here</a>. Check out the PyData London 2023 slides <a href="https://docs.google.com/presentation/d/1A0M5sXA7ksBYByi0P3wfFOqqfKKWnKlcBf_17qakcYo/edit?usp=sharing">here</a>.</em></p>
+<p>In this post, I will explore how to deploy a real-time machine learning model using AWS Lambda and API Gateway. I will go over the following steps:</p>
 <ol type="1">
+<li>Real-time vs batch models</li>
+<li>AWS Lambda and API gateway for model deployment</li>
 <li>Building a Scikit-learn text classifier</li>
 <li>Creating a Docker image for Lambda including that model</li>
 <li>Creating a Lambda function using that image</li>
 <li>Creating an API Gateway endpoint using that Lambda</li>
 <li>Testing the endpont with POST requests</li>
 </ol>
-<p>Before we get to the technical details, why did I decide to write this blogpost?</p>
+<p>Before we get to the technical details, why did I decide to write this blogpost and make a PyData presentation?</p>
 <section id="motivation-my-failed-side-hustle" class="level2">
 <h2 class="anchored" data-anchor-id="motivation-my-failed-side-hustle">Motivation: my failed side hustle</h2>
-<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottomline ($). To deploy it, a machine learning engineer (MLE) had to work full-time for a months to build a model serving framework using Scala. To bridge the gap between Python and Scala, we serialized the models using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, which I had experience with? The company simply wouldn’t allow non-JVM servers in prod!</p>
+<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottomline ($). To deploy it, a machine learning engineer (MLE) had to work full-time for months to build a model serving framework using Scala. To bridge the gap between Python and Scala, we serialized the model using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, something I had experience with? The company simply wouldn’t allow non-JVM servers in prod!</p>
 <p>Later, I learned about AWS Lambda and realised I could have deployed the fraud model using it. It would run Python code, but not need a Python server or any associated infrastructure. This led me to the idea of creating a side hustle called Deploir:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -254,20 +261,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">Landing page of <a href="https://web.archive.org/web/20180830055216/https://www.deploir.com/">Deploir</a></figcaption>
 </figure>
 </div>
-<p>The idea was simple: a data scientist trains a model, generates a pickle, uploads the pickle to the website using a GUI, and 1 minute later they have an endpoint ready to be used at scale. Technically, the idea was sound and the prototype worked. Commercially, I couldn’t get one single conversion. Deploir taught me many valuable lessons about overbuilding (see this <a href="https://twitter.com/dvassallo/status/1630813028156579841">tweet</a> for a hilarious and maximalist view). But it also taught me how to deploy real-time models using serverless tech, which I intend to share with you now:</p>
+<p>The idea was simple: a data scientist trains a model, generates a pickle, uploads the pickle to the website using a GUI, and 1 minute later they have an endpoint ready to be used at scale. Technically, the idea was sound and the prototype worked. Commercially, I couldn’t get one single conversion. Deploir taught me many valuable lessons about overbuilding (see this <a href="https://twitter.com/dvassallo/status/1630813028156579841">tweet</a> for a hilarious and maximalist view). But it also taught me how to deploy real-time models using serverless tech, which I intend to share with you now.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Here is a summary of what we’re about to explore in this post:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="summary.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">From model to endpoint in 3 simple steps</figcaption>
 </figure>
 </div>
-<p>Before we get to the ML engineering, first I’d like to discuss different model deployments styles (real-time vs batch), how Lambda works and why serverless might be a good idea for <em>some</em> usecases and bad for others.</p>
+<p>Before we get to the ML engineering, first I’d like to discuss different model deployments modes (real-time vs batch), how Lambda and API gateway work and why serverless might be a good idea for <em>some</em> usecases and bad for others.</p>
 </section>
 <section id="real-time-vs-batch-models" class="level2">
 <h2 class="anchored" data-anchor-id="real-time-vs-batch-models">Real-time vs batch models</h2>
 <section id="real-time-models" class="level3">
 <h3 class="anchored" data-anchor-id="real-time-models">Real-time models</h3>
-<p>Real-time models serve predictions (almost) instantly. Usually, you serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and returns the prediction in the response using the JSON format. Then, the main application will do something with it, like approving a loan. If something fails, the application returns a HTTP error.</p>
+<p>Real-time models serve predictions (almost) instantly. Usually, you serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and return the prediction in the response using the JSON format. Then, the main application will do something with it, like approving a loan. If something fails, the application returns a HTTP error.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="real_time.jpg" class="img-fluid figure-img"></p>
@@ -275,12 +286,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 <p>There are many other choices to serve real-time predictions. You can use a different programming language other than Python by serializing the model in a language-agnostic framework like <a href="https://onnx.ai/">ONNX</a>. You can use FastAPI instead of Flask, which is becoming more common over time as FastAPI is blazing fast with great Pydantic integration. Or you might use a queue (e.g.&nbsp;Kafka) and handle requisitions asynchronously. The details change, but the principles are similar.</p>
-<p>Using real-time models has a couple of strong downsides:</p>
+<p>Real-time models have a couple of strong downsides:</p>
 <ul>
 <li>Need to build, manage and maintain a webserver</li>
-<li>Need to ensure the feature engineering pipelines are the same for training and serving (which is more difficult than it seems!)</li>
+<li>Need to guarantee the feature engineering pipelines are the same for training and serving (which is more difficult than it seems!)</li>
 </ul>
-<p>But it’s inevitable for some applications:</p>
+<p>But it’s inevitable for some applications where you only know what you need a prediction for in real-time:</p>
 <ul>
 <li>Credit card transaction fraud</li>
 <li>Customer support routing</li>
@@ -289,19 +300,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="batch-models" class="level3">
 <h3 class="anchored" data-anchor-id="batch-models">Batch models</h3>
-<p>Batch models serve predictions in batch (duh) and at a regular frequency, generally every 24h. Those models are typically embedded in the data pipelines or ETL process. The prototypical Python ETL today is a Spark pipeline controlled by Airflow that reads from production databases, makes all kind of data transformations, and somewhere along the way calls a model to make predictions, which are then pushed back to a database to be used by the main application in production:</p>
+<p>Batch models serve predictions in batch (duh) and generally at a regular frequency, typically every 24h. Those models are usually part of the data pipeline or ETL process. The prototypical batch ML architecture in Python is a Spark pipeline controlled by Airflow (or Snowflake controlled by DBT) that reads from production databases, makes all kind of data transformations, and somewhere along the way calls a model to make predictions, which are then pushed back to a database to be used by the main application in production:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="batch.jpg" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Typical batch ML application using Spark</figcaption>
 </figure>
 </div>
-<p>Use batch models if you can: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a webserver or endpoint, only a small step in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
+<p><strong>Use batch models if you can</strong>: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a webserver or endpoint, only one or few steps in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
 <p>What are some typical applications for a batch model? * Predicting churn in a B2B SaaS company * Calculating credit scores * Estimating Lifetime Value of users</p>
 </section>
 <section id="hybrid-models" class="level3">
 <h3 class="anchored" data-anchor-id="hybrid-models">Hybrid models</h3>
-<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can use them both. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behaviour and external information like credit scores, and another running real-time using that first model as a feature plus other variables which are only available at request time (such as the loan amount). This offloads most of the complexity to a batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting).</p>
+<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can get the best of both worlds by chaining them together. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behaviour and external information like credit scores and another model running in real-time that uses the batch model as a feature plus other variables which are only available at request time (such as the loan amount). This offloads most of the complexity to the batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting if the models re-use the same training examples).</p>
 </section>
 </section>
 <section id="aws-lambda" class="level2">
@@ -37708,8 +37719,8 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>ecr_image_name <span class="op">=</span> <span class="st">"predict-sklearn"</span></span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>account_id <span class="op">=</span> <span class="dv">339465038532</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="creating-iam-role" class="level2">
-<h2 class="anchored" data-anchor-id="creating-iam-role">Creating IAM role</h2>
+<section id="iam-role" class="level2">
+<h2 class="anchored" data-anchor-id="iam-role">IAM role</h2>
 <p>Just once, we need to create an IAM role that will allow the creation and invokation of Lambdas:</p>
 <div class="cell" data-tags="[]" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>iam_client <span class="op">=</span> boto3.client(<span class="st">'iam'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -38018,12 +38029,16 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can enable features such as file history. You can also update a model in production without touching the Lambda or Docker image.</p>
-<p>There are many other avenues of improvement: improving error handling in the Lambda function, adding a keep-alive for your endpoint, using the same API for multiple endpoints serving different models, model versioning using stages, etc.</p>
-<p>I also didn’t explore the scalability deeply: How would a load test look like? How would it compare with a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
+<p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
+<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda and endpoint, using the same API for multiple endpoints serving different models, model versioning using endpoint stages, etc.</p>
+<p>I also didn’t explore the scalability deeply: How would a load test look like? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
 <p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your usecase, feel free to use the code and let me know how it goes!</p>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
+<p>I would like to give my gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, YOUR_NAME_HERE if you review it :).</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

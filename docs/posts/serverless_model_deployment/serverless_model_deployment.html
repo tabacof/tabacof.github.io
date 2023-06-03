@@ -256,18 +256,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Building a Docker image for Lambda including that model</li>
 <li>Creating and invoking a Lambda function using that image</li>
 <li>Creating an API Gateway REST endpoint using that Lambda</li>
-<li>Testing the endpont with POST requests</li>
+<li>Testing the endpoint with POST requests</li>
 </ol>
-<p>Before we get to the technical details, why did I decide to write this blogpost and make a PyData presentation?</p>
+<p>Before we get to the technical details, why did I decide to write a post and make a PyData presentation about serverless deployment?</p>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
 <section id="first-data-scientist-role" class="level3">
 <h3 class="anchored" data-anchor-id="first-data-scientist-role">First data scientist role</h3>
-<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottomline ($). To deploy it, a machine learning engineer (MLE) had to work full-time for months to build a model serving framework using Scala. To bridge the gap between Python and Scala, which required models to be serialized using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, something I had experience with? The company simply wouldn’t allow non-JVM servers in prod!</p>
+<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottom line ($). To deploy it, a machine learning engineer (MLE) had to work full-time for months to build a model serving framework using Scala. To bridge the gap between Python and Scala, which required models to be serialized using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, something I had experience with? The company simply wouldn’t allow non-JVM servers in prod!</p>
 </section>
 <section id="failed-side-hustle" class="level3">
 <h3 class="anchored" data-anchor-id="failed-side-hustle">Failed side hustle</h3>
-<p>Later, I learned about AWS Lambda and realised I could have deployed the fraud model using it. It would run Python code, but not need a Python server or any associated infrastructure. This led me to the idea of creating a side hustle called Deploir:</p>
+<p>Later, I learned about AWS Lambda and realized I could have deployed the fraud model using it. It would run Python code, but not need a Python server or any associated infrastructure. This led me to the idea of creating a side hustle called Deploir:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="deploir.png" class="img-fluid figure-img"></p>
@@ -287,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 <p>This post will show how to go from a Scikit-learn model (but could be XGBoost, LightGBM, Tensorflow, etc) to a REST endpoint in three steps: Pickle the model, create a Lambda function to serve that model pickle, then wrap the function around a POST endpoint using API gateway.</p>
-<p>Before we get to the engineering, first I’d like to discuss different model deployments modes (real-time vs batch) to make it clear what I mean by “real-time”, how Lambda and API gateway work and why serverless might be a good idea for <em>some</em> usecases and bad for others.</p>
+<p>Before we get to the engineering, first I’d like to discuss different model deployments modes (real-time vs batch) to make it clear what I mean by “real-time”, how Lambda and API gateway work and why serverless might be a good idea for <em>some</em> use cases and bad for others.</p>
 </section>
 <section id="real-time-vs-batch-models" class="level2">
 <h2 class="anchored" data-anchor-id="real-time-vs-batch-models">Real-time vs batch models</h2>
@@ -303,7 +303,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>There are many other possibilities to serve real-time predictions. You can use a different programming language other than Python by serializing the model in a language-agnostic framework like <a href="https://onnx.ai/">ONNX</a>. You can use FastAPI instead of Flask, which is becoming more common over time as FastAPI is blazing fast with great Pydantic integration. Or you might use a queue (e.g.&nbsp;Kafka) and handle requisitions asynchronously. The details change, but the principles are similar.</p>
 <p>Real-time models have a couple of strong downsides:</p>
 <ul>
-<li>Need to build, manage and maintain a webserver</li>
+<li>Need to build, manage and maintain a web server</li>
 <li>Need to guarantee the feature engineering pipelines are the same for training and serving (which is more difficult than it seems!)</li>
 </ul>
 <p>But it’s inevitable for some applications where the most informative features are only received in real-time:</p>
@@ -322,7 +322,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">Typical batch ML application using Airflow/Spark</figcaption>
 </figure>
 </div>
-<p><strong>Use batch models if you can</strong>: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a webserver or endpoint, only one or a few steps in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
+<p><strong>Use batch models if you can</strong>: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a web server or endpoint, only one or a few steps in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
 <p>What are some typical applications for a batch model?</p>
 <ul>
 <li>Predicting churn in a B2B SaaS company</li>
@@ -332,7 +332,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="hybrid-models" class="level3">
 <h3 class="anchored" data-anchor-id="hybrid-models">Hybrid models</h3>
-<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can get the best of both worlds by chaining them together. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behaviour and external information like credit scores and another model running in real-time that uses the batch model as a feature plus other variables which are only available at request time (such as the loan amount). This offloads most of the complexity to the batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting and leakage if the models re-use the same training examples).</p>
+<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can get the best of both worlds by chaining them together. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behavior and external information like credit scores and another model running in real-time that uses the batch model as a feature plus other variables which are only available at request time (such as the loan amount). This offloads most of the complexity to the batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting and leakage if the models re-use the same training examples).</p>
 </section>
 </section>
 <section id="aws-lambda" class="level2">
@@ -369,7 +369,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Going serverless has many trade-offs. Check out <a href="https://www.serverless.com/blog/when-why-not-use-serverless">When (and why) not to go serverless</a> for a more general take. For ML deployment, we can be more precise about the trade-offs we face:</p>
 <section id="why-serverless-model-deployment" class="level3">
 <h3 class="anchored" data-anchor-id="why-serverless-model-deployment">Why serverless model deployment?</h3>
-<p>You should go serverless if you cannot bear the costs of maintaining a Python server, whether they are the server cloud costs if you’re a poor entrepeneur, the human-engineering costs if you need to build a fancy Scala server (when Python is not allowed), or the time costs of managing a server yourself. Here are some examples that all have applied to me personally to go with Lambda in the past:</p>
+<p>You should go serverless if you cannot bear the costs of maintaining a Python server, whether they are the server cloud costs if you’re a poor entrepreneur, the human-engineering costs if you need to build a fancy Scala server (when Python is not allowed), or the time costs of managing a server yourself. Here are some examples that all have applied to me personally to go with Lambda in the past:</p>
 <ul>
 <li>You are a data scientist (DS) and need to deploy a model but Python servers are not allowed</li>
 <li>You are an indie hacker and want to sell something with high scalability but no baseline costs</li>
@@ -427,7 +427,7 @@ extractor.
     =================   ==========</code></pre>
 </div>
 </div>
-<p>To make the model outputs more intepretable and illustrative, I will only work with the classes as strings (e.g.&nbsp;<code>"rec.sport.hockey"</code>) instead of numerical labels (e.g.&nbsp;<code>3</code>).</p>
+<p>To make the model outputs more interpretable and illustrative, I will only work with the classes as strings (e.g.&nbsp;<code>"rec.sport.hockey"</code>) instead of numerical labels (e.g.&nbsp;<code>3</code>).</p>
 <div class="cell" data-tags="[]" data-execution_count="40">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_dataset.data</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> np.array([train_dataset.target_names[i] <span class="cf">for</span> i <span class="kw">in</span> train_dataset.target])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -503,7 +503,7 @@ talk.religion.misc          0.033324
 Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
-<p>Great, this means choosing the most common class would only yield 5% accuracy. We can also look at the literature and see that a much more sophisticated approach using Deep Learning achieves 89% (<a href="https://arxiv.org/abs/2105.05727">ref</a>), not that far from our simple bag-of-words + linear classifier. Now let’s take a look at some predictions:</p>
+<p>Great, this means choosing the most common class would only yield 5% accuracy. We can also look at the literature and see that a much more sophisticated approach using <a href="https://arxiv.org/abs/2105.05727">Deep Learning achieves 89%</a>, not that far from our simple bag-of-words + linear classifier. Now let’s take a look at some predictions:</p>
 <div class="cell" data-tags="[]" data-execution_count="48">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pipe.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="48">
@@ -37727,7 +37727,7 @@ Name: proportion, dtype: float64</code></pre>
 <section id="pickle" class="level3">
 <h3 class="anchored" data-anchor-id="pickle">Pickle</h3>
 <p>Finally, let’s save this model for deployment using <a href="https://github.com/cloudpipe/cloudpickle">Cloudpickle</a>. Note that you cannot use the standard library Pickle in this case, since we created a custom class! Cloudpickle works the same as the regular pickle, but it saves custom classes as well in the pickle. Note that pickles are in general an <strong>unsafe</strong> form of model sharing since they allow for execution of arbitrary code. <em>Only open pickles of good provenance</em>.</p>
-<p>If pickling is infeasible or too unsafe for your usecase, you can use a model serialization framework like the aforementioned <a href="https://github.com/combust/mleap">MLeap</a> or <a href="https://onnx.ai/">ONNX</a>.</p>
+<p>If pickling is infeasible or too unsafe for your use case, you can use a model serialization framework like the aforementioned <a href="https://github.com/combust/mleap">MLeap</a> or <a href="https://onnx.ai/">ONNX</a>.</p>
 <div class="cell" data-tags="[]" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> <span class="st">'model.pickle'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -37750,7 +37750,7 @@ Name: proportion, dtype: float64</code></pre>
 </div>
 <section id="iam-role" class="level2">
 <h2 class="anchored" data-anchor-id="iam-role">IAM role</h2>
-<p>In a real application, you probably want to use <a href="https://www.terraform.io/">Terraform</a> to manage your infrastructure and cloud permission. For our standalone example, we can create manually an IAM role that will allow the creation and invokation of Lambdas:</p>
+<p>In a real application, you probably want to use <a href="https://www.terraform.io/">Terraform</a> to manage your infrastructure and cloud permission. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
 <div class="cell" data-tags="[]" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>iam_client <span class="op">=</span> boto3.client(<span class="st">'iam'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -37796,7 +37796,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="lambda" class="level2">
 <h2 class="anchored" data-anchor-id="lambda">Lambda</h2>
-<p>As explained before, there are two ways to create a Lambda function: just zipping all the relevant files together or via a Docker image. The easiest way in general is using a zip file, but the standard Python image won’t contain the necessary libraries for ML such as Numpy or Sklearn. While possible to add the libraries to the zip, it’s easier to use a Dockerfile.</p>
+<p>As explained before, there are two ways to create a Lambda function: just zipping all the relevant files together or via a Docker image. The easiest way in general is using a zip file, but the standard Python image won’t contain the necessary libraries for ML such as Numpy or Scikit-learn. While possible to add the libraries to the zip, it’s easier to use a Dockerfile.</p>
 <p>We just need to define a Dockerfile, a requirements.txt and the predict.py script that will actually be called by the Lambda:</p>
 <ul>
 <li><a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/Dockerfile">Dockerfile</a>: the Docker image definition</li>
@@ -38070,7 +38070,7 @@ Name: proportion, dtype: float64</code></pre>
 <pre><code>['rec.autos', 'rec.sport.hockey']</code></pre>
 </div>
 </div>
-<p><strong>Success!</strong> We have an endpoing serving the model at scale without the hassles and costs of running a webserver.</p>
+<p><strong>Success!</strong> We have an endpoint serving the model at scale without the hassles and costs of running a web server.</p>
 </section>
 <section id="monitoring" class="level2">
 <h2 class="anchored" data-anchor-id="monitoring">Monitoring</h2>
@@ -38088,8 +38088,8 @@ Name: proportion, dtype: float64</code></pre>
 <h1>Conclusion</h1>
 <p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
 <p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda and endpoint, using the same API for multiple endpoints serving different models, model versioning using endpoint stages, etc.</p>
-<p>I also didn’t explore the scalability deeply: How can we reserve Lambda concurrency? How Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
-<p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your usecase, feel free to use the code and let me know how it goes!</p>
+<p>I also didn’t explore the scalability deeply: How can we reserve Lambda concurrency? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
+<p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your use case, feel free to use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
 <p>I’d like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, <a href="https://www.linkedin.com/in/garcia-dias/">Rafael Garcia-Dias</a>, and <a href="https://www.linkedin.com/in/ramongtx/">Ramon Maciel</a>. At the time of writing of this post, Guilherme and Ramon are AWS engineers, but this post does not officially reflect any position from AWS.</p>

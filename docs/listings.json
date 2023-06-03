@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/serverless_model_deployment/serverless_model_deployment.html",
       "/posts/name_classification/name_classification.html",
       "/posts/hierarchy_needs_ml/index.html",
       "/posts/neurips_2018/index.html",

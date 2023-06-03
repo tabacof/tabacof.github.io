@@ -163,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Serverless ML model deployment</h1>
+      <h1 class="title">Deploying Real-Time Machine Learning Models with Serverless AWS</h1>
             <p class="subtitle lead">Using AWS Lambda and API gateway</p>
                       </div>
   </div>
@@ -38061,13 +38061,6 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="103">
 <pre><code>['alt.atheism']</code></pre>
-</div>
-</div>
-<div class="cell" data-tags="[]" data-execution_count="121">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>[<span class="st">"cars are fun"</span>, <span class="st">"hockey sucks"</span>])</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="121">
-<pre><code>['rec.autos', 'rec.sport.hockey']</code></pre>
 </div>
 </div>
 <p><strong>Success!</strong> We have an endpoint serving the model at scale without the hassles and costs of running a web server.</p>

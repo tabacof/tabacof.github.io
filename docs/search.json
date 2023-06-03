@@ -4,7 +4,7 @@
     "href": "posts/serverless_model_deployment/serverless_model_deployment.html",
     "title": "Deploying Real-Time Machine Learning Models with Serverless AWS",
     "section": "",
-    "text": "Check out the notebook here. Check out the PyData London 2023 slides here.\nIn this post, I will explore how to deploy a real-time machine learning model using AWS Lambda and API Gateway. I will go over the following points:\nBefore we get to the technical details, why did I decide to write a post and make a PyData presentation about serverless deployment?"
+    "text": "In this post, I will explore how to deploy a real-time machine learning model using AWS Lambda and API Gateway. I will go over the following points:\nIf you just want the reproducible code, check out the raw notebook here.\nBefore we get to the technical details, why did I decide to write a post and make a PyData presentation about serverless deployment?"
   },
   {
     "objectID": "posts/serverless_model_deployment/serverless_model_deployment.html#motivation",

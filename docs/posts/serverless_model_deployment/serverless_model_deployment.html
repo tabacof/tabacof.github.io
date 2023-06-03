@@ -104,15 +104,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Serverless model deployment">
 <meta property="og:description" content="Using AWS Lambda and API gateway">
-<meta property="og:image" content="https://tabacof.github.io/posts/serverless_model_deployment/deploir.png">
+<meta property="og:image" content="https://tabacof.github.io/posts/serverless_model_deployment/api_gateway.jpg">
 <meta property="og:site-name" content="Pedro Tabacof's blog">
-<meta property="og:image:height" content="648">
-<meta property="og:image:width" content="1107">
 <meta name="twitter:title" content="Serverless model deployment">
 <meta name="twitter:description" content="Using AWS Lambda and API gateway">
-<meta name="twitter:image" content="https://tabacof.github.io/posts/serverless_model_deployment/deploir.png">
-<meta name="twitter:image-height" content="648">
-<meta name="twitter:image-width" content="1107">
+<meta name="twitter:image" content="https://tabacof.github.io/posts/serverless_model_deployment/api_gateway.jpg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -247,7 +243,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p><em>Check out the notebook <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/serverless_model_deployment.ipynb">here</a>. Check out the PyData London 2023 slides <a href="https://docs.google.com/presentation/d/1A0M5sXA7ksBYByi0P3wfFOqqfKKWnKlcBf_17qakcYo/edit?usp=sharing">here</a>.</em></p>
 <p>In this post, I will explore how to deploy a real-time machine learning model using AWS Lambda and API Gateway. I will go over the following points:</p>
 <ol type="1">
 <li>Real-time vs batch models</li>
@@ -258,6 +253,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Creating an API Gateway REST endpoint using that Lambda</li>
 <li>Testing the endpoint with POST requests</li>
 </ol>
+<p>If you just want the reproducible code, check out the raw notebook <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/serverless_model_deployment.ipynb">here</a>.</p>
 <p>Before we get to the technical details, why did I decide to write a post and make a PyData presentation about serverless deployment?</p>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>

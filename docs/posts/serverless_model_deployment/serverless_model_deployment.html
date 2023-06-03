@@ -359,6 +359,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">API gateway: the lifetime of a request</figcaption>
 </figure>
 </div>
+<p>Note that there are two situations where you wouldn’t need to use API gateway:</p>
+<ol type="1">
+<li>If you only call the Lambda inside your org, so you can invoke it directly with <code>boto3</code> or another AWS library</li>
+<li>If you use <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html">Lambda function URLs</a> to distribute your Lambda, which I wouldn’t recommend since API Gateway is already simple enough to use, quite cheap, and offers you more control</li>
+</ol>
 </section>
 <section id="trade-offs" class="level2">
 <h2 class="anchored" data-anchor-id="trade-offs">Trade-offs</h2>
@@ -37746,7 +37751,7 @@ Name: proportion, dtype: float64</code></pre>
 </div>
 <section id="iam-role" class="level2">
 <h2 class="anchored" data-anchor-id="iam-role">IAM role</h2>
-<p>In a real application, you probably want to use <a href="https://www.terraform.io/">Terraform</a> to manage your infrastructure and cloud permission. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
+<p>In a real application, you probably want to use Terraform or AWS CloudFormation to manage your infrastructure and cloud permission. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
 <div class="cell" data-tags="[]" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>iam_client <span class="op">=</span> boto3.client(<span class="st">'iam'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>

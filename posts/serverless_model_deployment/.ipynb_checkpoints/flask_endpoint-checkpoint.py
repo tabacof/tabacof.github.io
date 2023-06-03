@@ -3,18 +3,14 @@ import cloudpickle
 
 app = Flask(__name__)
 
-# Load your model at startup
-try:
-    with open('model.pickle', 'rb') as f:
-        model = cloudpickle.load(f)
-except (OSError, IOError) as e:
-    print(f"Error: {e}")
-    model = None
+# Load model once at startup
+with open('model.pickle', 'rb') as f:
+    model = cloudpickle.load(f)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.get_json()
     try:
+        data = request.get_json()
         predictions = model.predict(data).tolist()
         return jsonify({'predictions': predictions})
     except Exception as e:

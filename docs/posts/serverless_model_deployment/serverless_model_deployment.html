@@ -37729,7 +37729,7 @@ Name: proportion, dtype: float64</code></pre>
 <section id="pickle" class="level3">
 <h3 class="anchored" data-anchor-id="pickle">Pickle</h3>
 <p>Finally, let’s save this model for deployment using <a href="https://github.com/cloudpipe/cloudpickle">Cloudpickle</a>. Note that you cannot use the standard library Pickle in this case, since we created a custom class! Cloudpickle works the same way as the regular pickle, but it saves custom classes as well in the pickle. Note that pickles are in general an <strong>unsafe</strong> form of model sharing since they allow for execution of arbitrary code. <em>Only open pickles of good provenance</em>.</p>
-<p>If pickling is infeasible or too unsafe for your use case, you can use a model serialization framework like the aforementioned <a href="https://github.com/combust/mleap">MLeap</a> or <a href="https://onnx.ai/">ONNX</a>.</p>
+<p>If pickling is infeasible or too unsafe for your use case, you can use a model serialization framework like the aforementioned <a href="https://github.com/combust/mleap">MLeap</a> and <a href="https://onnx.ai/">ONNX</a>.</p>
 <div class="cell" data-tags="[]" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> <span class="st">'model.pickle'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -38036,7 +38036,7 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb49-94"><a href="#cb49-94" aria-hidden="true" tabindex="-1"></a>        SourceArn<span class="op">=</span>source_arn</span>
 <span id="cb49-95"><a href="#cb49-95" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="90">
+<div class="cell" data-tags="[]" data-execution_count="214">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The URL by default will follow this pattern:</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="ss">f"https://</span><span class="sc">{</span>rest_api_id<span class="sc">}</span><span class="ss">.execute-api.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>stage<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">/"</span></span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -38053,7 +38053,7 @@ Name: proportion, dtype: float64</code></pre>
 <pre><code>API key: Kqrrc4uDk5aFZpH0NLfXW4CvgZphPbrc731nY5Yx</code></pre>
 </div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="180">
+<div class="cell" data-tags="[]" data-execution_count="212">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Content-type'</span>: <span class="st">'application/json'</span>, </span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x-api-key'</span>: api_key[<span class="st">'value'</span>],</span>
@@ -38061,7 +38061,7 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>example)</span>
 <span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="180">
+<div class="cell-output cell-output-display" data-execution_count="212">
 <pre><code>['alt.atheism']</code></pre>
 </div>
 </div>
@@ -38082,8 +38082,8 @@ Name: proportion, dtype: float64</code></pre>
 <section id="limitations-and-conclusion" class="level1">
 <h1>Limitations and conclusion</h1>
 <p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
-<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda, model versioning using endpoint stages, etc. I also didn’t explore scalability deeply: How can we provision/reserve Lambda concurrency and what is their difference? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
-<p>Finally, I ignored the <a href="https://www.serverless.com/">Serverless</a> framework, which aim to automate and abstract many steps shown here. I tried using Serverless for Deploir and it wasn’t a good match, but a lot has changed since then.</p>
+<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda, model versioning using endpoint stages, etc. I also didn’t explore scalability deeply: How can we provision Lambda concurrency? What is the difference between reserved and provisioned concurrency? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave the latter as an exercise to the reader.</p>
+<p>Finally, I ignored the <a href="https://www.serverless.com/">Serverless</a> framework, which aims to automate and abstract many steps shown here. I tried using Serverless for Deploir and it wasn’t a good match, but a lot has changed since then. I also ignored serverless inference using <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.htmlhttps://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html">SageMaker</a>, which provides a similar solution to what I described here. SageMaker offers some advantages, like pre-built Docker images for particular libraries and the model registry, with the disadvantage of being less customizable since you don’t write the Lambda code yourself.</p>
 <p>To conclude, I presented one way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your use case, feel free to re-use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>

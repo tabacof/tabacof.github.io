@@ -11,7 +11,7 @@
 <meta name="keywords" content="model deployment, AWS, Lambda, API gateway, MLOps">
 <meta name="description" content="Serverless model deployment with AWS Lambda and API gateway">
 
-<title>Serverless model deployment</title>
+<title>Serverless ML Model Deployment</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -102,11 +102,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Serverless model deployment">
+<meta property="og:title" content="Serverless ML Model Deployment">
 <meta property="og:description" content="Using AWS Lambda and API gateway">
 <meta property="og:image" content="https://tabacof.github.io/posts/serverless_model_deployment/api_gateway.jpg">
 <meta property="og:site-name" content="Pedro Tabacof's blog">
-<meta name="twitter:title" content="Serverless model deployment">
+<meta name="twitter:title" content="Serverless ML Model Deployment">
 <meta name="twitter:description" content="Using AWS Lambda and API gateway">
 <meta name="twitter:image" content="https://tabacof.github.io/posts/serverless_model_deployment/api_gateway.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -159,7 +159,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Deploying Real-Time Machine Learning Models with Serverless AWS</h1>
+      <h1 class="title">Deploying Real-Time ML Models with Serverless AWS</h1>
             <p class="subtitle lead">Using AWS Lambda and API gateway</p>
                       </div>
   </div>
@@ -352,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="api-gateway" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway">API Gateway</h2>
-<p>API Gateway allows you to wrap an endpoint around a Lambda function. There is no code involved, only configuration. You just specify you want to create a REST API with a POST endpoint using a certain Lambda function and the integration is done by AWS.</p>
+<p>API Gateway allows you to wrap an endpoint around a Lambda function. There is no code involved, only configuration. You just specify you want to create a REST API with a POST endpoint using a certain Lambda function and the integration is done by AWS. <em>You get one million requests for free every month</em> and for subsequent use you pay $3.5 per million requests.</p>
 <p>Use API Gateway to distribute and control usage of Lambdas inside and outside your org. You can define API keys to use the endpoint with associated usage plans where you can set rate limits, throttling and quotas. The integration between API gateway and Lambda is seamless: it will pass along the request payload to the Lambda function <code>event</code> argument and it will return the request response from the Lambda return dictionary:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -381,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="why-not" class="level3">
 <h3 class="anchored" data-anchor-id="why-not">Why not?</h3>
 <p>You should <strong>choose <a href="https://boringtechnology.club/">boring technology</a> by default</strong>. If you can use Flask for your real-time model, do it! There will be a lot more resources, examples, and people with tacit knowledge and experience out there.</p>
-<p>If your application has tight latency requirements, say you work with real-time ad auctions, the latency spikes from Lambda cold start might cause issues. You can prevent this by keeping the function warm manually, but this is hackish without any guarantees from AWS. You can reserve concurrency, but you will pay for it, so the solution becomes less cost-effective.</p>
+<p>If your application has tight latency requirements, say you work with real-time ad auctions, the latency spikes from Lambda cold start might cause issues. You can prevent this by keeping the function warm manually, but this is hackish without any guarantees from AWS. You can provision concurrency, but you will pay for it, so the solution becomes less cost-effective.</p>
 <p>If you operate at <a href="https://world.hey.com/dhh/even-amazon-can-t-make-sense-of-serverless-or-microservices-59625580">absurd scales like Prime Video</a>, Lambda might not be cost-effective anymore since there are slight inefficiencies in the serverless model that are only apparent at scale. However, if the load varies a lot and unpredictably, Lambda can still outperform traditional web servers.</p>
 <p>If you are at the limits of technology, say running LLMs inference on GPUs, it’s not even possible to start using Lambda in the first place.</p>
 </section>
@@ -37921,7 +37921,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="api-gateway-1" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway-1">API Gateway</h2>
-<p>To create a POST endpoint on API gateway, you will need a few more commands. While the commands below seem overly bureaucratic and hard to remember, consider that you only have to do it once and you can always go to <sub>ChatGPT</sub> the documentation for help.</p>
+<p>To create a POST endpoint on API gateway, you will need a few more commands. While the commands below seem overly bureaucratic and hard to remember, consider that you only have to do it once and you can always go to <del>ChatGPT</del> the documentation for help.</p>
 <div class="cell" data-tags="[]" data-execution_count="34">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the API Gateway client</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>apigw_client <span class="op">=</span> boto3.client(<span class="st">'apigateway'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -38082,7 +38082,7 @@ Name: proportion, dtype: float64</code></pre>
 <section id="limitations-and-conclusion" class="level1">
 <h1>Limitations and conclusion</h1>
 <p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
-<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda, model versioning using endpoint stages, etc. I also didn’t explore scalability deeply: How can we reserve Lambda concurrency? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
+<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda, model versioning using endpoint stages, etc. I also didn’t explore scalability deeply: How can we provision/reserve Lambda concurrency and what is their difference? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
 <p>Finally, I ignored the <a href="https://www.serverless.com/">Serverless</a> framework, which aim to automate and abstract many steps shown here. I tried using Serverless for Deploir and it wasn’t a good match, but a lot has changed since then.</p>
 <p>To conclude, I presented one way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your use case, feel free to re-use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">

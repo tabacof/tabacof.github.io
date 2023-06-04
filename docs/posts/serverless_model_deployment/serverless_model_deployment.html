@@ -230,7 +230,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#api-gateway-1" id="toc-api-gateway-1" class="nav-link" data-scroll-target="#api-gateway-1">API Gateway</a></li>
   <li><a href="#monitoring" id="toc-monitoring" class="nav-link" data-scroll-target="#monitoring">Monitoring</a></li>
   </ul></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <li><a href="#limitations-and-conclusion" id="toc-limitations-and-conclusion" class="nav-link" data-scroll-target="#limitations-and-conclusion">Limitations and conclusion</a>
   <ul class="collapse">
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
   </ul></li>
@@ -259,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
 <section id="first-data-scientist-role" class="level3">
 <h3 class="anchored" data-anchor-id="first-data-scientist-role">First data scientist role</h3>
-<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottom line ($). To deploy it, a machine learning engineer (MLE) had to work full-time for months to build a model serving framework using Scala. To bridge the gap between Python and Scala, which required models to be serialized using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, something I had experience with? The company simply wouldn’t allow non-JVM servers in prod!</p>
+<p>In my first data scientist role, I was tasked with shipping a credit card fraud model. Long story short, I built a good enough model using PySpark that would have significant impact on the bottom line ($). To deploy it, a machine learning engineer (MLE) had to work full-time for months to build a model serving framework using Scala. To bridge the gap between Python and Scala, the models had to be serialized using <a href="https://github.com/combust/mleap">MLeap</a>. Why not use a Python server, something I had experience with? The company simply wouldn’t allow non-JVM servers in prod! There had to be a better way.</p>
 </section>
 <section id="failed-side-hustle" class="level3">
 <h3 class="anchored" data-anchor-id="failed-side-hustle">Failed side hustle</h3>
@@ -282,14 +282,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">From model to endpoint in 3 simple steps</figcaption>
 </figure>
 </div>
-<p>This post will show how to go from a Scikit-learn model (but could be XGBoost, LightGBM, Tensorflow, etc) to a REST endpoint in three steps: Pickle the model, create a Lambda function to serve that model pickle, then wrap the function around a POST endpoint using API gateway.</p>
+<p>I will show how to go from a Scikit-learn model (but could be XGBoost, LightGBM, Tensorflow, etc) to a REST endpoint in three steps: Pickle the model, create a Lambda function to serve that model pickle, then wrap the function around a POST endpoint using API gateway.</p>
 <p>Before we get to the engineering, first I’d like to discuss different model deployments modes (real-time vs batch) to make it clear what I mean by “real-time”, how Lambda and API gateway work and why serverless might be a good idea for <em>some</em> use cases and bad for others.</p>
 </section>
 <section id="real-time-vs-batch-models" class="level2">
 <h2 class="anchored" data-anchor-id="real-time-vs-batch-models">Real-time vs batch models</h2>
 <section id="real-time-models" class="level3">
 <h3 class="anchored" data-anchor-id="real-time-models">Real-time models</h3>
-<p>Real-time models serve predictions (almost) instantly. Usually, they serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and return the prediction as a JSON. Then, the main application will do something with it, like approving a loan. If something fails, the application returns a HTTP error. Check out this minimal <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">example</a>.</p>
+<p>Real-time models serve predictions (almost) instantly. Usually, they serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and return the prediction as a JSON HTTP response. Then, the main application will do something with it, like approving a loan. If something fails, the application returns a HTTP error. Check out this minimal <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">example</a>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="real_time.jpg" class="img-fluid figure-img"></p>
@@ -308,6 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Real-time bidding for ad auctions</li>
 <li>Chatbots</li>
 </ul>
+<p>Be sure to test your need for a real-time model empirically: train a model with just day old features and see how its performance compares to a model with real-time features. You might be surprised by how far “stale” features go.</p>
 </section>
 <section id="batch-models" class="level3">
 <h3 class="anchored" data-anchor-id="batch-models">Batch models</h3>
@@ -328,19 +329,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="hybrid-models" class="level3">
 <h3 class="anchored" data-anchor-id="hybrid-models">Hybrid models</h3>
-<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can get the best of both worlds by chaining them together. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behavior and external information like credit scores and another model running in real-time that uses the batch model as a feature plus other variables which are only available at request time (such as the loan amount). This offloads most of the complexity to the batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting and leakage if the models re-use the same training examples).</p>
+<p>Since real-time models are sometimes inevitable (but be sure to test this assumption!) and batch models are easier to maintain, you can get the best of both worlds by chaining them together. For example, for a loan application, you can have a credit risk model that runs in batch based on past user behavior and external information like credit scores and another model running in real-time that uses the batch model as a feature plus other variables which are only available online (such as the loan amount). This offloads most of the complexity to the batch model, with the downside of having two models instead of one and having one depend on the other (so watch out for overfitting and leakage if the models re-use the same training examples).</p>
 </section>
 </section>
 <section id="aws-lambda" class="level2">
 <h2 class="anchored" data-anchor-id="aws-lambda">AWS Lambda</h2>
 <p>AWS Lambda allows you to run functions on the cloud without having to manage webservers. You send a Python function to AWS and, one minute later, can invoke it from anywhere. Lambda has strong but not unlimited scalability, so you generally don’t have to worry about up or downscaling servers to handle variable load.</p>
-<p>Most importantly, you only pay for what you use. The cost is proportional to the time spent in each function call. The price varies by other things such as memory used and network traffic, but you can use the following rule-of-thumb as a ballpark estimate for a typical workload: <strong>~1M requests → ~$1</strong>.</p>
+<p>Most importantly, you only pay for what you use. The cost is proportional to the time spent in each function call. The price varies by other things such as memory used and network traffic, but you can use the following rule-of-thumb as a ballpark estimate for a typical workload: <strong>~1M requests → $1</strong>.</p>
 <p>You can create Lambda functions manually in the web interface or programatically using <code>boto3</code>. I strongly recommend the latter: you get reproducibility and more explicit control. There are two ways to create a Lambda function:</p>
 <ol type="1">
 <li>Zipping your script and artefacts (including library dependencies) into a file</li>
 <li>Creating a Docker image with your script and artefacts</li>
 </ol>
-<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the standard Lambda limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> file and the limits are much looser. Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
+<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the standard Lambda limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> file and the limits are much looser (the image can be up to 10g). Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
 <p>When I first built Deploir, only zipping was available. One of my technical breakthroughs was compressing the numerical and ML libs to make them fit the file size and memory constraints. I hope nobody else has to experience the same pain again!</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -381,16 +382,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="why-not">Why not?</h3>
 <p>You should <strong>choose <a href="https://boringtechnology.club/">boring technology</a> by default</strong>. If you can use Flask for your real-time model, do it! There will be a lot more resources, examples, and people with tacit knowledge and experience out there.</p>
 <p>If your application has tight latency requirements, say you work with real-time ad auctions, the latency spikes from Lambda cold start might cause issues. You can prevent this by keeping the function warm manually, but this is hackish without any guarantees from AWS. You can reserve concurrency, but you will pay for it, so the solution becomes less cost-effective.</p>
-<p>If you operate at <a href="https://world.hey.com/dhh/even-amazon-can-t-make-sense-of-serverless-or-microservices-59625580">absurd scales</a>, Lambda is not cost-effective anymore since there are slight inefficiencies in the serverless model that are only apparent at scale.</p>
-<p>If you are at the limits of technology, say running LLMs inference on GPUs, it’s not even possible to start using Lambda.</p>
+<p>If you operate at <a href="https://world.hey.com/dhh/even-amazon-can-t-make-sense-of-serverless-or-microservices-59625580">absurd scales like Prime Video</a>, Lambda might not be cost-effective anymore since there are slight inefficiencies in the serverless model that are only apparent at scale. However, if the load varies a lot and unpredictably, Lambda can still outperform traditional web servers.</p>
+<p>If you are at the limits of technology, say running LLMs inference on GPUs, it’s not even possible to start using Lambda in the first place.</p>
 </section>
 </section>
 <section id="model-example" class="level1">
 <h1>Model example</h1>
-<p>Now let’s go over the process of building and deploying a serverless model. First, we need a model:</p>
+<p>Now let’s go over the process of building and deploying a serverless model. First, we need to train a ML model:</p>
 <section id="scikit-learn-text-classifier" class="level2">
 <h2 class="anchored" data-anchor-id="scikit-learn-text-classifier">Scikit-learn text classifier</h2>
-<p>I will build a text classifier using Scikit-learn. If you just want to see the AWS part, skip to the next section. First, I load the 20 Newsgroups dataset:</p>
+<p>Let’s build a text classifier using Scikit-learn. If you just want to see the AWS part, skip to the next section. First, I load the 20 Newsgroups dataset:</p>
 <div class="cell" data-tags="[]" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="op">=</span> fetch_20newsgroups(subset<span class="op">=</span><span class="st">'train'</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>test_dataset <span class="op">=</span> fetch_20newsgroups(subset<span class="op">=</span><span class="st">'test'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -37727,7 +37728,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="pickle" class="level3">
 <h3 class="anchored" data-anchor-id="pickle">Pickle</h3>
-<p>Finally, let’s save this model for deployment using <a href="https://github.com/cloudpipe/cloudpickle">Cloudpickle</a>. Note that you cannot use the standard library Pickle in this case, since we created a custom class! Cloudpickle works the same as the regular pickle, but it saves custom classes as well in the pickle. Note that pickles are in general an <strong>unsafe</strong> form of model sharing since they allow for execution of arbitrary code. <em>Only open pickles of good provenance</em>.</p>
+<p>Finally, let’s save this model for deployment using <a href="https://github.com/cloudpipe/cloudpickle">Cloudpickle</a>. Note that you cannot use the standard library Pickle in this case, since we created a custom class! Cloudpickle works the same way as the regular pickle, but it saves custom classes as well in the pickle. Note that pickles are in general an <strong>unsafe</strong> form of model sharing since they allow for execution of arbitrary code. <em>Only open pickles of good provenance</em>.</p>
 <p>If pickling is infeasible or too unsafe for your use case, you can use a model serialization framework like the aforementioned <a href="https://github.com/combust/mleap">MLeap</a> or <a href="https://onnx.ai/">ONNX</a>.</p>
 <div class="cell" data-tags="[]" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> <span class="st">'model.pickle'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -37751,7 +37752,7 @@ Name: proportion, dtype: float64</code></pre>
 </div>
 <section id="iam-role" class="level2">
 <h2 class="anchored" data-anchor-id="iam-role">IAM role</h2>
-<p>In a real application, you probably want to use Terraform or AWS CloudFormation to manage your infrastructure and cloud permission. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
+<p>In a real application, you probably want to use Terraform or AWS CloudFormation to manage your infrastructure and cloud permissions. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
 <div class="cell" data-tags="[]" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>iam_client <span class="op">=</span> boto3.client(<span class="st">'iam'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -37841,7 +37842,7 @@ Name: proportion, dtype: float64</code></pre>
 <p>Most of the function above is error handling. Essentially, we are loading a model pickle outside the function (so that it’s cached across multiple calls) and calling <code>model.predict</code> inside it.</p>
 <section id="docker-image" class="level3">
 <h3 class="anchored" data-anchor-id="docker-image">Docker image</h3>
-<p>We need to login to ECR (Elastic Container Registry), build the image, tag and then and push it to the registry. Then, this image will be accessible by any AWS service.</p>
+<p>We need to login to ECR (Elastic Container Registry), build the image, tag and then and push it to the registry. Then, this image will be accessible by any AWS service:</p>
 <div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-tags="[]" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log in to AWS ECR</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>os.system(<span class="ss">f"aws ecr get-login-password --region </span><span class="sc">{</span>region<span class="sc">}</span><span class="ss"> | docker login --username AWS --password-stdin </span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">.dkr.ecr.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com"</span>)</span>
@@ -37894,11 +37895,11 @@ Name: proportion, dtype: float64</code></pre>
 <div class="cell" data-execution_count="34">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>time.sleep(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="116">
+<div class="cell" data-tags="[]" data-execution_count="143">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the event to pass to the Lambda function</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> [<span class="st">"""Did that FAQ ever got modified to re-define strong atheists as not those who</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="st">| assert the nonexistence of God, but as those who assert that they BELIEVE in </span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="st">| the nonexistence of God?"""</span>]</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> [<span class="st">"""Did that FAQ ever got modified to re-define strong atheists as not those who </span><span class="ch">\</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="st">assert the nonexistence of God, but as those who assert that they BELIEVE in </span><span class="ch">\</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="st">the nonexistence of God?"""</span>]</span>
 <span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Invoke the Lambda function</span></span>
 <span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> lambda_client.invoke(</span>
@@ -37920,7 +37921,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="api-gateway-1" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway-1">API Gateway</h2>
-<p>To create a POST endpoint on API gateway, you will need a few more commands. While the commands below seem overly bureaucratic and hard to remember, consider that you only have to do it once and you can always go to ChatGPT for help.</p>
+<p>To create a POST endpoint on API gateway, you will need a few more commands. While the commands below seem overly bureaucratic and hard to remember, consider that you only have to do it once and you can always go to <sub>ChatGPT</sub> the documentation for help.</p>
 <div class="cell" data-tags="[]" data-execution_count="34">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the API Gateway client</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>apigw_client <span class="op">=</span> boto3.client(<span class="st">'apigateway'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -38043,7 +38044,7 @@ Name: proportion, dtype: float64</code></pre>
 <pre><code>https://9g9npm4j2h.execute-api.eu-west-1.amazonaws.com/test/predict/</code></pre>
 </div>
 </div>
-<p>Now we have an endpoint in production! Anyone, even you, can use it. To have skin in the game, I’m leaving this endpoint in public. Try out make a request yourself. Here is how you can do it:</p>
+<p>Now we have an endpoint in production! Anyone, even you, can use it. To have skin in the game, I’m leaving this endpoint open to the public. Try out make a request yourself. Here is how you can do it:</p>
 <div class="cell" data-tags="[]" data-execution_count="91">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">WARNING</span><span class="co">: you shouldn't print or commit API keys in general</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This is for demonstration purposes only</span></span>
@@ -38052,15 +38053,15 @@ Name: proportion, dtype: float64</code></pre>
 <pre><code>API key: Kqrrc4uDk5aFZpH0NLfXW4CvgZphPbrc731nY5Yx</code></pre>
 </div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="103">
+<div class="cell" data-tags="[]" data-execution_count="180">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>headers <span class="op">=</span> {</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Content-type'</span>: <span class="st">'application/json'</span>, </span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x-api-key'</span>: api_key[<span class="st">'value'</span>],</span>
 <span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>}  </span>
 <span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>[<span class="st">"test atheism god"</span>])</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(url, headers<span class="op">=</span>headers, json<span class="op">=</span>example)</span>
 <span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>resp.json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="103">
+<div class="cell-output cell-output-display" data-execution_count="180">
 <pre><code>['alt.atheism']</code></pre>
 </div>
 </div>
@@ -38068,7 +38069,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="monitoring" class="level2">
 <h2 class="anchored" data-anchor-id="monitoring">Monitoring</h2>
-<p>We can use AWS CloudWatch to monitor Lambda and API gateway usage, check the logs and create alarms:</p>
+<p>We can use AWS CloudWatch to monitor Lambda and API gateway usage, check the logs and create alarms. As a tip from a seasoned AWS engineer, pay special attention to memory usage, execution times and failure rates. Memory and execution time have limits which you can adjust for your particular usecase. But never forget that every resource you use, you pay for it.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="cloudwatch.png" class="img-fluid figure-img"></p>
@@ -38078,15 +38079,15 @@ Name: proportion, dtype: float64</code></pre>
 <p>For ML metrics and issues such as accuracy and covariate shift, we need a different solution. See this <a href="https://github.com/awesome-mlops/awesome-ml-monitoring">repo</a> for some suggestions. With AWS, you will only be able to monitor the “SRE” aspects of your deployment. Don’t ignore that part: the <a href="https://sre.google/sre-book/monitoring-distributed-systems/">Four Golden Signals</a> are as important to ML as they are to any other web application.</p>
 </section>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="limitations-and-conclusion" class="level1">
+<h1>Limitations and conclusion</h1>
 <p>One limitation of the code above is the model pickle being bundled in the Docker image directly. A more sensible architecture would be putting the model in S3 and reading from S3 in the Lambda function. This allows you to use S3 for model management, so you can use features like file versioning. More importantly, you would be able to update a model in production without touching the Docker image.</p>
-<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda and endpoint, using the same API for multiple endpoints serving different models, model versioning using endpoint stages, etc.</p>
-<p>I also didn’t explore the scalability deeply: How can we reserve Lambda concurrency? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
-<p>To conclude, I presented here a way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your use case, feel free to use the code and let me know how it goes!</p>
+<p>There are many other avenues of improvement: better error handling in the Lambda function, adding a keep-alive for the Lambda, model versioning using endpoint stages, etc. I also didn’t explore scalability deeply: How can we reserve Lambda concurrency? How would Lambda fare in a load test? How would it compare against a <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">simple Flask server</a>? I will leave this as an exercise to the reader.</p>
+<p>Finally, I ignored the <a href="https://www.serverless.com/">Serverless</a> framework, which aim to automate and abstract many steps shown here. I tried using Serverless for Deploir and it wasn’t a good match, but a lot has changed since then.</p>
+<p>To conclude, I presented one way to go from model to endpoint using AWS Lambda and API gateway. If it makes sense for your use case, feel free to re-use the code and let me know how it goes!</p>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>I’d like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, <a href="https://www.linkedin.com/in/garcia-dias/">Rafael Garcia-Dias</a>, and <a href="https://www.linkedin.com/in/ramongtx/">Ramon Maciel</a>. At the time of writing of this post, Guilherme and Ramon are AWS engineers, but this post does not officially reflect any position from AWS.</p>
+<p>I’d like to give my deepest gratitude to the reviewers of this post: <a href="https://www.linkedin.com/in/guilherme-l%C3%A1zari-costa-e-silva-7a074b59/">Guilherme Lázari</a>, <a href="https://www.linkedin.com/in/raphael-de-brito-tamaki/">Raphael Tamaki</a>, <a href="https://www.linkedin.com/in/garcia-dias/">Rafael Garcia-Dias</a>, <a href="https://www.linkedin.com/in/ramongtx/">Ramon Maciel</a> and <a href="https://www.linkedin.com/in/danilo-pereira-7ab95382/">Danilo Pereira</a>. At the time of writing of this post, Guilherme, Ramon and Danilo are all AWS engineers, but this post does not reflect any official position from AWS.</p>
 
 
 </section>

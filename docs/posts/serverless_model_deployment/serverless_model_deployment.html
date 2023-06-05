@@ -159,7 +159,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Deploying Real-Time ML Models with Serverless AWS</h1>
+      <h1 class="title">Real-Time ML Models with Serverless AWS</h1>
             <p class="subtitle lead">Using AWS Lambda and API gateway</p>
                       </div>
   </div>
@@ -270,7 +270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">Landing page of <a href="https://web.archive.org/web/20180830055216/https://www.deploir.com/">Deploir</a></figcaption>
 </figure>
 </div>
-<p>The idea was simple: a data scientist trains a model, generates a pickle, uploads the pickle to the website using a GUI, and 1 minute later they have an endpoint ready to be used at scale. Technically, the idea was sound and the prototype worked. Commercially, I couldn’t get one single conversion. Deploir taught me many valuable lessons about overbuilding (see this <a href="https://twitter.com/dvassallo/status/1630813028156579841">tweet</a> for a hilarious and maximalist view). But it also taught me how to deploy real-time models using serverless tech, which I intend to share with you now.</p>
+<p>The idea was simple: a data scientist trains a model, generates a pickle, uploads the pickle to the website using a GUI, and 1 minute later they have an endpoint ready to be used at scale. Technically, the idea was sound and the prototype worked. Commercially, I couldn’t get one single conversion. Deploir taught me many valuable lessons about overbuilding (see this <a href="https://twitter.com/dvassallo/status/1630813028156579841">tweet</a> for a hilarious and maximalist view). But it also taught me how to deploy real-time models using serverless tech, which I intend to share now.</p>
 </section>
 </section>
 <section id="summary" class="level2">
@@ -289,7 +289,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="real-time-vs-batch-models">Real-time vs batch models</h2>
 <section id="real-time-models" class="level3">
 <h3 class="anchored" data-anchor-id="real-time-models">Real-time models</h3>
-<p>Real-time models serve predictions (almost) instantly. Usually, they serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and return the prediction as a JSON HTTP response. Then, the main application will do something with it, like approving a loan. If something fails, the application returns a HTTP error. Check out this minimal <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">example</a>.</p>
+<p>Real-time models serve predictions (almost) instantly. Usually, they serve one prediction at a time as they come. The prototypical real-time ML service in Python is a Flask server running a <code>/predict</code> endpoint that handles POST requests. After receiving a request with features in the payload, the server will process the features (if needed), call the model prediction function (e.g.&nbsp;<code>model.predict(X)</code>) and return the prediction as a JSON HTTP response. Then, the main application will do something with it, like approve or deny a loan. If something fails, the application returns a HTTP error. Check out a minimal <a href="https://github.com/tabacof/tabacof.github.io/blob/master/posts/serverless_model_deployment/flask_endpoint.py">example</a>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="real_time.jpg" class="img-fluid figure-img"></p>
@@ -299,7 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>There are many other possibilities to serve real-time predictions. You can use a different programming language other than Python by serializing the model in a language-agnostic framework like <a href="https://onnx.ai/">ONNX</a>. You can use FastAPI instead of Flask, which is becoming more common over time as FastAPI is blazing fast with great Pydantic integration. Or you might use a queue (e.g.&nbsp;Kafka) and handle requisitions asynchronously. The details change, but the principles are similar.</p>
 <p>Real-time models have a couple of strong downsides:</p>
 <ul>
-<li>Need to build, manage and maintain a web server</li>
+<li>Need to build, manage and maintain an endpoint or web server</li>
 <li>Need to guarantee the feature engineering pipelines are the same for training and serving (which is more difficult than it seems!)</li>
 </ul>
 <p>But it’s inevitable for some applications where the most informative features are only received in real-time:</p>
@@ -320,7 +320,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 <p><strong>Use batch models if you can</strong>: you train models in batch after all! With batch models, it’s much easier to ensure the feature pipelines for training and serving are the same. You don’t have to maintain a web server or endpoint, only one or a few steps in the data pipeline. You can leverage everything the data engineers build in your favour.</p>
-<p>What are some typical applications for a batch model?</p>
+<p>What are some typical batch model applications?</p>
 <ul>
 <li>Predicting churn in a B2B SaaS company</li>
 <li>Calculating credit scores</li>
@@ -341,14 +341,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Zipping your script and artefacts (including library dependencies) into a file</li>
 <li>Creating a Docker image with your script and artefacts</li>
 </ol>
-<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the standard Lambda limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> file and the limits are much looser (the image can be up to 10g). Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
-<p>When I first built Deploir, only zipping was available. One of my technical breakthroughs was compressing the numerical and ML libs to make them fit the file size and memory constraints. I hope nobody else has to experience the same pain again!</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="lambda.jpg" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Lambda deployment choices: go with Docker</figcaption>
 </figure>
 </div>
+<p>I highly recommend going with option (2): Python libraries for ML are quite large and will create an unreasonably large zip file, which may exceed the standard Lambda limits. With a Docker image, you can install libraries with a <code>requirements.txt</code> file and the limits are much looser (the image can be up to 10g). Also, a Docker image is reproducible with a Dockerfile and allows for local testing with the exact same behaviour as production.</p>
+<p>When I first built Deploir, only zipping was available. One of my technical breakthroughs was compressing the numerical and ML libs to make them fit the file size and memory constraints. I hope nobody else has to experience the same pain again!</p>
 </section>
 <section id="api-gateway" class="level2">
 <h2 class="anchored" data-anchor-id="api-gateway">API Gateway</h2>
@@ -505,7 +505,7 @@ talk.religion.misc          0.033324
 Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
-<p>Great, this means choosing the most common class would only yield 5% accuracy. We can also look at the literature and see that a much more sophisticated approach using <a href="https://arxiv.org/abs/2105.05727">Deep Learning achieves 89%</a>, not that far from our simple bag-of-words + linear classifier. Now let’s take a look at some predictions:</p>
+<p>Great, this means choosing the most common class would only yield 5% accuracy. We can also look at the literature and see that a much more sophisticated <a href="https://arxiv.org/abs/2105.05727">approach using Deep Learning</a> achieves 89%, not that far from our simple bag-of-words + linear classifier. Now let’s take a look at some predictions:</p>
 <div class="cell" data-tags="[]" data-execution_count="48">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pipe.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="48">
@@ -577,7 +577,7 @@ Name: proportion, dtype: float64</code></pre>
       dtype='&lt;U24')</code></pre>
 </div>
 </div>
-<p>Success! Since this post-processing is part of the Scikit-learn pipeline, this means we can bundle all of it together in the deployment process. But first, do we still have the same performance?</p>
+<p>Success! Since this post-processing is part of the Scikit-learn pipeline, this means we can bundle all of it together in the deployment process. But first, let’s check we still have the same performance:</p>
 <div class="cell" data-tags="[]" data-execution_count="53">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy is </span><span class="sc">{</span><span class="fl">100.0</span><span class="op">*</span>accuracy_score(predict_pipe.predict(X_test), y_test)<span class="sc">}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">

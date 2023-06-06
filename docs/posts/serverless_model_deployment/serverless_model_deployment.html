@@ -37743,7 +37743,7 @@ Name: proportion, dtype: float64</code></pre>
 <section id="deploying-the-model-using-serverless-aws" class="level1">
 <h1>Deploying the model using serverless AWS</h1>
 <p>In this section, we will start the actual model deployment process. To run this code, you need have an AWS account and have the credentials in place. For example, you can install the <code>aws</code> command line and run aws configure. Also, you need to change <code>account_id</code> below with your own (don’t worry, account_id is not sensitive information).</p>
-<div class="cell" data-tags="[]" data-execution_count="30">
+<div class="cell" data-tags="[]" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>region <span class="op">=</span> <span class="st">"eu-west-1"</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>stage <span class="op">=</span> <span class="st">"test"</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>endpoint <span class="op">=</span> <span class="st">"predict"</span></span>
@@ -37753,10 +37753,10 @@ Name: proportion, dtype: float64</code></pre>
 <section id="iam-role" class="level2">
 <h2 class="anchored" data-anchor-id="iam-role">IAM role</h2>
 <p>In a real application, you probably want to use Terraform or AWS CloudFormation to manage your infrastructure and cloud permissions. For our standalone example, we can create manually an IAM role that will allow the creation and invocation of Lambdas:</p>
-<div class="cell" data-tags="[]" data-execution_count="23">
+<div class="cell" data-tags="[]" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>iam_client <span class="op">=</span> boto3.client(<span class="st">'iam'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="24">
+<div class="cell" data-tags="[]" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the role name and trust policy for the Lambda service</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>role_name <span class="op">=</span> <span class="st">'lambda-exec-role'</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -37771,7 +37771,7 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    ]</span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="25">
+<div class="cell" data-tags="[]" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Just need to run it once, otherwise retrieve already existing role</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> iam_client.get_role(</span>
@@ -37784,7 +37784,7 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>        Description<span class="op">=</span><span class="st">'Execution role for Lambda function'</span>,</span>
 <span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="26">
+<div class="cell" data-tags="[]" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the role ARN</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>role_arn <span class="op">=</span> response[<span class="st">'Role'</span>][<span class="st">'Arn'</span>]</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -37816,10 +37816,10 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> api_return(body, status):</span>
 <span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"isBase64Encoded"</span>: <span class="va">False</span>,</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"statusCode"</span>: status,</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"headers"</span>: {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>},</span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"body"</span>: json.dumps(body, default<span class="op">=</span><span class="bu">str</span>)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'isBase64Encoded'</span>: <span class="va">False</span>,</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'statusCode'</span>: status,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">'headers'</span>: {<span class="st">'Content-Type'</span>: <span class="st">'application/json'</span>},</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">'body'</span>: json.dumps(body, default<span class="op">=</span><span class="bu">str</span>)</span>
 <span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(event, context):</span>
@@ -37827,23 +37827,27 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
 <span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>            payload <span class="op">=</span> json.loads(event[<span class="st">'body'</span>])</span>
 <span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> json.JSONDecodeError:</span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> api_return({<span class="st">'error'</span>: <span class="st">"JSON decode error when decoding payload"</span>}, <span class="dv">400</span>)</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> api_return({<span class="st">'error'</span>: <span class="st">'JSON decode error when decoding payload'</span>}, <span class="dv">400</span>)</span>
 <span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="bu">isinstance</span>(event[<span class="st">'body'</span>], <span class="bu">list</span>):</span>
 <span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> event[<span class="st">'body'</span>]</span>
 <span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> api_return({<span class="st">'error'</span>: <span class="st">"Unknown input format"</span>}, <span class="dv">400</span>)</span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> model.predict(payload).tolist()</span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> api_return({<span class="st">"error"</span>: <span class="bu">str</span>(e)}, <span class="dv">500</span>)</span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> api_return(output, <span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> api_return({<span class="st">'error'</span>: <span class="st">'Unknown input format'</span>}, <span class="dv">400</span>)</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scikit-learn needs a list or array as input</span></span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(payload, <span class="bu">list</span>):</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> [payload]</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> model.predict(payload).tolist()</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> api_return({<span class="st">'error'</span>: <span class="bu">str</span>(e)}, <span class="dv">500</span>)</span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> api_return(output, <span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Most of the function above is error handling. Essentially, we are loading a model pickle outside the function (so that it’s cached across multiple calls) and calling <code>model.predict</code> inside it.</p>
 <section id="docker-image" class="level3">
 <h3 class="anchored" data-anchor-id="docker-image">Docker image</h3>
 <p>We need to login to ECR (Elastic Container Registry), build the image, tag and then and push it to the registry. Then, this image will be accessible by any AWS service:</p>
-<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-tags="[]" data-execution_count="29">
+<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-tags="[]" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log in to AWS ECR</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>os.system(<span class="ss">f"aws ecr get-login-password --region </span><span class="sc">{</span>region<span class="sc">}</span><span class="ss"> | docker login --username AWS --password-stdin </span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">.dkr.ecr.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com"</span>)</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -37860,11 +37864,11 @@ Name: proportion, dtype: float64</code></pre>
 <span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>os.system(<span class="ss">f"docker push </span><span class="sc">{</span>account_id<span class="sc">}</span><span class="ss">.dkr.ecr.</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">.amazonaws.com/</span><span class="sc">{</span>ecr_image_name<span class="sc">}</span><span class="ss">:latest"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s finally create the Lambda function:</p>
-<div class="cell" data-tags="[]" data-execution_count="74">
+<div class="cell" data-tags="[]" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the Lambda client</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>lambda_client <span class="op">=</span> boto3.client(<span class="st">'lambda'</span>, region_name<span class="op">=</span>region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="29">
+<div class="cell" data-tags="[]" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function name (not public facing)</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>function_name <span class="op">=</span> <span class="st">'lambda-fn-sklearn-predict'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -37895,7 +37899,7 @@ Name: proportion, dtype: float64</code></pre>
 <div class="cell" data-execution_count="34">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>time.sleep(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="143">
+<div class="cell" data-tags="[]" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the event to pass to the Lambda function</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> [<span class="st">"""Did that FAQ ever got modified to re-define strong atheists as not those who </span><span class="ch">\</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="st">assert the nonexistence of God, but as those who assert that they BELIEVE in </span><span class="ch">\</span></span>

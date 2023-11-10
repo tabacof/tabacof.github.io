@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://tabacof.github.io/posts/serverless_model_deployment/serverless_model_deployment.html</loc>
-    <lastmod>2023-06-06T19:51:29.340Z</lastmod>
+    <lastmod>2023-06-08T08:47:49.421Z</lastmod>
   </url>
   <url>
     <loc>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</loc>
@@ -22,10 +22,14 @@
   </url>
   <url>
     <loc>https://tabacof.github.io/index.html</loc>
-    <lastmod>2023-06-06T19:51:35.388Z</lastmod>
+    <lastmod>2023-11-10T15:31:48.316Z</lastmod>
   </url>
   <url>
     <loc>https://tabacof.github.io/about.html</loc>
-    <lastmod>2023-06-06T19:51:35.670Z</lastmod>
+    <lastmod>2023-11-10T12:22:21.889Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/snippets/snippets.html</loc>
+    <lastmod>2023-06-08T09:05:07.611Z</lastmod>
   </url>
 </urlset>

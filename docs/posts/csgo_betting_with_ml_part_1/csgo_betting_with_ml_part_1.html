@@ -184,13 +184,13 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="How I lost 1000 euros betting on CS:GO">
-<meta property="og:description" content="Part 1 of a series of 2 posts where I explain how I lost 1000 euros betting on CS:GO with machine learning and Python.">
+<meta property="og:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, the Kelly criterion, probability calibration and the winner’s curse.">
 <meta property="og:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/ml_profits_meme.png">
 <meta property="og:site-name" content="Pedro Tabacof's blog">
 <meta property="og:image:height" content="704">
 <meta property="og:image:width" content="1252">
 <meta name="twitter:title" content="How I lost 1000 euros betting on CS:GO">
-<meta name="twitter:description" content="Part 1 of a series of 2 posts where I explain how I lost 1000 euros betting on CS:GO with machine learning and Python.">
+<meta name="twitter:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, the Kelly criterion, probability calibration and the winner’s curse.">
 <meta name="twitter:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/ml_profits_meme.png">
 <meta name="twitter:image-height" content="704">
 <meta name="twitter:image-width" content="1252">
@@ -245,10 +245,9 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">How I lost 1000€ betting on CS:GO — Foundations</h1>
-            <p class="subtitle lead">Part 1 of 2</p>
                   <div>
         <div class="description">
-          Part 1 of a series of 2 posts where I explain how I lost 1000 euros betting on CS:GO with machine learning and Python.
+          <p>Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, the Kelly criterion, probability calibration and the winner’s curse.</p>
         </div>
       </div>
                 </div>
@@ -283,12 +282,12 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#part-1-foundations" id="toc-part-1-foundations" class="nav-link active" data-scroll-target="#part-1-foundations">Part 1: Foundations</a>
+  <li><a href="#foundations" id="toc-foundations" class="nav-link active" data-scroll-target="#foundations">Foundations</a>
   <ul class="collapse">
   <li><a href="#what-is-your-edge" id="toc-what-is-your-edge" class="nav-link" data-scroll-target="#what-is-your-edge">What is your edge?</a></li>
-  <li><a href="#machine-learning-for-financial-decision-making" id="toc-machine-learning-for-financial-decision-making" class="nav-link" data-scroll-target="#machine-learning-for-financial-decision-making">Machine learning for financial decision-making</a></li>
-  <li><a href="#expected-profits-and-decision-rule-for-one-bet" id="toc-expected-profits-and-decision-rule-for-one-bet" class="nav-link" data-scroll-target="#expected-profits-and-decision-rule-for-one-bet">Expected profits and decision rule for one bet</a></li>
-  <li><a href="#multiple-bets" id="toc-multiple-bets" class="nav-link" data-scroll-target="#multiple-bets">Multiple bets</a></li>
+  <li><a href="#financial-decision-making-with-ml" id="toc-financial-decision-making-with-ml" class="nav-link" data-scroll-target="#financial-decision-making-with-ml">Financial decision-making with ML</a></li>
+  <li><a href="#one-bet-expected-profits-and-decision-rule" id="toc-one-bet-expected-profits-and-decision-rule" class="nav-link" data-scroll-target="#one-bet-expected-profits-and-decision-rule">One bet: Expected profits and decision rule</a></li>
+  <li><a href="#multiple-bets-the-kelly-criterion" id="toc-multiple-bets-the-kelly-criterion" class="nav-link" data-scroll-target="#multiple-bets-the-kelly-criterion">Multiple bets: The Kelly criterion</a></li>
   <li><a href="#probability-calibration" id="toc-probability-calibration" class="nav-link" data-scroll-target="#probability-calibration">Probability calibration</a></li>
   <li><a href="#winners-curse" id="toc-winners-curse" class="nav-link" data-scroll-target="#winners-curse">Winner’s curse</a>
   <ul class="collapse">
@@ -341,8 +340,8 @@ if (outputEl) {{
 <ul>
 <li>What is your edge?</li>
 <li>Financial decision-making with ML</li>
-<li>Expected profits and decision rule for one bet</li>
-<li>Multiple bets</li>
+<li>One bet: Expected profits and decision rule</li>
+<li>Multiple bets: The Kelly criterion</li>
 <li>Probability calibration</li>
 <li>Winner’s curse</li>
 </ul>
@@ -356,8 +355,8 @@ if (outputEl) {{
 <li>Backtesting</li>
 <li>Why I actually lost 1000 euros</li>
 </ul>
-<section id="part-1-foundations" class="level1">
-<h1>Part 1: Foundations</h1>
+<section id="foundations" class="level1">
+<h1>Foundations</h1>
 <section id="what-is-your-edge" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-your-edge">What is your edge?</h2>
 <blockquote class="blockquote">
@@ -369,8 +368,8 @@ if (outputEl) {{
 <p>That is why you should read about failure stories, like mine, as they carry important lessons not contaminated by bad incentives or biases. Nassim Taleb, for example, recommends the book <a href="https://www.amazon.co.uk/Learned-Million-Columbia-Business-Publishing/dp/0231164688">What I Learned Losing a Million Dollars</a> as “one of the rare noncharlatanic books in finance”.</p>
 <p>Our edge, or so we thought, was to use the power of tabular ML to beat the bookmakers. We had worked previously with credit, fraud, and insurance, and we believed our skill set in those areas would translate to an advantage here. While that’s a flimsy argument at face value, the backtests we ran indicated we did have an edge indeed (more on that on the next post). We chose CS:GO in particular as it had enough match data available in public that we could scrape and leverage for our models. Plus, we thought it’d be a much more incipient market compared to horse racing or football betting.</p>
 </section>
-<section id="machine-learning-for-financial-decision-making" class="level2">
-<h2 class="anchored" data-anchor-id="machine-learning-for-financial-decision-making">Machine learning for financial decision-making</h2>
+<section id="financial-decision-making-with-ml" class="level2">
+<h2 class="anchored" data-anchor-id="financial-decision-making-with-ml">Financial decision-making with ML</h2>
 <p>How can you use ML for sports betting? That has a surprising long history: Decades ago, logistic regression was being used for horse racing betting and <a href="https://www.bloomberg.com/news/features/2018-05-03/the-gambler-who-cracked-the-horse-racing-code">made some people rich</a>. Essentially, it’s not different from using ML in any other financial decision-making application, such as giving loans or stopping fraudulent transactions.</p>
 <p><img src="ml_profits_meme.png" class="img-fluid"></p>
 <p>Let’s work backwards from a simple profits equation. Profits can be defined as revenue minus costs<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and as a function of actions <code>a</code>. The actions <code>a</code> you take are betting, providing credit, and blocking transactions. You can simply write it as:</p>
@@ -400,8 +399,8 @@ if (outputEl) {{
 </ul>
 <p>ML can help by filling in the blanks (in bold): ML models can predict the probability of winning a bet, default of a loan or fraud for a transaction. With such probabilities and the other fixed quantities known (like the interest rate), you can choose an action <code>a</code> that maximizes the profits. Let’s work that out in the case of betting.</p>
 </section>
-<section id="expected-profits-and-decision-rule-for-one-bet" class="level2">
-<h2 class="anchored" data-anchor-id="expected-profits-and-decision-rule-for-one-bet">Expected profits and decision rule for one bet</h2>
+<section id="one-bet-expected-profits-and-decision-rule" class="level2">
+<h2 class="anchored" data-anchor-id="one-bet-expected-profits-and-decision-rule">One bet: Expected profits and decision rule</h2>
 <p>Say you have a match between two teams A and B. Assume that the probability of A beating B is P. If you place a bet of \$10 at odds of 2, you will net \$20 if A wins and lose \$10 if A loses. The expected value of the bet on A is:</p>
 <p><span class="math display">\[\begin{align}
 E[Profits(bet=10)] &amp;= E[Revenue(bet=10)] - E[Cost(bet=10)] \\
@@ -417,8 +416,8 @@ E[Profits(bet)] &amp;= E[Revenue(bet)] - E[Loss(bet)] \\
 <p>And you should bet on A if <span class="math inline">\(P(X_A, X_B) \gg \frac{1}{O+1}\)</span> and on B if <span class="math inline">\(P(X_A, X_B) \ll \frac{1}{O+1}\)</span>, where <span class="math inline">\(\frac{1}{O+1}\)</span> is the implied probability of winning given by the betting odds. In practice, the implied probability of A beating B and B beating A sum up to more than 1. That is the bookmaker’s margin, which is one major way they make money.</p>
 <p><em>One bet cannot be made in isolation</em>. There are other potential bets you can make in the present and future. For simplicity, I will assume bets are made sequentially and on a limited bankroll. How do you maximize the expected value of all your future bets?</p>
 </section>
-<section id="multiple-bets" class="level2">
-<h2 class="anchored" data-anchor-id="multiple-bets">Multiple bets</h2>
+<section id="multiple-bets-the-kelly-criterion" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-bets-the-kelly-criterion">Multiple bets: The Kelly criterion</h2>
 <p>A typical answer is the <a href="https://en.wikipedia.org/wiki/Kelly_criterion"><strong>Kelly criterion</strong></a>. That is a formula used to determine the optimal size of a series of bets, developed by John Kelly in 1956. It’s based on the idea of maximizing the expected value of the logarithm of wealth<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. I will not bore you with its derivation here, but the end result is a simple formula providing you the <em>fraction</em> of your bankroll to wager:</p>
 <p><span class="math display">\[
 \text{Fraction} = \frac{O \cdot P(X_A, X_B) - (1 - P(X_A, X_B))}{O}

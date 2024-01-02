@@ -403,14 +403,17 @@ if (outputEl) {{
 <section id="expected-profits-and-decision-rule-for-one-bet" class="level2">
 <h2 class="anchored" data-anchor-id="expected-profits-and-decision-rule-for-one-bet">Expected profits and decision rule for one bet</h2>
 <p>Say you have a match between two teams A and B. Assume that the probability of A beating B is P. If you place a bet of \$10 at odds of 2, you will net \$20 if A wins and lose \$10 if A loses. The expected value of the bet on A is:</p>
-<p><span class="math display">\[
-E[Profits(bet=10)] = E[Revenue(bet=10)] - E[Cost(bet=10)] = 2 \cdot 10 \cdot P - 10 \cdot (1 - P) = 30 \cdot P - 10
-\]</span></p>
+<p><span class="math display">\[\begin{align}
+E[Profits(bet=10)] &amp;= E[Revenue(bet=10)] - E[Cost(bet=10)] \\
+                   &amp;= 2 \cdot 10 \cdot P - 10 \cdot (1 - P) \\
+                   &amp;= 30 \cdot P - 10
+\end{align}\]</span></p>
 <p>This leads to the following decision rule: if <span class="math inline">\(P \gg 1/3\)</span>, you should bet on A. If <span class="math inline">\(P \ll 1/3\)</span>, you should bet on B. If <span class="math inline">\(P \approx 1/3\)</span>, you should not bet at all<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Also, this implies that, if the market is efficient, then betting odds of 2 implies probability of winning to be 1/3.</p>
 <p>Now, let’s make it broader and consider any betting odds <span class="math inline">\(O\)</span> and that the probability of A beating B is <span class="math inline">\(P(X_A, X_B)\)</span>, where <span class="math inline">\(X\)</span> are the features of each team (say, their latest result):</p>
-<p><span class="math display">\[
-E[Profits(bet)] = E[Revenue(bet)]-E[Loss(bet)] = (O \cdot bet) \cdot P(X_A, X_B) - bet \cdot (1 - P(X_A, X_B))
-\]</span></p>
+<p><span class="math display">\[\begin{align}
+E[Profits(bet)] &amp;= E[Revenue(bet)] - E[Loss(bet)] \\
+                &amp;= O \cdot bet \cdot P(X_A, X_B) - bet \cdot (1 - P(X_A, X_B))
+\end{align}\]</span></p>
 <p>And you should bet on A if <span class="math inline">\(P(X_A, X_B) \gg \frac{1}{O+1}\)</span> and on B if <span class="math inline">\(P(X_A, X_B) \ll \frac{1}{O+1}\)</span>, where <span class="math inline">\(\frac{1}{O+1}\)</span> is the implied probability of winning given by the betting odds. In practice, the implied probability of A beating B and B beating A sum up to more than 1. That is the bookmaker’s margin, which is one major way they make money.</p>
 <p><em>One bet cannot be made in isolation</em>. There are other potential bets you can make in the present and future. For simplicity, I will assume bets are made sequentially and on a limited bankroll. How do you maximize the expected value of all your future bets?</p>
 </section>

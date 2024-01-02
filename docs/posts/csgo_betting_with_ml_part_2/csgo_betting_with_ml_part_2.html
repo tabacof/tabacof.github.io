@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pedro Tabacof">
+<meta name="dcterms.date" content="2023-11-11">
+<meta name="keywords" content="machine learning, cs:go, betting, kelly, winner’s curse, probability calibration, backtesting, lightgbm">
+<meta name="description" content="How I lost 1000 euros betting on CS:GO with machine learning and Python">
+
+<title>How I lost 1000 euros betting on CS:GO</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="How I lost 1000 euros betting on CS:GO">
+<meta property="og:description" content="Part 2 of a series of two posts where I explain how I lost 1000 euros betting on CS:GO with machine learning.">
+<meta property="og:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/cumulative_profits.png">
+<meta property="og:site-name" content="Pedro Tabacof's blog">
+<meta property="og:image:height" content="450">
+<meta property="og:image:width" content="983">
+<meta name="twitter:title" content="How I lost 1000 euros betting on CS:GO">
+<meta name="twitter:description" content="Part 2 of a series of two posts where I explain how I lost 1000 euros betting on CS:GO with machine learning.">
+<meta name="twitter:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/cumulative_profits.png">
+<meta name="twitter:image-height" content="450">
+<meta name="twitter:image-width" content="983">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pedro Tabacof’s blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/tabacof/" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/tabacof/" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/PedroTabacof" rel="" target=""><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">How I lost 1000€ betting on CS:GO — Solution</h1>
+            <p class="subtitle lead">Part 2 of 2</p>
+                  <div>
+        <div class="description">
+          Part 2 of a series of two posts where I explain how I lost 1000 euros betting on CS:GO with machine learning.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Pedro Tabacof </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 10, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#part-2-solution-heavy-wip" id="toc-part-2-solution-heavy-wip" class="nav-link active" data-scroll-target="#part-2-solution-heavy-wip">Part 2: Solution (Heavy WiP)</a>
+  <ul class="collapse">
+  <li><a href="#web-scraping" id="toc-web-scraping" class="nav-link" data-scroll-target="#web-scraping">Web scraping</a></li>
+  <li><a href="#feature-engineering" id="toc-feature-engineering" class="nav-link" data-scroll-target="#feature-engineering">Feature engineering</a></li>
+  <li><a href="#trueskill" id="toc-trueskill" class="nav-link" data-scroll-target="#trueskill">TrueSkill</a>
+  <ul class="collapse">
+  <li><a href="#inferential-vs-predictive-models" id="toc-inferential-vs-predictive-models" class="nav-link" data-scroll-target="#inferential-vs-predictive-models">Inferential vs predictive models</a></li>
+  </ul></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling">Modelling</a>
+  <ul class="collapse">
+  <li><a href="#out-of-time-train-test-split" id="toc-out-of-time-train-test-split" class="nav-link" data-scroll-target="#out-of-time-train-test-split">Out-of-time train-test split</a></li>
+  <li><a href="#model-lightgbm" id="toc-model-lightgbm" class="nav-link" data-scroll-target="#model-lightgbm">Model: LightGBM</a></li>
+  <li><a href="#feature-importance" id="toc-feature-importance" class="nav-link" data-scroll-target="#feature-importance">Feature importance</a></li>
+  </ul></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
+  <li><a href="#backtesting" id="toc-backtesting" class="nav-link" data-scroll-target="#backtesting">Backtesting</a></li>
+  <li><a href="#why-did-i-lose-money-after-all" id="toc-why-did-i-lose-money-after-all" class="nav-link" data-scroll-target="#why-did-i-lose-money-after-all">Why did I lose money after all?</a></li>
+  </ul></li>
+  <li><a href="#take-aways" id="toc-take-aways" class="nav-link" data-scroll-target="#take-aways">Take aways</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>This is a true story of how I lost money using machine learning (ML) to bet on CS:GO. The original idea and implementation came from a <a href="https://www.linkedin.com/in/ramon-de-oliveira/">friend</a>, who gave me permission to share this story in public. For an introduction, check out the first part of the post here.</p>
+<section id="part-2-solution-heavy-wip" class="level1">
+<h1>Part 2: Solution (Heavy WiP)</h1>
+<p>Summary:</p>
+<ul>
+<li>Web scraping using Selenium and Beautiful Soup
+<ul>
+<li>Collected over 30k CS:GO matches</li>
+<li>Collected on average 30 betting odds per match</li>
+</ul></li>
+<li>Feature engineering: 100s of features
+<ul>
+<li>Also used the TrueSkill model as feature</li>
+</ul></li>
+<li>Modelling with LightGBM</li>
+<li>Out-of-time evaluation with AUC and calibration metrics</li>
+<li>Backtesting to calculate the ROI</li>
+</ul>
+<section id="web-scraping" class="level2">
+<h2 class="anchored" data-anchor-id="web-scraping">Web scraping</h2>
+<blockquote class="blockquote">
+<p>Data is the new oil.</p>
+</blockquote>
+<p>As I explained in the beggining, one of the reasons we chose CS:GO was data availability. Since we broke some term and conditions, I won’t name our exact sources, but they are easily found online.</p>
+<p>To scrape the data that we needed we used Selenium. Then, we parsed it with BeautifulSoup. We extracted over 3 years worth of match data and over 30k matches. We thought the was enough to build a model using the latest tabular ML technology.</p>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature engineering</h2>
+<blockquote class="blockquote">
+<p>Past behavior is the best predictor of future behavior.</p>
+</blockquote>
+<p>With that data, we created 100s of features. Most features were related to past performance, such as the percentage of times team 1 won on the map to be played or against team 2. That is, if the teams faced each other off before, who won is an important predictor. We also used fined-grained information such as KD (kill-death) difference and ADR (average damaga per round).</p>
+<p>While we built the features manually with some code automation, I’d suggest using <a href="https://www.featuretools.com/">Featuretools</a> nowadays.</p>
+<p>Also, we had a trump card, which ended up being the most important feature: TrueSkill.</p>
+</section>
+<section id="trueskill" class="level2">
+<h2 class="anchored" data-anchor-id="trueskill">TrueSkill</h2>
+<p>TrueSkill is a Bayesian skill rating system developed by Microsoft for multiplayer games. It aims to estimate the “true skill” of each player or team based on their performance history. The model uses a Gaussian distribution to represent the skill level of each player, and it updates these skill levels after each match using Bayesian inference. TrueSkill considers not just the outcome but also the uncertainty around each player’s skill, providing a more dynamic and accurate measure of player ability.</p>
+<section id="inferential-vs-predictive-models" class="level3">
+<h3 class="anchored" data-anchor-id="inferential-vs-predictive-models">Inferential vs predictive models</h3>
+<p>If we have TrueSkill, why do we even need a ML model? TrueSkill serves as an inferential model aimed at understanding the underlying skill levels of players or teams based on their historical performance. Its primary goal is not to predict future match outcomes but to estimate parameters that describe the skill and uncertainty levels of each player. While it provides valuable latent variables, such as skill ratings, it doesn’t necessarily consider all the variables that might influence the outcome of a future match, such as current form, injuries, or team strategies.</p>
+<p>On the other hand, machine learning models in this context are predictive. Their primary goal is to accurately predict the outcome of future matches. These models have the advantage of being able to incorporate a wide range of features, including but not limited to those offered by TrueSkill. By doing so, they can capture complex, non-linear relationships and interactions between variables, offering potentially higher prediction accuracy.</p>
+<p>So why not use TrueSkill output directly for betting on e-sport matches? There are several reasons. First, TrueSkill’s scope is limited to estimating the “true skill” of players, which, although important, is not the only factor affecting match outcomes. Second, machine learning models can capture non-linearities and interactions between features, something that a simpler model like TrueSkill is not designed to do. Third, using ensemble methods, you can combine TrueSkill estimates with other predictive models to potentially improve accuracy. Lastly, machine learning models can be more adaptable to new data or changes in the game, making them more flexible for prediction tasks.</p>
+</section>
+</section>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+<p>I provide here the dataset with all features and target together, so you can play around with it Kaggle style:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(<span class="st">"dataset.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="modelling" class="level2">
+<h2 class="anchored" data-anchor-id="modelling">Modelling</h2>
+<p>The modelling is pretty standard with a couple of notable exceptions:</p>
+<ol type="1">
+<li>We remove ties, which represent roughly 1.5% of the dataset</li>
+<li>We do data augmentation by swithing team1 and team2 features and learning on both scenarios (this is something we can do as there is no “home advantage” in CS:GO like there is in football)</li>
+</ol>
+<section id="out-of-time-train-test-split" class="level3">
+<h3 class="anchored" data-anchor-id="out-of-time-train-test-split">Out-of-time train-test split</h3>
+<p>We used out-of-time split instead of the more typical cross-validation. In a real-life application, the model is trained with past data and used for feature unseen data. Your evaluation should reflect that, as you might be interested to know how your model performance degrades over time (which could be cause, for example, due to <a href="https://en.wikipedia.org/wiki/Concept_drift">concept drift</a>).</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> pd.read_parquet(<span class="st">"dataset.parquet"</span>).drop_duplicates()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>dt_train <span class="op">=</span> <span class="st">'2019-01-01'</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>dt_test <span class="op">=</span> <span class="st">'2019-08-01'</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>dataset[<span class="st">'target'</span>] <span class="op">=</span> (dataset[<span class="st">'winner'</span>] <span class="op">==</span> <span class="st">'team1'</span>).astype(<span class="bu">bool</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> dataset[</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    (dataset[<span class="st">'match_date'</span>] <span class="op">&gt;=</span> <span class="st">'2017-01-01'</span>) <span class="op">&amp;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    (dataset[<span class="st">'winner'</span>] <span class="op">!=</span> <span class="st">'tie'</span>) <span class="op">&amp;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    (dataset[<span class="st">'match_id'</span>] <span class="op">!=</span> <span class="st">'https://www.hltv.org/matches/2332976/lucid-dream-vs-alpha-red-esl-pro-league-season-9-asia'</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>mask_train <span class="op">=</span> dataset[<span class="st">'match_date'</span>] <span class="op">&lt;</span> dt_train</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>dataset_train <span class="op">=</span> dataset.loc[mask_train].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>dataset_train2 <span class="op">=</span> dataset_train.sample(frac<span class="op">=</span><span class="dv">1</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>dataset_train2[<span class="st">'target'</span>] <span class="op">=</span> <span class="op">~</span>dataset_train2[<span class="st">'target'</span>]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> []</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> <span class="bu">list</span>(dataset_train.columns):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> c.startswith(<span class="st">'team1_'</span>):</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        cols.append(c.replace(<span class="st">'team1_'</span>, <span class="st">'team2_'</span>).replace(<span class="st">'_team2'</span>, <span class="st">'_team1'</span>))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> c.startswith(<span class="st">'team2_'</span>):</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        cols.append(c.replace(<span class="st">'team2_'</span>, <span class="st">'team1_'</span>).replace(<span class="st">'_team1'</span>, <span class="st">'_team2'</span>))</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        cols.append(c)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>dataset_train2 <span class="op">=</span> dataset_train2.rename(columns<span class="op">=</span><span class="bu">dict</span>(<span class="bu">zip</span>(dataset_train.columns, cols)))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>dataset_train <span class="op">=</span> dataset_train[cols]</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>dataset_train2 <span class="op">=</span> dataset_train2[cols]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>dataset_train <span class="op">=</span> pd.concat([dataset_train, dataset_train2], axis<span class="op">=</span><span class="dv">0</span>, ignore_index<span class="op">=</span><span class="va">True</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>idxs <span class="op">=</span> np.random.choice(<span class="bu">len</span>(dataset_train), replace<span class="op">=</span><span class="va">False</span>, size<span class="op">=</span><span class="dv">4000</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>dataset_val <span class="op">=</span> dataset_train.loc[idxs].drop_duplicates(<span class="st">'match_id'</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>dataset_val <span class="op">=</span> dataset_val.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>index <span class="op">=</span> np.arange(<span class="bu">len</span>(dataset_train))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> <span class="op">~</span>np.in1d(index, idxs)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>dataset_train <span class="op">=</span> dataset_train.loc[mask].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>mask_test <span class="op">=</span> (</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    (dataset[<span class="st">'match_date'</span>] <span class="op">&gt;=</span> dt_train) <span class="op">&amp;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    (dataset[<span class="st">'match_date'</span>] <span class="op">&lt;</span> dt_test)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>dataset_test <span class="op">=</span> dataset.loc[mask_test].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataset_train.shape, dataset_val.shape, dataset_test.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>((38490, 267), (3820, 267), (4759, 267))</code></pre>
+</div>
+</div>
+</section>
+<section id="model-lightgbm" class="level3">
+<h3 class="anchored" data-anchor-id="model-lightgbm">Model: LightGBM</h3>
+<p>We used a standard off-the-shelf LightGBM binary classifier. There are many advantages to use LGBM or XGBoost for tabular data problems:</p>
+<ul>
+<li>Handles missing values natively</li>
+<li>Handles categorical features natively</li>
+<li>Early stopping to set the number of estimators</li>
+<li>Blazing fast and scalable</li>
+<li>Loss functions options, including using a custom one
+<ul>
+<li>For binary classification, the default is the negative logloss (a proper scoring rule)</li>
+</ul></li>
+</ul>
+<p>For more information on how to unlock the power of LightGBM, watch my <a href="https://www.youtube.com/watch?v=qGsHlvE8KZM">PyData London 2022 presentation</a>.</p>
+<p>We do something special for the model: since we have features for team1 and team2 and we swap them during training, we average out two predictions, one made for team1 and another made for team2.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CSGOPredictor(<span class="bu">object</span>):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, model_params):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.model_params <span class="op">=</span> model_params</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit(<span class="va">self</span>, x_train, y_train, x_val, y_val):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.lgb <span class="op">=</span> LGBMClassifier(<span class="op">**</span><span class="va">self</span>.model_params).fit(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            x_train, y_train,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            eval_names<span class="op">=</span>[<span class="st">'training'</span>, <span class="st">'validation'</span>],</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            eval_set<span class="op">=</span>[(x_train, y_train), (x_val, y_val)],</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            early_stopping_rounds<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            verbose<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict_proba(<span class="va">self</span>, x):</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        original <span class="op">=</span> <span class="va">self</span>.lgb.predict_proba(x)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        x_inv <span class="op">=</span> x.copy()</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        team1_cols <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> x_inv.columns <span class="cf">if</span> i.startswith(<span class="st">'team1'</span>)]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        team2_cols <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> x_inv.columns <span class="cf">if</span> i.startswith(<span class="st">'team2'</span>)]</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        x_inv <span class="op">=</span> x_inv.rename(<span class="bu">dict</span>(<span class="bu">zip</span>(team1_cols <span class="op">+</span> team2_cols, team2_cols <span class="op">+</span> team1_cols)), axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        x_inv <span class="op">=</span> x_inv.reindex(columns<span class="op">=</span>x.columns)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        inv <span class="op">=</span> <span class="va">self</span>.lgb.predict_proba(x_inv)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        inv[:, <span class="dv">0</span>], inv[:, <span class="dv">1</span>] <span class="op">=</span> inv[:, <span class="dv">1</span>], inv[:, <span class="dv">0</span>].copy()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (original<span class="op">+</span>inv)<span class="op">/</span><span class="fl">2.0</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict(<span class="va">self</span>, x):</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.predict_proba(x).argmax(axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>drop_cols <span class="op">=</span> [<span class="st">'winner'</span>,  <span class="st">'match_date'</span>, <span class="st">'match_id'</span>, <span class="st">'event_id'</span>, <span class="st">'team1_id'</span>, <span class="st">'team2_id'</span>, <span class="st">'target'</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>x_train <span class="op">=</span> dataset_train.drop(columns<span class="op">=</span>drop_cols, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> dataset_train[<span class="st">'target'</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> <span class="bu">list</span>(x_train.columns)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>x_val <span class="op">=</span> dataset_val[features]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>y_val <span class="op">=</span> dataset_val[<span class="st">'target'</span>]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>x_test <span class="op">=</span> dataset_test[features]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> dataset_test[<span class="st">'target'</span>]</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>model_params <span class="op">=</span> {</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: <span class="dv">10_000</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: <span class="fl">0.05</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CSGOPredictor(model_params).fit(x_train, y_train, x_val, y_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/pedrotabacof/anaconda3/lib/python3.11/site-packages/lightgbm/sklearn.py:726: UserWarning: 'early_stopping_rounds' argument is deprecated and will be removed in a future release of LightGBM. Pass 'early_stopping()' callback via 'callbacks' argument instead.
+  _log_warning("'early_stopping_rounds' argument is deprecated and will be removed in a future release of LightGBM. "
+/Users/pedrotabacof/anaconda3/lib/python3.11/site-packages/lightgbm/sklearn.py:736: UserWarning: 'verbose' argument is deprecated and will be removed in a future release of LightGBM. Pass 'log_evaluation()' callback via 'callbacks' argument instead.
+  _log_warning("'verbose' argument is deprecated and will be removed in a future release of LightGBM. "</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[50]    training's binary_logloss: 0.562685 validation's binary_logloss: 0.591155
+[100]   training's binary_logloss: 0.535262 validation's binary_logloss: 0.587102
+[150]   training's binary_logloss: 0.515411 validation's binary_logloss: 0.586915</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-importance" class="level3">
+<h3 class="anchored" data-anchor-id="feature-importance">Feature importance</h3>
+<p>While typically I’d recommend using <a href="https://github.com/shap/shap">SHAP</a>, for simplicity I just plot the standard split gain importance:</p>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get feature importances and create a DataFrame</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>feature_importances <span class="op">=</span> model.lgb.feature_importances_</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the top_n importances</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>top_n <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>sorted_idx <span class="op">=</span> feature_importances.argsort()[<span class="op">-</span>top_n:][::<span class="op">-</span><span class="dv">1</span>]  <span class="co"># Sort and reverse to get top features first</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>top_features <span class="op">=</span> np.array(features)[sorted_idx]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>top_importances <span class="op">=</span> feature_importances[sorted_idx]</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the bar chart</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure(go.Bar(</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>top_importances,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>top_features,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">'h'</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Update layout for a more informative plot</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Top 20 Feature Importances'</span>,</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Importance'</span>,</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'Feature'</span>,</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span><span class="bu">dict</span>(autorange<span class="op">=</span><span class="st">'reversed'</span>),</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">700</span>,</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">800</span>,</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation">Evaluation</h2>
+<p>We evaluate using the following metrics:</p>
+<ul>
+<li>Accuracy: how many bets you expect to get right</li>
+<li>AUC: how well you rank-order the winners/losers</li>
+<li>Brier score: a metric takes both calibarion and accuracy into account</li>
+</ul>
+<p>I also plot the calibration curves for the training and test sets.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_metrics(X, y, model):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    y_pred_proba <span class="op">=</span> model.predict_proba(X)[:, <span class="dv">1</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    y_pred <span class="op">=</span> model.predict(X)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Accuracy'</span>: accuracy_score(y, y_pred),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'AUC'</span>: roc_auc_score(y, y_pred_proba),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Brier_score'</span>: brier_score_loss(y, y_pred_proba)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>metrics_train <span class="op">=</span> calculate_metrics(x_train, y_train, model)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>metrics_val <span class="op">=</span> calculate_metrics(x_val, y_val, model)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>metrics_test <span class="op">=</span> calculate_metrics(x_test, y_test, model)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>metrics_df <span class="op">=</span> pd.DataFrame([metrics_train, metrics_val, metrics_test],</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                          index<span class="op">=</span>[<span class="st">'Training'</span>, <span class="st">'Validation'</span>, <span class="st">'Test'</span>])</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>metrics_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Accuracy</th>
+<th data-quarto-table-cell-role="th">AUC</th>
+<th data-quarto-table-cell-role="th">Brier_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Training</td>
+<td>0.743102</td>
+<td>0.825941</td>
+<td>0.172918</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Validation</td>
+<td>0.707330</td>
+<td>0.785611</td>
+<td>0.188653</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Test</td>
+<td>0.702458</td>
+<td>0.772788</td>
+<td>0.191430</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_calibration_curve(y_true, y_pred_proba, set_name, fig, color):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    mean_predicted_value, fraction_of_positives <span class="op">=</span> calibration_curve(y_true, y_pred_proba, n_bins<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(go.Scatter(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>mean_predicted_value, y<span class="op">=</span>fraction_of_positives,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines+markers'</span>, name<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>set_name<span class="sc">}</span><span class="ss"> set'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>color)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new figure for the calibration plot</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>calibration_fig <span class="op">=</span> go.Figure()</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the perfectly calibrated line</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>calibration_fig.add_trace(go.Scatter(</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], y<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines'</span>, name<span class="op">=</span><span class="st">'Perfectly calibrated'</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dot'</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot calibration curve for the training set</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>plot_calibration_curve(y_train, model.predict_proba(x_train)[:, <span class="dv">1</span>], <span class="st">'Training'</span>, calibration_fig, <span class="st">'blue'</span>)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot calibration curve for the test set</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>plot_calibration_curve(y_test, model.predict_proba(x_test)[:, <span class="dv">1</span>], <span class="st">'Test'</span>, calibration_fig, <span class="st">'red'</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Set layout properties for the calibration plot</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>calibration_fig.update_layout(</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Calibration plot"</span>,</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"Mean predicted value"</span>,</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">"Fraction of positives"</span>,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span><span class="bu">dict</span>(tickvals<span class="op">=</span>[i<span class="op">/</span><span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">11</span>)], <span class="bu">range</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>]),</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span><span class="bu">dict</span>(tickvals<span class="op">=</span>[i<span class="op">/</span><span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">11</span>)], <span class="bu">range</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>]),</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>calibration_fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> auc_over_time(df, model, date_col, target_col, features):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make a copy to avoid modifying the original dataframe and convert match_date to datetime</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    weekly_df <span class="op">=</span> df.copy()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    weekly_df[date_col] <span class="op">=</span> pd.to_datetime(weekly_df[date_col])</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a 'week_start_date' column for grouping that represents the start of the week</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    weekly_df[<span class="st">'week_start_date'</span>] <span class="op">=</span> weekly_df[date_col].dt.to_period(<span class="st">'W'</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> r: r.start_time)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize a dictionary to store AUC for each week</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    weekly_auc <span class="op">=</span> {}</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> week_start_date, group <span class="kw">in</span> weekly_df.groupby(<span class="st">'week_start_date'</span>):</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> group.empty:</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>            X <span class="op">=</span> group[features]</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> group[target_col]</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>            auc <span class="op">=</span> roc_auc_score(y, model.predict_proba(X)[:, <span class="dv">1</span>])</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>            weekly_auc[week_start_date] <span class="op">=</span> auc</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series(weekly_auc)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> acc_over_time(df, model, date_col, target_col, features):</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make a copy to avoid modifying the original dataframe and convert match_date to datetime</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    weekly_df <span class="op">=</span> df.copy()</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    weekly_df[date_col] <span class="op">=</span> pd.to_datetime(weekly_df[date_col])</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a 'week_start_date' column for grouping that represents the start of the week</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    weekly_df[<span class="st">'week_start_date'</span>] <span class="op">=</span> weekly_df[date_col].dt.to_period(<span class="st">'W'</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> r: r.start_time)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize a dictionary to store AUC for each week</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    weekly_auc <span class="op">=</span> {}</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> week_start_date, group <span class="kw">in</span> weekly_df.groupby(<span class="st">'week_start_date'</span>):</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> group.empty:</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>            X <span class="op">=</span> group[features]</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> group[target_col]</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>            auc <span class="op">=</span> accuracy_score(y, model.predict(X))</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>            weekly_auc[week_start_date] <span class="op">=</span> auc</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series(weekly_auc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate weekly AUC for training and test sets</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>weekly_auc_train <span class="op">=</span> auc_over_time(dataset_train, model, <span class="st">'match_date'</span>, <span class="st">'target'</span>, features)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>weekly_auc_test <span class="op">=</span> auc_over_time(dataset_test, model, <span class="st">'match_date'</span>, <span class="st">'target'</span>, features)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the AUC over time using Plotly</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>trace0 <span class="op">=</span> go.Scatter(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>weekly_auc_train.index,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>weekly_auc_train.values,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines+markers'</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Training Set'</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>trace1 <span class="op">=</span> go.Scatter(</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>weekly_auc_test.index,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>weekly_auc_test.values,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines+markers'</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Test Set'</span>,</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>layout <span class="op">=</span> go.Layout(</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'AUC Over Time'</span>,</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Week Start Date'</span>),</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'AUC'</span>),</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure(data<span class="op">=</span>[trace0, trace1], layout<span class="op">=</span>layout)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="fl">0.5</span>, line_dash<span class="op">=</span><span class="st">"dash"</span>, line_color<span class="op">=</span><span class="st">"black"</span>,</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>              annotation_text<span class="op">=</span><span class="st">"Random prediction"</span>, annotation_position<span class="op">=</span><span class="st">"bottom right"</span>)</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>avg_train_auc <span class="op">=</span> weekly_auc_train.mean()</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>avg_test_auc <span class="op">=</span> weekly_auc_test.mean()</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Training set average line for the training period</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>fig.add_shape(<span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>              x0<span class="op">=</span>weekly_auc_train.index.<span class="bu">min</span>(), y0<span class="op">=</span>avg_train_auc,</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>              x1<span class="op">=</span>weekly_auc_train.index.<span class="bu">max</span>(), y1<span class="op">=</span>avg_train_auc,</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>              line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'blue'</span>, width<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>              xref<span class="op">=</span><span class="st">'x'</span>, yref<span class="op">=</span><span class="st">'y'</span>)</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Test set average line for the test period</span></span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>fig.add_shape(<span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>,</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>              x0<span class="op">=</span>weekly_auc_test.index.<span class="bu">min</span>(), y0<span class="op">=</span>avg_test_auc,</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>              x1<span class="op">=</span>weekly_auc_test.index.<span class="bu">max</span>(), y1<span class="op">=</span>avg_test_auc,</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>              line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'red'</span>, width<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>              xref<span class="op">=</span><span class="st">'x'</span>, yref<span class="op">=</span><span class="st">'y'</span>)</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations for the averages</span></span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>fig.add_annotation(x<span class="op">=</span>weekly_auc_train.index.<span class="bu">max</span>(), y<span class="op">=</span>avg_train_auc,</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>                   text<span class="op">=</span><span class="ss">f"Train Avg: </span><span class="sc">{</span>avg_train_auc<span class="sc">:.2f}</span><span class="ss">"</span>, showarrow<span class="op">=</span><span class="va">False</span>, yshift<span class="op">=</span><span class="dv">10</span>, bgcolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>fig.add_annotation(x<span class="op">=</span>weekly_auc_test.index.<span class="bu">max</span>(), y<span class="op">=</span>avg_test_auc,</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>                   text<span class="op">=</span><span class="ss">f"Test Avg: </span><span class="sc">{</span>avg_test_auc<span class="sc">:.2f}</span><span class="ss">"</span>, showarrow<span class="op">=</span><span class="va">False</span>, yshift<span class="op">=</span><span class="dv">10</span>, bgcolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate weekly AUC for training and test sets</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>weekly_acc_train <span class="op">=</span> acc_over_time(dataset_train, model, <span class="st">'match_date'</span>, <span class="st">'target'</span>, features)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>weekly_acc_test <span class="op">=</span> acc_over_time(dataset_test, model, <span class="st">'match_date'</span>, <span class="st">'target'</span>, features)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the AUC over time using Plotly</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>trace0 <span class="op">=</span> go.Scatter(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>weekly_acc_train.index,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>weekly_acc_train.values,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines+markers'</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Training Set'</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>trace1 <span class="op">=</span> go.Scatter(</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>weekly_acc_test.index,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>weekly_acc_test.values,</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines+markers'</span>,</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Test Set'</span>,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>layout <span class="op">=</span> go.Layout(</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Accuracy Over Time'</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Week Start Date'</span>),</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Accuracy'</span>),</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure(data<span class="op">=</span>[trace0, trace1], layout<span class="op">=</span>layout)</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="fl">0.5</span>, line_dash<span class="op">=</span><span class="st">"dash"</span>, line_color<span class="op">=</span><span class="st">"black"</span>,</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>              annotation_text<span class="op">=</span><span class="st">"Random prediction"</span>, annotation_position<span class="op">=</span><span class="st">"bottom right"</span>)</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>avg_train_acc <span class="op">=</span> weekly_acc_train.mean()</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>avg_test_acc <span class="op">=</span> weekly_acc_test.mean()</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Training set average line for the training period</span></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>fig.add_shape(<span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>,</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>              x0<span class="op">=</span>weekly_acc_train.index.<span class="bu">min</span>(), y0<span class="op">=</span>avg_train_acc,</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>              x1<span class="op">=</span>weekly_acc_train.index.<span class="bu">max</span>(), y1<span class="op">=</span>avg_train_acc,</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>              line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'blue'</span>, width<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>              xref<span class="op">=</span><span class="st">'x'</span>, yref<span class="op">=</span><span class="st">'y'</span>)</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Test set average line for the test period</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>fig.add_shape(<span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>,</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>              x0<span class="op">=</span>weekly_acc_test.index.<span class="bu">min</span>(), y0<span class="op">=</span>avg_test_acc,</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>              x1<span class="op">=</span>weekly_acc_test.index.<span class="bu">max</span>(), y1<span class="op">=</span>avg_test_acc,</span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>              line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'red'</span>, width<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>              xref<span class="op">=</span><span class="st">'x'</span>, yref<span class="op">=</span><span class="st">'y'</span>)</span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations for the averages</span></span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>fig.add_annotation(x<span class="op">=</span>weekly_acc_train.index.<span class="bu">max</span>(), y<span class="op">=</span>avg_train_acc,</span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>                   text<span class="op">=</span><span class="ss">f"Train Avg: </span><span class="sc">{</span>avg_train_acc<span class="sc">:.2f}</span><span class="ss">"</span>, showarrow<span class="op">=</span><span class="va">False</span>, yshift<span class="op">=</span><span class="dv">10</span>, bgcolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>fig.add_annotation(x<span class="op">=</span>weekly_acc_test.index.<span class="bu">max</span>(), y<span class="op">=</span>avg_test_acc,</span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>                   text<span class="op">=</span><span class="ss">f"Test Avg: </span><span class="sc">{</span>avg_test_acc<span class="sc">:.2f}</span><span class="ss">"</span>, showarrow<span class="op">=</span><span class="va">False</span>, yshift<span class="op">=</span><span class="dv">10</span>, bgcolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+</section>
+<section id="backtesting" class="level2">
+<h2 class="anchored" data-anchor-id="backtesting">Backtesting</h2>
+<blockquote class="blockquote">
+<p>Past performance is no guarantee of future results.</p>
+</blockquote>
+<p>Backtesting is all about replaying the past with your model decisions: Train model with data up to a certain date Make bets for the following day or week Repeat (1) and (2) until you cover all the test data Evaluate ML metrics (e.g.&nbsp;AUC) and business metrics (e.g ROI) on your bets</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dataset_with_odds <span class="op">=</span> pd.read_parquet(<span class="st">"match_predictions_with_odds.parquet"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dataset_with_odds <span class="op">=</span> dataset_with_odds[[<span class="st">"match_id"</span>, <span class="st">"team1_odds"</span>, <span class="st">"team2_odds"</span>]]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>dataset_with_odds <span class="op">=</span> dataset_with_odds.merge(dataset_test, on<span class="op">=</span><span class="st">"match_id"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>dataset_with_odds[<span class="st">'match_date'</span>] <span class="op">=</span> pd.to_datetime(dataset_with_odds[<span class="st">'match_date'</span>])</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>dataset_with_odds <span class="op">=</span> dataset_with_odds.sort_values(by<span class="op">=</span><span class="st">'match_date'</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>dataset_with_odds.shape, dataset_test.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>((1113837, 269), (4759, 267))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>MIN_PROBA <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>MIN_DELTA_PROBA <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>N_SIMS <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>all_samples_data <span class="op">=</span> []  <span class="co"># List to store data from all samples for later aggregation</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N_SIMS):</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> dataset_with_odds.groupby(<span class="st">'match_id'</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.sample(<span class="dv">1</span>)).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    predict_proba <span class="op">=</span> model.predict_proba(df[features])</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'team1_proba'</span>] <span class="op">=</span> predict_proba[:, <span class="dv">1</span>]</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'team2_proba'</span>] <span class="op">=</span> predict_proba[:, <span class="dv">0</span>]</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team1_implied_prob"</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> df[<span class="st">"team1_odds"</span>]</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team2_implied_prob"</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> df[<span class="st">"team2_odds"</span>]</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team1_bet"</span>] <span class="op">=</span> (df.team1_proba <span class="op">&gt;</span> MIN_PROBA) <span class="op">&amp;</span> (df.team1_proba <span class="op">&gt;</span> (df.team1_implied_prob <span class="op">+</span> MIN_DELTA_PROBA))</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team2_bet"</span>] <span class="op">=</span> (df.team2_proba <span class="op">&gt;</span> MIN_PROBA) <span class="op">&amp;</span> (df.team2_proba <span class="op">&gt;</span> (df.team2_implied_prob <span class="op">+</span> MIN_DELTA_PROBA))</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team1_returns"</span>] <span class="op">=</span> np.where(df.team1_bet <span class="op">&amp;</span> (df.winner<span class="op">==</span><span class="st">'team1'</span>), df[<span class="st">"team1_odds"</span>], <span class="fl">0.0</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"team2_returns"</span>] <span class="op">=</span> np.where(df.team2_bet <span class="op">&amp;</span> (df.winner<span class="op">==</span><span class="st">'team2'</span>), df[<span class="st">"team2_odds"</span>], <span class="fl">0.0</span>)</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"loss"</span>] <span class="op">=</span> df[<span class="st">"team1_bet"</span>].astype(<span class="bu">int</span>) <span class="op">+</span> df[<span class="st">"team2_bet"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"revenue"</span>] <span class="op">=</span> df[<span class="st">"team1_returns"</span>] <span class="op">+</span> df[<span class="st">"team2_returns"</span>]</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"profit"</span>] <span class="op">=</span> df[<span class="st">"revenue"</span>] <span class="op">-</span> df[<span class="st">"loss"</span>]</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    all_samples_data.append(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>all_samples_df <span class="op">=</span> pd.concat(all_samples_data).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>all_samples_df[<span class="st">'match_date'</span>] <span class="op">=</span> pd.to_datetime(all_samples_df[<span class="st">'match_date'</span>])</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>all_samples_df.sort_values(by<span class="op">=</span><span class="st">'match_date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>all_samples_df[<span class="st">'cumulative_profit'</span>] <span class="op">=</span> all_samples_df.groupby(<span class="st">'match_date'</span>)[<span class="st">'profit'</span>].cumsum()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>daily_profit_sum <span class="op">=</span> all_samples_df.groupby(<span class="st">'match_date'</span>)[<span class="st">'profit'</span>].<span class="bu">sum</span>().reset_index()</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>daily_profit_sum[<span class="st">'cumulative_profit'</span>] <span class="op">=</span> daily_profit_sum[<span class="st">'profit'</span>].cumsum()<span class="op">/</span>N_SIMS</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>total_profits <span class="op">=</span> all_samples_df[<span class="st">'profit'</span>].<span class="bu">sum</span>()</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>total_bets <span class="op">=</span> all_samples_df[<span class="st">'loss'</span>].<span class="bu">sum</span>()  <span class="co"># This assumes that 'loss' is the number of bets in the all_samples_df</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>roi <span class="op">=</span> total_profits <span class="op">/</span> total_bets <span class="cf">if</span> total_bets <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>roi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>0.09442104132789252</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a Plotly figure</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add traces for each sample's cumulative profits</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sample_data <span class="kw">in</span> all_samples_data:</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make sure to sort the sample_data by 'match_date'</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    sample_data_sorted <span class="op">=</span> sample_data.sort_values(by<span class="op">=</span><span class="st">'match_date'</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(go.Scatter(</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>sample_data_sorted[<span class="st">'match_date'</span>],</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>sample_data_sorted[<span class="st">'profit'</span>].cumsum(),</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">'lines'</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        line<span class="op">=</span><span class="bu">dict</span>(width<span class="op">=</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'lightgrey'</span>),</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        showlegend<span class="op">=</span><span class="va">False</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a trace for the average cumulative profits per date</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>daily_profit_sum[<span class="st">'match_date'</span>],</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>daily_profit_sum[<span class="st">'cumulative_profit'</span>],</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines'</span>,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Avg Cum. Profits'</span>,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(width<span class="op">=</span><span class="dv">3</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding ROI text</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>[daily_profit_sum[<span class="st">'match_date'</span>].iloc[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> pd.DateOffset(days<span class="op">=</span><span class="dv">4</span>)],</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>[daily_profit_sum[<span class="st">'cumulative_profit'</span>].iloc[<span class="op">-</span><span class="dv">1</span>]],</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    text<span class="op">=</span>[<span class="ss">f"ROI: </span><span class="sc">{</span>roi<span class="sc">:.2f}</span><span class="ss">"</span>],  <span class="co"># The ROI text</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">"text"</span>,</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    textfont<span class="op">=</span><span class="bu">dict</span>(  <span class="co"># Adjust the font properties here</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>        size<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">'black'</span>,</span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Update layout to add titles and make it more informative</span></span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Cumulative Profits over Time with Average"</span>,</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"Match Date"</span>,</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">"Cumulative Profit"</span>,</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>    legend_title<span class="op">=</span><span class="st">"Legend"</span>,</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">"plotly_white"</span>,</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>        <span class="bu">type</span><span class="op">=</span><span class="st">'date'</span>  <span class="co"># Ensure that x-axis is treated as date</span></span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the figure</span></span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+</section>
+<section id="why-did-i-lose-money-after-all" class="level2">
+<h2 class="anchored" data-anchor-id="why-did-i-lose-money-after-all">Why did I lose money after all?</h2>
+<p>While we don’t know the precise root cause of the massive bankroll drop we faced in July 2019 (trust me, we tried), in retrospect, I realise there were many systematic failures which led to those results:</p>
+<ul>
+<li>Little risk management: besides the backtesting curves, I didn’t check other risk metrics like risk-adjusted returns (e.g.&nbsp;Sharpe ratio) or the maximum drawdown of the strategy - more importantly, I didn’t consider the “unknown unkowns”</li>
+<li>No entry strategy: even Ed Thorp with his card counting skills started small and paper-traded for a while before going all in - I came in too strong without any idea whether the system worked in practice or not (and it didn’t)</li>
+<li>No exit strategy: I decided to quit based on “vibes”, but quittin</li>
+<li>“ML is all you need” fallacy: ML is always just a small part of a broader system</li>
+</ul>
+<p>Overall, emotions clouded my judgement and I focused too much in ML and too little in finance. If I had started small, paper-trading or making small fixed amounts, and validated the system end-to-end before increasing the bets, I probably wouldn’t have lost so much money so fast.</p>
+</section>
+</section>
+<section id="take-aways" class="level1">
+<h1>Take aways</h1>
+<p>Don’t believe anyone who sells you how to trade or bet (with ML or otherwise). Your edges need to be hard won and only known to you. Be rigorous about your edge: backtesting is not enough, consider the possible unknown unknowns and have a thorough financial strategy including entry and exit plans.</p>
+<p>If you use <code>predict_proba</code>, make sure probabilities are calibrated. If not, calibrate them post-hoc. Whenever you bid for something, beware the winner’s curse. Paper-trade your strategy before putting real money on the line.</p>
+<p>Final take away: Making money directly with ML is hard, just find a ML job instead!</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/csgo_betting_with_ml_part_1/csgo_betting_with_ml_part_1.html",
       "/posts/serverless_model_deployment/serverless_model_deployment.html",
       "/posts/name_classification/name_classification.html",
       "/posts/hierarchy_needs_ml/index.html",

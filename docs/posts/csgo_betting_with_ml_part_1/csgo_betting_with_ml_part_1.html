@@ -184,13 +184,13 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="How I lost 1000 euros betting on CS:GO">
-<meta property="og:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration and the winner’s curse.">
+<meta property="og:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration, and the winner’s curse.">
 <meta property="og:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/ml_profits_meme.png">
 <meta property="og:site-name" content="Pedro Tabacof's blog">
 <meta property="og:image:height" content="704">
 <meta property="og:image:width" content="1252">
 <meta name="twitter:title" content="How I lost 1000 euros betting on CS:GO">
-<meta name="twitter:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration and the winner’s curse.">
+<meta name="twitter:description" content="Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration, and the winner’s curse.">
 <meta name="twitter:image" content="https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/ml_profits_meme.png">
 <meta name="twitter:image-height" content="704">
 <meta name="twitter:image-width" content="1252">
@@ -247,7 +247,7 @@ e.exports=function(t){return null!=t&&(n(t)||function(t){return"function"==typeo
       <h1 class="title">How I lost 1000€ betting on CS:GO — Foundations</h1>
                   <div>
         <div class="description">
-          <p>Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration and the winner’s curse.</p>
+          <p>Part 1 of a series of 2 posts where I explore how I lost 1000 euros betting on CS:GO with machine learning (ML). This post covers the foundations of e-sports betting with ML: financial decision-making, expected profits of a bet, multible bets with the Kelly criterion, probability calibration, and the winner’s curse.</p>
         </div>
       </div>
                 </div>
@@ -339,7 +339,7 @@ if (outputEl) {{
 </div>
 </div>
 <p>As you can see, I lost a lot of money very quickly, then my losses plateaued until I grew bored and decided to cut my losses. My friend persisted and he ended up making a 7.5% return on investment (ROI)! We did have an edge after all and I squandered it. This and the next post are a lesson on both how to bet with ML and how to avoid my mistakes. <strong>The lessons should apply more broadly than just for e-sports betting</strong>, as the concepts to be discussed can be applied to other financial domains like credit, fraud and marketing.</p>
-<p>First, on this post, I go over the foundations needed to understand how to make financial decisions with ML:</p>
+<p>First, in this post, I go over the foundations needed to understand how to make financial decisions with ML:</p>
 <ul>
 <li>What is your edge?</li>
 <li>Financial decision-making with ML</li>
@@ -356,7 +356,7 @@ if (outputEl) {{
 <li>Modelling</li>
 <li>Evaluation</li>
 <li>Backtesting</li>
-<li>Why I actually lost 1000 euros</li>
+<li>Why I lost 1000 euros</li>
 </ul>
 <section id="foundations" class="level1">
 <h1>Foundations</h1>
@@ -365,17 +365,17 @@ if (outputEl) {{
 <blockquote class="blockquote">
 <p>If you’re playing a poker game and you look around the table and you can’t tell who the sucker is, it’s you.</p>
 </blockquote>
-<p>If you want make money by betting or trading, you need to have an edge. While the <a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis">efficient market hypothesis</a> is a good first approximation and suggests edges shouldn’t exist, clearly there are situations where you can exploit market inefficiencies for monetary gains. <em>That is your edge</em>. That is how funds like Renaissance Technologies make money over decades. For a clear first-person narrative on finding edges and beating casinos and markets, read <a href="https://nntaleb.medium.com/foreword-to-ed-thorps-memoirs-a-man-for-all-markets-6beba78cd2b">Ed Thorp’s biography</a>, who proved card counting could be profitable and pioneered quantitative finance. More on him later.</p>
+<p>If you want to make money by betting or trading, you need to have an edge. While the <a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis">efficient market hypothesis</a> is a good first approximation and suggests edges shouldn’t exist, clearly there are situations where you can exploit market inefficiencies for monetary gains. <em>That is your edge</em>. That is how funds like Renaissance Technologies make money over decades. For a clear first-person narrative on finding edges and beating casinos and markets, read <a href="https://nntaleb.medium.com/foreword-to-ed-thorps-memoirs-a-man-for-all-markets-6beba78cd2b">Ed Thorp’s biography</a>, who proved card counting could be profitable and pioneered quantitative finance. More on him later.</p>
 <p>According to Agustin Lebron in the <a href="https://www.lawsoftrading.com/">Laws of Trading</a>, an edge is defined as “the set of reasons, the explanation, why you think a given trade has a positive expected value. In other words, why does that trade make money on average?”. More importantly, he highlights that if you can’t explain your edge in 5 minutes, you probably don’t have a very good one.</p>
-<p>Watch out for anecdotal evidence of anyone beating the market, as it could solely be due to survivorship bias. Edges are not sold on the public market, so be skeptical with anyone trying to sell you a way to make money. Whenever an edge becomes public, it’s not an edge anymore.</p>
+<p>Watch out for anecdotal evidence of anyone beating the market, as it could solely be due to survivorship bias. Edges are not sold on the public market, so be skeptical of anyone trying to sell you a way to make money. Whenever an edge becomes public, it’s not an edge anymore.</p>
 <p>That is why you should read about failure stories, like mine, as they carry important lessons not contaminated by bad incentives or biases. Nassim Taleb, for example, recommends the book <a href="https://www.amazon.co.uk/Learned-Million-Columbia-Business-Publishing/dp/0231164688">What I Learned Losing a Million Dollars</a> as “one of the rare noncharlatanic books in finance”.</p>
-<p>Our edge, or so we thought, was to use the power of tabular ML to beat the bookmakers. We had worked previously with credit, fraud, and insurance, and we believed our skill set in those areas would translate to an advantage here. While that’s a flimsy argument at face value, the backtests we ran indicated we did have an edge indeed (more on that on the next post). We chose CS:GO in particular as it had enough match data available in public that we could scrape and leverage for our models. Plus, we thought it’d be a much more incipient market compared to horse racing or football betting.</p>
+<p>Our edge, or so we thought, was to use the power of tabular ML to beat the bookmakers. We had worked previously with credit, fraud, and insurance, and we believed our skill set in those areas would translate to an advantage here. While that’s a flimsy argument at face value, the backtests we ran indicated we did have an edge indeed (more of that in the next post). We chose CS:GO in particular as it had enough match data available in public that we could scrape and leverage for our models. Plus, we thought it’d be a much more incipient market compared to horse racing or football betting.</p>
 </section>
 <section id="financial-decision-making-with-ml" class="level2">
 <h2 class="anchored" data-anchor-id="financial-decision-making-with-ml">Financial decision-making with ML</h2>
-<p>How can you use ML for sports betting? That has a surprising long history: Decades ago, logistic regression was being used for horse racing betting and <a href="https://www.bloomberg.com/news/features/2018-05-03/the-gambler-who-cracked-the-horse-racing-code">made some people rich</a>. Essentially, it’s not different from using ML in any other financial decision-making application, such as giving loans or stopping fraudulent transactions.</p>
+<p>How can you use ML for sports betting? That has a surprisingly long history: Decades ago, logistic regression was being used for horse racing betting and <a href="https://www.bloomberg.com/news/features/2018-05-03/the-gambler-who-cracked-the-horse-racing-code">made some people rich</a>. Essentially, it’s not different from using ML in any other financial decision-making application, such as giving loans or stopping fraudulent transactions.</p>
 <p><img src="ml_profits_meme.png" class="img-fluid"></p>
-<p>Let’s work backwards from a simple profits equation. Profits can be defined as revenue minus costs<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and as a function of actions <code>a</code>. The actions <code>a</code> you take are betting, providing credit, and blocking transactions. You can simply write it as:</p>
+<p>Let’s work backward from a simple profits equation. Profits can be defined as revenue minus costs<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and as a function of actions <code>a</code>. The actions <code>a</code> you take are betting, providing credit, and blocking transactions. You can simply write it as:</p>
 <p><span class="math display">\[
 \text{Profits}(a) = \sum \text{Revenue}(a) - \sum \text{Cost}(a)
 \]</span></p>
@@ -400,7 +400,7 @@ if (outputEl) {{
 <li>Expected cost: Transaction amount <span class="math inline">\(\cdot\)</span> <strong>Probability of fraud</strong></li>
 </ul></li>
 </ul>
-<p>ML can help by filling in the blanks (in bold): ML models can predict the probability of winning a bet, default of a loan or fraud for a transaction. With such probabilities and the other fixed quantities known (like the interest rate), you can choose an action <code>a</code> that maximizes the profits. Let’s work that out in the case of betting.</p>
+<p>ML can help by filling in the blanks (in bold): ML models can predict the probability of winning a bet, defaulting on a loan, or transaction fraud. With such probabilities and the other fixed quantities known (like the interest rate), you can choose an action <code>a</code> that maximizes the profits. Let’s work that out in the case of betting.</p>
 </section>
 <section id="one-bet-expected-profits-and-decision-rule" class="level2">
 <h2 class="anchored" data-anchor-id="one-bet-expected-profits-and-decision-rule">One bet: Expected profits and decision rule</h2>
@@ -410,7 +410,7 @@ E[Profits(bet=10)] &amp;= E[Revenue(bet=10)] - E[Cost(bet=10)] \\
                    &amp;= 2 \cdot 10 \cdot P - 10 \cdot (1 - P) \\
                    &amp;= 30 \cdot P - 10
 \end{align}\]</span></p>
-<p>This leads to the following decision rule: if <span class="math inline">\(P \gg 1/3\)</span>, you should bet on A. If <span class="math inline">\(P \ll 1/3\)</span>, you should bet on B. If <span class="math inline">\(P \approx 1/3\)</span>, you should not bet at all<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Also, this implies that, if the market is efficient, then betting odds of 2 implies probability of winning to be 1/3.</p>
+<p>This leads to the following decision rule: if <span class="math inline">\(P \gg 1/3\)</span>, you should bet on A. If <span class="math inline">\(P \ll 1/3\)</span>, you should bet on B. If <span class="math inline">\(P \approx 1/3\)</span>, you should not bet at all<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Also, this implies that, if the market is efficient, then betting odds of 2 implies the probability of winning to be 1/3.</p>
 <p>Now, let’s make it broader and consider any betting odds <span class="math inline">\(O\)</span> and that the probability of A beating B is <span class="math inline">\(P(X_A, X_B)\)</span>, where <span class="math inline">\(X\)</span> are the features of each team (say, their latest result):</p>
 <p><span class="math display">\[\begin{align}
 E[Profits(bet)] &amp;= E[Revenue(bet)] - E[Loss(bet)] \\
@@ -539,7 +539,7 @@ if (outputEl) {{
 </section>
 <section id="probability-calibration" class="level2">
 <h2 class="anchored" data-anchor-id="probability-calibration">Probability calibration</h2>
-<p>Some of the assumptions above are not realistic in real life. The probability <span class="math inline">\(P(X_A, X_B)\)</span> is never exactly known, even if it can be predicted by a ML model trained on historical data (which is the major theme of the second post in this series). But even if you have a good model for that, it doesn’t mean that the probability is calibrated. Also, it assumes the data-generating process to be stationary<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>, another further complication discussed in the second post.</p>
+<p>Some of the assumptions above are not realistic in real life. The probability <span class="math inline">\(P(X_A, X_B)\)</span> is never exactly known, even if it can be predicted by an ML model trained on historical data (which is the major theme of the second post in this series). But even if you have a good model for that, it doesn’t mean that the probability is calibrated. Also, it assumes the data-generating process to be stationary<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>, another further complication discussed in the second post.</p>
 <p>Before we go on further, we need to actually define what probability calibration means: if the model predicts probability of <span class="math inline">\(X\)</span>, it should be correct <span class="math inline">\(X%\)</span> of the times. This can be better visualized with a calibration plot, where the dotted blue line represents a perfectly calibrated model and the black line represents the uncalibrated predictions of a fake model:</p>
 <div class="cell" data-execution_count="4">
 <details>
@@ -607,14 +607,14 @@ if (outputEl) {{
 </div>
 </div>
 <p>Note that calibration is not enough: if your model predicts 50% for a coin flip, it’s perfectly calibrated but also totally useless!</p>
-<p>How do you calibrate a model? If your loss function is a <a href="https://en.wikipedia.org/wiki/Scoring_rule">proper scoring rule</a>, like the the negative log-likelihood (NLL), it should come calibrated by default<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. But if your loss doesn’t lead to calibration or if empirically you see calibration issues, you can always use a <a href="https://scikit-learn.org/stable/modules/calibration.html">calibration method</a>:</p>
+<p>How do you calibrate a model? If your loss function is a <a href="https://en.wikipedia.org/wiki/Scoring_rule">proper scoring rule</a>, like the negative log-likelihood (NLL), it should come calibrated by default<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. But if your loss doesn’t lead to calibration or if empirically you see calibration issues, you can always use a <a href="https://scikit-learn.org/stable/modules/calibration.html">calibration method</a>:</p>
 <ul>
-<li>Platt scaling: logistic regression on the output of the model, usually applied to smooth predictors like MLPs</li>
+<li>Platt scaling: logistic regression on the output of the model, usually applied to smooth predictors like neural networks</li>
 <li>Isotonic regression: non-parametric method that fits a piecewise-constant non-decreasing function to the data, usually applied to tree-based models like XGBoost</li>
 </ul>
-<p>Measuring calibration is tricky as there is a trade-off between calibration and discrimination. As the coin flip example shows, a dumb model can be calibrated, while a model with amazing discrimination powers could be uncalibrated. Therefore, you need to to look at both calibration and discrimination (accuracy, AUC, precision-recall, etc) separately. With respect to the calibration part alone, I suggest two assessments:</p>
+<p>Measuring calibration is tricky as there is a trade-off between calibration and discrimination. As the coin flip example shows, a dumb model can be calibrated, while a model with amazing discrimination powers could be uncalibrated. Therefore, you need to look at both calibration and discrimination (accuracy, AUC, precision-recall, etc) separately. With respect to the calibration part alone, I suggest two assessments:</p>
 <ol type="1">
-<li>Calibration plot (like shown above): visual inspection always helps making sense of the data</li>
+<li>Calibration plot (like shown above): visual inspection always helps make sense of the data</li>
 <li>Brier score / negative log-likelihood: they are proper scoring rules and they balance calibration and discrimination, so the smaller the better in both senses (0 is perfect but usually not achievable)</li>
 </ol>
 <p>If you want to automate the visual inspection in (1), you can use the expected calibration error (ECE), which is the average difference between the accuracy and the confidence of the predictions. The smaller the ECE, the better the calibration. For more on this topic, read <a href="https://arxiv.org/abs/1706.04599">On Calibration of Modern Neural Networks</a>.</p>
@@ -624,8 +624,8 @@ if (outputEl) {{
 <blockquote class="blockquote">
 <p>If it sounds too good to be true, it probably is!</p>
 </blockquote>
-<p>The <a href="https://en.wikipedia.org/wiki/Winner's_curse">winner’s curse</a> is a phenomenon that occurs when buyers overpay for something that they won in an auction, a form of selection bias. Consider the following toy experiment: Say you have N people bidding for a product, the true value of the product is V, and each person estimates the value of the product with <span class="math inline">\(v \sim N(V, \sigma)\)</span>, where N is a normal distribution and <span class="math inline">\(\sigma\)</span> is the standard deviation of the estimate. This means that the value estimations are unbiased (correct on average). The person who bids the highest, wins. Assuming a second-price auction<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>, what is the expected value of the winning bid?</p>
-<p>Let’s assume the item is worth \$1000, the standard deviation of the estimates is \$50, and that there are 10 bidders. In a second-price auction, you bet the expected value of the item. If you win, you only have to pay the second highest bid. We can simulate that easily:</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Winner's_curse">winner’s curse</a> is a phenomenon that occurs when buyers overpay for something that they won in an auction, a form of selection bias. Consider the following toy experiment: Say you have N people bidding for a product, the true value of the product is V, and each person estimates the value of the product with <span class="math inline">\(v \sim N(V, \sigma)\)</span>, where N is a normal distribution and <span class="math inline">\(\sigma\)</span> is the standard deviation of the estimate. This means that the value estimations are unbiased (correct on average). The person who bids the highest wins. Assuming a second-price auction<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>, what is the expected value of the winning bid?</p>
+<p>Let’s assume the item is worth \$1000, the standard deviation of the estimates is \$50, and that there are 10 bidders. In a second-price auction, you bet the expected value of the item. If you win, you only have to pay the second-highest bid. We can simulate that easily:</p>
 <div class="cell" data-execution_count="5">
 <details>
 <summary>Code</summary>
@@ -721,21 +721,21 @@ if (outputEl) {{
 </div>
 </div>
 <p>That is, the expected <strong>overpayment</strong> conditional on winning the auction is \$50, 5% of the actual value of the item! <em>What is surprising is that the winner’s curse can exist even if there are no biases in the estimates of the item’s value.</em></p>
-<p>In auctions, it’s very difficult to be rid of the winner’s curse, as it depends on not just your estimate of the item’s value but also everyone else’s. Plus, it also depends whether it’s a first- or second-price auction. For more, read <a href="https://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.2.1.191">Richard Thaler’s intro on the topic</a>.</p>
+<p>In auctions, it’s very difficult to be rid of the winner’s curse, as it depends on not just your estimate of the item’s value but also everyone else’s. Plus, it also depends on whether it’s a first- or second-price auction. For more, read <a href="https://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.2.1.191">Richard Thaler’s intro on the topic</a>.</p>
 <section id="from-winners-curse-to-winning-strategy" class="level3">
 <h3 class="anchored" data-anchor-id="from-winners-curse-to-winning-strategy">From winner’s curse to winning strategy</h3>
 <p>For sports betting, consider the following: If your model prediction differs from the implied betting odds, which one is more likely to be wrong? Also, consider that whenever your model is wildly overconfident, that is when you will bet the most and most wrongly. That is a recipe for disaster, as even a perfectly calibrated and precise model on average could still lead to ruinous betting decisions if you only act when it’s wrong.</p>
 <p>The only protection against the winner’s curse and selection bias is extensive validation: backtest your strategy and <a href="https://en.wikipedia.org/wiki/Stock_market_simulator">paper-trade</a> before spending real money. The backtest will provide you with a list of bets you would have made in the past and paper-trading will allow you to validate your strategy and collect data in real time.</p>
 <p>With such “counterfactual” betting data, you can ensure that your model and strategy work not just on expectation but also for the bets you actually would have made. That is, you must evaluate your model metrics, including calibration, on the matches you would have bet on. You can also use this data to calculate the ROI and risk metrics (e.g.&nbsp;Sharpe ratio and maximum drawdown) of your betting strategy in order to further validate your edge and determine its profitability and risk<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <p>Even Ed Thorp, when he had a clear and quantified edge by card counting on blackjack, paper-traded and started small until he fully embraced the Kelly criterion. He actually made some mistakes and lost money early on until he figured out the proper winning strategy. Then, he adopted the Kelly criterion and made huge sums until he was banned from and threatened by many casinos. He then moved on to beat the stock market and became a billionaire.</p>
-<p>Backtesting and paper-trading are not enough. You also should have an entry and exist strategy to allow you to validate every piece of your strategy before you go all-in. That is, you should have a plan for when to stop betting and when to increase your bets that is not model-dependent. Simulation is essential but it can only go so far, as there are always <a href="https://en.wikipedia.org/wiki/There_are_unknown_unknowns">unknown unknowns</a> which will only be surfaced when you start betting for real.</p>
+<p>Backtesting and paper-trading are not enough. You also should have entry and exit plans to validate every piece of your strategy before you go all-in. That is, you should have a plan for when to start and stop betting and when to increase your bets that is not model-dependent. Simulation is essential but it can only go so far, as there are always <a href="https://en.wikipedia.org/wiki/There_are_unknown_unknowns">unknown unknowns</a> that will only be surfaced when you close the loop and bet for real.</p>
 </section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In this post, I went over some concepts you need to know to use ML for e-sports betting. They apply more broadly than just CS:GO betting and might be useful for credit, fraud and marketing decisions, as I can attest from my own previous experiences in all of those fields. For example, I developed risk models for credit lines that impacted the bank’s credit exposure by dozens of millions of dollars using a profit-revenue-cost framework that was much more complex but similar in principle to what I describe in this post. I might write about that in the future in more details, so let me know if that interests you.</p>
-<p>I didn’t cover some important topics for financial decision-making which might not be that relevant for betting but might be for other areas, the most glaring omission being causal inference. For more on that, read <a href="https://www.oreilly.com/library/view/causal-inference-in/9781098140243/">Causal Inference in Python</a>, written by a former colleague that worked with me in credit.</p>
-<p>For the next post, to be released soon, I will go over how we actually implemented our solution, including the features and betting odds data, the modelling, evaluation and metrics, and the backtesting showing our strategy had a positive ROI in theory. Also, I comment on why I failed make money given the theoretical edge. Stay tuned!</p>
+<p>I didn’t cover some important topics for financial decision-making which might not be that relevant for betting but might be for other areas, the most glaring omission being causal inference. For more on that, read <a href="https://www.oreilly.com/library/view/causal-inference-in/9781098140243/">Causal Inference in Python</a>, written by a former colleague who worked with me in credit.</p>
+<p>For the next post, to be released soon, I will go over how we actually implemented our solution, including the features and betting odds data, the modeling, evaluation and metrics, and the backtesting showing our strategy had a positive ROI in theory. Also, I comment on why I failed to make money given the theoretical edge. Stay tuned!</p>
 <section id="acknowledgements" class="level3">
 <h3 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h3>
 <p>This post would not exist without the ideas of <a href="https://www.linkedin.com/in/ramon-de-oliveira/">Ramon de Oliveira</a>, who worked with me on the project and did most of the implementation. I also thank <a href="https://raphaeltamaki.github.io/raphaeltamaki/">Raphael Tamaki</a> for his feedback on the post.</p>

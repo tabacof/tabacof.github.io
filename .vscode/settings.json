@@ -1,5 +1,8 @@
 {
     "cSpell.enableFiletypes": [
         "quarto"
+    ],
+    "cSpell.words": [
+        "backtesting"
     ]
 }

@@ -1,0 +1,84 @@
+---
+title: "Research"
+description: "Research publications and open-source work by Pedro Tabacof."
+page-layout: full
+toc: false
+---
+
+::: {.page-head}
+# Research
+
+My work includes an ICLR main-conference paper and four papers accepted at NeurIPS workshops, including a spotlight. It spans language-model negotiation, probability calibration, adversarial examples, uncertainty, and collective behavior. See also [Google Scholar](https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en).
+:::
+
+::: {.content-page}
+::: {.publication}
+<span class="pub-year">2026</span> <span class="venue-badge">NeurIPS · SLM-Agents workshop · Poster</span>
+
+## [Do Small Language Models Learn to Negotiate? A Controlled Scaling Study of RL-Trained Sellers](https://arxiv.org/abs/2610.06204)
+Pedro Tabacof and Sagar Joglekar.
+
+A controlled study of model size, learning rate, and buyer-model generalization across 1,152 negotiations. Accepted as a poster at the NeurIPS 2026 Workshop on SLMs for Agentic Systems.
+:::
+
+::: {.publication}
+<span class="pub-year">2020</span> <span class="venue-badge">ICLR · Main conference</span>
+
+## [Probability Calibration for Knowledge Graph Embedding Models](https://openreview.net/forum?id=S1g8K1BFwS)
+Pedro Tabacof and Luca Costabello.
+
+Calibrating knowledge-graph embeddings when ground-truth negatives are unavailable.
+:::
+
+::: {.publication}
+<span class="pub-year">2018</span> <span class="venue-badge">NeurIPS · LatinX in AI workshop</span>
+
+## [Adversarial Attacks on Variational Autoencoders](https://arxiv.org/abs/1806.04646)
+George Gondim-Ribeiro, Pedro Tabacof, and Eduardo Valle.
+
+A framework for attacking and quantitatively evaluating variational autoencoders across MNIST, SVHN, and CelebA.
+:::
+
+::: {.publication}
+<span class="pub-year">2017</span> <span class="venue-badge">PLOS ONE</span>
+
+## [The role of the interaction network in the emergence of diversity of behavior](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0172073)
+Alan Godoy, Pedro Tabacof, and Fernando J. Von Zuben.
+
+How small-world interaction networks create specialised behaviour among otherwise identical agents.
+:::
+
+::: {.publication}
+<span class="pub-year">2016</span> <span class="venue-badge">NeurIPS · Bayesian Deep Learning workshop</span>
+
+## [Known Unknowns: Uncertainty Quality in Bayesian Neural Networks](https://arxiv.org/abs/1612.01251)
+Ramon Oliveira, Pedro Tabacof, and Eduardo Valle. [Code](https://github.com/tabacof/bayesian-nn-uncertainty).
+
+An anomaly-detection test for uncertainty quality, plus a faster variational sampling method for Bayesian neural networks.
+:::
+
+::: {.publication}
+<span class="pub-year">2016</span> <span class="venue-badge">NeurIPS · Adversarial Training workshop · Spotlight</span>
+
+## [Adversarial Images for Variational Autoencoders](https://arxiv.org/abs/1612.00155)
+Pedro Tabacof, Julia Tavares, and Eduardo Valle. [Code](https://github.com/tabacof/adv_vae).
+
+A targeted attack on latent representations that makes an autoencoder reconstruct a different image.
+:::
+
+::: {.publication}
+<span class="pub-year">2016</span> <span class="venue-badge">IJCNN</span>
+
+## [Exploring the Space of Adversarial Images](https://arxiv.org/abs/1510.05328)
+Pedro Tabacof and Eduardo Valle. [Code](https://github.com/tabacof/adversarial).
+
+A study and visualisation of where adversarial images appear in pixel space, from MNIST to ImageNet.
+:::
+
+## Open source
+
+- [adversarial](https://github.com/tabacof/adversarial) — experiments for *Exploring the Space of Adversarial Images*.
+- [bayesian-nn-uncertainty](https://github.com/tabacof/bayesian-nn-uncertainty) — uncertainty experiments with Bayesian neural networks.
+- [rust-trees](https://github.com/tabacof/rust-trees) — decision trees, random forests, and causal forests in Rust.
+- [AmpliGraph](https://github.com/Accenture/AmpliGraph) — representation learning on knowledge graphs; I contributed to the project and calibration work.
+:::

@@ -3,21 +3,49 @@ project:
   output-dir: docs
 
 website:
-  title: "Pedro Tabacof's blog"
+  title: "Pedro Tabacof"
   site-url: https://tabacof.github.io/
-  description: "Pedro Tabacof's personal blog"
-  twitter-card: true
-  open-graph: true
+  description: "Pedro Tabacof is a Principal Machine Learning Scientist working on reliable AI systems, evaluation, experimentation, and applied machine learning."
+  favicon: favicon.svg
+  open-graph:
+    locale: en_IE
+    site-name: Pedro Tabacof
+  twitter-card:
+    card-style: summary
+  search: true
   navbar:
+    title: "Pedro Tabacof"
+    pinned: true
     right:
-      - about.qmd
-      - icon: github
-        href: https://github.com/tabacof/
-      - icon: linkedin
+      - text: Experience
+        href: work.qmd
+      - text: Blog
+        href: blog.qmd
+      - text: Research
+        href: research.qmd
+      - text: Talks
+        href: writing.qmd
+      - text: About
+        href: about.qmd
+  page-footer:
+    left: "© 2026 Pedro Tabacof"
+    right:
+      - text: Email
+        href: mailto:tabacof@gmail.com
+      - text: LinkedIn
         href: https://www.linkedin.com/in/tabacof/
-      - icon: twitter
-        href: https://twitter.com/PedroTabacof
+      - text: GitHub
+        href: https://github.com/tabacof/
+  page-navigation: false
+
 format:
   html:
-    theme: litera
-    css: styles.css
+    theme: default
+    css: site.css
+    canonical-url: true
+    toc: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    include-in-header: _includes/head.html
+    include-before-body: _includes/body-start.html
+    code-copy: true

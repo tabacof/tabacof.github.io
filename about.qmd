@@ -1,27 +1,20 @@
 ---
 title: "About"
-image: profile.jpg
-about:
-  template: jolla
-  links:
-    - icon: twitter
-      text: Twitter
-      href: https://twitter.com/PedroTabacof
-    - icon: linkedin
-      text: LinkedIn
-      href: https://www.linkedin.com/in/tabacof/
-    - icon: github
-      text: Github
-      href: https://github.com/tabacof/
-    - icon: google
-      text: Google scholar
-      href: https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en&authuser=1
-
+description: "About Pedro Tabacof, Principal Machine Learning Scientist based in Ireland."
+page-layout: full
+toc: false
 ---
 
-Personal blog of Pedro Tabacof.
+::: {.page-head}
+# About
+:::
 
-Check out my academic work [here](https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en&authuser=1).
+::: {.content-page .about-page}
+I am a Principal Machine Learning Scientist at Fin, based in Ireland. I have worked in machine learning for more than ten years, from academic research to production systems.
 
-Reach out to me via Linkedin, Twitter, or last name at gmail dot com.
+I currently lead Fin Core, the workstream responsible for most behaviour between an end user and Fin’s AI agent. That includes answering informational and personalised questions, following customer guidance, taking actions, and handling the conversational details around those tasks. My work spans product strategy, evaluation, online experiments, and hands-on implementation.
 
+Earlier in my career I built systems for marketing attribution and lifetime-value forecasting at Wildlife Studios, credit and risk at Nubank, fraud detection at iFood, and knowledge-graph research at Accenture. I trained as a computer engineer and completed an M.Sc. in machine learning at the University of Campinas.
+
+For speaking, research, or professional conversations, email me at [tabacof@gmail.com](mailto:tabacof@gmail.com). You can also find me on [LinkedIn](https://www.linkedin.com/in/tabacof/), [Google Scholar](https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en), and [GitHub](https://github.com/tabacof/).
+:::

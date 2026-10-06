@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Pedro Tabacof</title>
+<link>https://tabacof.github.io/blog.html</link>
+<atom:link href="https://tabacof.github.io/blog.xml" rel="self" type="application/rss+xml"/>
+<description>Pedro Tabacof&#39;s writing about machine learning, statistics, experiments, and engineering.</description>
+<generator>quarto-1.10.18</generator>
+<lastBuildDate>Wed, 10 Jul 2024 23:00:00 GMT</lastBuildDate>
+<item>
+  <title>How I lost 1000€ betting on CS:GO — Practice</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/csgo_betting_with_ml_part_2.html</link>
+  <description><![CDATA[ How I lost 1000 euros betting on CS:GO with machine learning and Python ]]></description>
+  <guid>https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/csgo_betting_with_ml_part_2.html</guid>
+  <pubDate>Wed, 10 Jul 2024 23:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/backtest_profits.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
+<item>
+  <title>How I lost 1000€ betting on CS:GO — Theory</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/csgo_betting_with_ml_part_1.html</link>
+  <description><![CDATA[ How I lost 1000 euros betting on CS:GO with machine learning and Python ]]></description>
+  <guid>https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/csgo_betting_with_ml_part_1.html</guid>
+  <pubDate>Thu, 04 Jan 2024 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Real-Time ML Models with Serverless AWS</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/serverless_model_deployment/serverless_model_deployment.html</link>
+  <description><![CDATA[ Serverless model deployment with AWS Lambda and API gateway ]]></description>
+  <guid>https://tabacof.github.io/posts/serverless_model_deployment/serverless_model_deployment.html</guid>
+  <pubDate>Sat, 03 Jun 2023 23:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/serverless_model_deployment/api_gateway.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Name classification with ChatGPT</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/name_classification/name_classification.html</link>
+  <description><![CDATA[ Name classification with ChatGPT: How does it compare to machine learning language models? ]]></description>
+  <guid>https://tabacof.github.io/posts/name_classification/name_classification.html</guid>
+  <pubDate>Sun, 26 Mar 2023 23:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>The Hierarchy of Machine Learning Needs</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/hierarchy_needs_ml/</link>
+  <description><![CDATA[ In 1943, Abraham Maslow created the <a href="https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs">hierarchy of human needs</a>, ranging from basic physiological needs to abstract concepts like self-actualization. In this article, I propose a hierarchy of machine learning needs: ]]></description>
+  <guid>https://tabacof.github.io/posts/hierarchy_needs_ml/</guid>
+  <pubDate>Wed, 15 Mar 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>NeurIPS 2018: A Data Scientist’s Perspective</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/neurips_2018/</link>
+  <description><![CDATA[ <img src="https://tabacof.github.io/posts/neurips_2018/montreal.jpeg" class="img-fluid"> ]]></description>
+  <guid>https://tabacof.github.io/posts/neurips_2018/</guid>
+  <pubDate>Mon, 17 Dec 2018 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>How (not) to forecast an election</title>
+  <dc:creator>Pedro Tabacof</dc:creator>
+  <link>https://tabacof.github.io/posts/how_not_to_forecast_election/</link>
+  <description><![CDATA[ <em>We use a hierarchical Bayesian model to show how a simple pro-Trump bias has a huge effect on forecasting election results. See the discussion on <a href="https://news.ycombinator.com/item?id=13049651">HackerNews</a>.</em> ]]></description>
+  <guid>https://tabacof.github.io/posts/how_not_to_forecast_election/</guid>
+  <pubDate>Wed, 16 Nov 2016 00:00:00 GMT</pubDate>
+  <media:content url="https://tabacof.github.io/posts/how_not_to_forecast_election/us_map_bias.gif" medium="image" type="image/gif"/>
+</item>
+</channel>
+</rss>

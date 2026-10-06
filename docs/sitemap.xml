@@ -1,39 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://tabacof.github.io/posts/serverless_model_deployment/serverless_model_deployment.html</loc>
-    <lastmod>2024-07-13T17:15:55.258Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</loc>
-    <lastmod>2024-07-13T17:15:56.222Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/name_classification/name_classification.html</loc>
-    <lastmod>2024-07-13T17:15:58.249Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/neurips_2018/index.html</loc>
-    <lastmod>2024-07-13T17:15:58.693Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/csgo_betting_with_ml_part_1.html</loc>
-    <lastmod>2024-07-13T17:16:00.070Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/csgo_betting_with_ml_part_2.html</loc>
-    <lastmod>2024-07-13T17:16:03.649Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</loc>
-    <lastmod>2024-07-13T17:16:04.235Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tabacof.github.io/index.html</loc>
-    <lastmod>2024-07-13T17:16:04.820Z</lastmod>
+    <loc>https://tabacof.github.io/blog.html</loc>
+    <lastmod>2026-10-06T19:50:20.637Z</lastmod>
   </url>
   <url>
     <loc>https://tabacof.github.io/about.html</loc>
-    <lastmod>2024-07-13T17:16:05.104Z</lastmod>
+    <lastmod>2026-10-06T19:41:22.188Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/work.html</loc>
+    <lastmod>2026-10-06T20:05:00.473Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/hierarchy_needs_ml/index.html</loc>
+    <lastmod>2026-10-06T18:13:11.747Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/csgo_betting_with_ml_part_1/csgo_betting_with_ml_part_1.html</loc>
+    <lastmod>2026-10-06T18:13:11.555Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/name_classification/name_classification.html</loc>
+    <lastmod>2026-10-06T19:45:02.231Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/research.html</loc>
+    <lastmod>2026-10-06T19:50:20.540Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/serverless_model_deployment/serverless_model_deployment.html</loc>
+    <lastmod>2026-10-06T18:13:11.898Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/how_not_to_forecast_election/index.html</loc>
+    <lastmod>2026-10-06T18:13:11.791Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/neurips_2018/index.html</loc>
+    <lastmod>2026-10-06T18:13:11.846Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/posts/csgo_betting_with_ml_part_2/csgo_betting_with_ml_part_2.html</loc>
+    <lastmod>2026-10-06T18:13:11.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/index.html</loc>
+    <lastmod>2026-10-06T20:05:00.413Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tabacof.github.io/writing.html</loc>
+    <lastmod>2026-10-06T20:09:17.699Z</lastmod>
   </url>
 </urlset>

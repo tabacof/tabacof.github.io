@@ -1,15 +1,78 @@
 ---
-title: "Blog"
-listing:
-  contents: posts
-  sort: "date desc"
-  type: default
-  categories: true
-  sort-ui: false
-  filter-ui: false
-  feed: true
+title: "Principal Machine Learning Scientist"
+description: "Pedro Tabacof is a Principal Machine Learning Scientist in Ireland who builds, evaluates, and leads production machine learning systems."
 page-layout: full
-title-block-banner: true
+toc: false
 ---
 
+::: {.home-intro}
+::: {.home-copy}
+# Pedro Tabacof
 
+<p class="role">Principal Machine Learning Scientist at Fin · Ireland</p>
+
+At Fin, I lead Fin Core, a 12+ person workstream that defines how the AI agent answers questions, follows guidance, takes actions, and handles the conversation around them.
+
+In more than ten years, my models have informed a $10M annual marketing budget at a mobile gaming company, credit decisions involving tens of millions of dollars in exposure at Nubank, and fraud screening for more than two-thirds of iFood transactions. My research includes an ICLR main-conference paper and four NeurIPS workshop papers, with [600+ citations](https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en).
+
+<p class="profile-links"><a href="mailto:tabacof@gmail.com">Email</a> · <a href="https://www.linkedin.com/in/tabacof/">LinkedIn</a> · <a href="https://scholar.google.com/citations?user=mbEp-w0AAAAJ&hl=en">Google Scholar</a> · <a href="https://github.com/tabacof/">GitHub</a></p>
+:::
+
+::: {.portrait-wrap}
+<img src="portrait.jpg" alt="Portrait of Pedro Tabacof" class="home-portrait">
+:::
+:::
+
+::: {.home-grid}
+::: {.home-main}
+## Recent posts
+
+::: {.simple-list}
+::: {.simple-item}
+<span>2024</span>
+
+### [How I lost 1000€ betting on CS:GO — Practice](posts/csgo_betting_with_ml_part_2/csgo_betting_with_ml_part_2.ipynb)
+What happened when the theory met feature engineering, validation, backtesting, and real money.
+:::
+::: {.simple-item}
+<span>2023</span>
+
+### [Name classification with ChatGPT](posts/name_classification/name_classification.ipynb)
+Comparing prompt-based classification with traditional language models.
+:::
+::: {.simple-item}
+<span>2023</span>
+
+### [Real-Time ML Models with Serverless AWS](posts/serverless_model_deployment/serverless_model_deployment.ipynb)
+A practical guide to deploying models with AWS Lambda and API Gateway.
+:::
+::: {.simple-item}
+<span>2023</span>
+
+### [The Hierarchy of Machine Learning Needs](posts/hierarchy_needs_ml/index.qmd)
+A framework for deciding what matters before choosing or tuning a model.
+:::
+:::
+
+[All blog posts](blog.qmd){.more-link}
+:::
+
+::: {.home-side}
+## Elsewhere
+
+::: {.side-item}
+### [Why not just ship it?](https://ideas.fin.ai/p/why-not-just-ship-it)
+How we evaluate changes to Fin before and after release. 2026.
+:::
+::: {.side-item}
+### [Do Small Language Models Learn to Negotiate?](https://arxiv.org/abs/2610.06204)
+A controlled study of reinforcement-learning-trained sellers. NeurIPS 2026 SLM-Agents workshop (poster).
+:::
+::: {.side-item}
+### [Slower Feels Smarter?](https://fin.ai/research/does-slower-seem-smarter-rethinking-latency-in-ai-agents/)
+An experiment on latency and user perception in AI agents. 2025.
+:::
+
+[Publications](research.qmd){.more-link} · [Talks and podcasts](writing.qmd){.more-link}
+:::
+:::

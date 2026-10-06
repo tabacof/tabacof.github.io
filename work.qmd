@@ -1,0 +1,67 @@
+---
+title: "Experience"
+description: "Professional experience and selected applied work by Pedro Tabacof."
+page-layout: full
+toc: false
+---
+
+::: {.page-head}
+# Experience
+
+Ten years of applied machine learning across AI products, games, credit, fraud, marketing, and research.
+:::
+
+::: {.content-page}
+## Fin / Intercom
+
+**Principal Machine Learning Scientist, previously Staff · 2023–present · Ireland**
+
+I lead Fin Core, the 12+ person workstream responsible for most behaviour between end users and Fin’s AI agent: answering informational and personalised queries, following customer guidance, taking actions, and handling conversational replies. I am responsible for strategy, roadmap, and execution.
+
+I have managed three senior ML scientists across locations, including hiring and onboarding, and currently manage the lead of the Apex workstream.
+
+Over the period I have led the workstream, **Fin AI Agent ARR grew more than 30× and its resolution rate doubled**—results delivered by the broader team. My individual-contributor work includes post-training open-weight models and migrating Fin to Anthropic models, spanning prompt engineering, evaluation, A/B testing, and cross-team delivery.
+
+Public descriptions of this work:
+
+- [Why not just ship it?](https://ideas.fin.ai/p/why-not-just-ship-it) — the evaluation process we use to decide which changes ship.
+- [Slower Feels Smarter?](https://fin.ai/research/does-slower-seem-smarter-rethinking-latency-in-ai-agents/) — an experiment on latency and perceived intelligence.
+- [How Intercom evaluates and adopts new models](https://openai.com/index/intercom/) — an OpenAI customer story.
+- [Why Intercom chose Claude for Fin](https://claude.com/customers/intercom) — an Anthropic customer story.
+
+## Wildlife Studios
+
+**Senior / Staff Data Scientist and Data Science Manager · 2019–2023**
+
+I led the data-science work for a privacy-preserving iOS marketing-attribution system after Apple’s tracking changes. Its outputs informed roughly **$10M in annual performance-marketing spend**. Earlier, I built lifetime-value models for games including *Zooba* and *Tennis Clash*, which together passed 100 million downloads.
+
+I also managed three senior data scientists and promoted one from senior to staff.
+
+## Nubank
+
+**Senior Data Scientist · 2018–2019**
+
+I built and deployed credit-risk and severity models, along with a net-present-value framework that connected model predictions to lending decisions. The work had impact measured in **millions of dollars of profit and tens of millions in credit exposure**. I also contributed to the open-source [fklearn](https://github.com/nubank/fklearn) library.
+
+## iFood
+
+**Senior Data Scientist · 2017–2018**
+
+I developed a real-time credit-card antifraud model used on **more than two-thirds of transactions**, with estimated savings in the hundreds of thousands of dollars per year.
+
+## Accenture and academic research
+
+**Research Engineer · 2019**
+
+At Accenture, I worked on knowledge-graph embeddings, counterfactual explanations, and Bayesian deep learning. That work produced an [ICLR 2020 main-conference paper](https://openreview.net/forum?id=S1g8K1BFwS) on probability calibration and contributions to [AmpliGraph](https://github.com/Accenture/AmpliGraph).
+
+My academic foundation is an M.Sc. from the **University of Campinas (Unicamp)**, where I studied adversarial examples and uncertainty in deep neural networks.
+
+## Patent applications
+
+- [Answer assistance computing system](https://patents.google.com/patent/US20260093729A1/en), US 2026/0093729 A1.
+- [Answer assistance computing system](https://patents.google.com/patent/US20250315458A1/en), US 2025/0315458 A1.
+- [Processing conversation records using language models for knowledge-base enrichment](https://patents.google.com/patent/US20250200332A1/en), US 2025/0200332 A1.
+
+These are published US patent applications, not granted patents.
+:::

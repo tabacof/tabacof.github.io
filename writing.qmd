@@ -1,0 +1,43 @@
+---
+title: "Talks & Media"
+description: "Talks, podcasts, and interviews featuring Pedro Tabacof."
+page-layout: full
+toc: false
+---
+
+::: {.page-head}
+# Talks & media
+
+Selected conference talks, podcasts, and interviews.
+:::
+
+::: {.content-page}
+## Talks
+
+::: {.media-list}
+- **[Deploying Real-Time Machine Learning Models Using Serverless AWS](https://www.youtube.com/watch?v=vbJz03riTv0)**<br>
+  PyData London, 2023.
+
+- **[Unlocking the Power of Gradient-Boosted Trees](https://www.youtube.com/watch?v=qGsHlvE8KZM)**<br>
+  PyData London, 2022. LightGBM from fundamentals to practical tuning.
+
+- **[Adversarial Attacks on Variational Autoencoders](https://research.latinxinai.org/papers/neurips/2018/slides/Slide_Pedro_Tabacof.pdf)**<br>
+  LatinX in AI at NeurIPS, 2018.
+:::
+
+## Podcasts and interviews
+
+::: {.media-list}
+- **[How Fin does 1,000,000 A/B tests in 24 hours](https://www.growthbook.io/podcast/episode/1-28)**<br>
+  The Experimentation Edge, 2026.
+
+- **[Fine-tuning vs. prompt engineering for customer service](https://www.alura.com.br/podcast/126-fine-tuning-vs-engenharia-de-prompt-na-adocao-de-llms-para-sacs-com-pedro-tabacof-a9652)**<br>
+  IA Sob Controle, 2025. In Portuguese.
+
+- **[A Machine Learning Scientist in Dublin](https://www.youtube.com/watch?v=t_mDructH6A)**<br>
+  Dev Sem Fronteiras, 2024. In Portuguese.
+
+- **[Data Science at Nubank and EBANX](https://podcasts.apple.com/gb/podcast/nubank-e-ebanx-como-%C3%A9-trabalhar-com-data-science-em/id1436619995?i=1000431504534)**<br>
+  Data Hackers, 2019. In Portuguese.
+:::
+:::

@@ -1,0 +1,22 @@
+---
+title: "Blog"
+description: "Pedro Tabacof's writing about machine learning, statistics, experiments, and engineering."
+page-layout: full
+toc: false
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: false
+  sort-ui: false
+  filter-ui: false
+  feed:
+    type: partial
+    items: 10
+---
+
+::: {.page-head}
+# Blog
+
+Technical notes on machine learning, statistics, experimentation, and engineering.
+:::

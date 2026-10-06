@@ -1,0 +1,16 @@
+---
+title: "Page not found"
+description: "The requested page could not be found."
+page-layout: full
+toc: false
+---
+
+::: {.page-head}
+# Page not found
+
+The address may be outdated, or the page may have moved.
+:::
+
+::: {.content-page}
+[Return home](index.qmd){.more-link} · [Browse the blog](blog.qmd){.more-link} · [View research](research.qmd){.more-link}
+:::

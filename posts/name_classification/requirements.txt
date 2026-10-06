@@ -1,4 +1,5 @@
-fastai==2.7.12
+# Maintained execution environment for this notebook (Python 3.10+).
+fastai==2.8.12
 joblib==1.2.0
 numpy==1.23.4
 openai==0.27.2
@@ -6,6 +7,6 @@ pandas==1.5.0
 plotly==5.14.0
 python_Levenshtein==0.20.9
 scikit_learn==1.2.2
-torch==1.12.1+cu116
+torch==2.14.1
 tqdm==4.64.1
-transformers==4.21.3
+transformers==5.19.0
